@@ -73,6 +73,7 @@ public class ConstellationGallery extends Application {
                 ex.printStackTrace();
             }
         });
+        
 
         // layout for the gallery
         VBox layout = new VBox(20, backButton, scrollPane);

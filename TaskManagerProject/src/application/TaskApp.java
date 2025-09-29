@@ -61,8 +61,20 @@ public class TaskApp extends Application {
            
         });
 
+        Button galleryButton = new Button("Go to Gallery");
+            galleryButton.getStyleClass().add("bubble-button");
+            
+            galleryButton.setOnAction(e -> {
+            ConstellationGallery gallery = new ConstellationGallery();
+                try {
+                    gallery.start(stage); // switch stage to ConstellationGallery
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            });
+
         // Add button and scrollable container to content layout
-        contentLayout.getChildren().addAll(createListButton, listContainer);
+        contentLayout.getChildren().addAll(createListButton, galleryButton, listContainer);
 
         // ScrollPane wraps the FlowPane to enable scrolling
         ScrollPane scrollPane = new ScrollPane(contentLayout);
