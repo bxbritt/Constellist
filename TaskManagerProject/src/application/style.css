@@ -87,3 +87,8 @@
 .close-button:hover {
 	-fx-text-fill: #ff4c4c;
 }
+.constellation-label {
+    -fx-text-fill: FFB6C1;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}

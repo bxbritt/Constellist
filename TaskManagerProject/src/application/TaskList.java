@@ -83,8 +83,8 @@ public class TaskList extends VBox {
             Alert popup = new Alert(Alert.AlertType.INFORMATION);
             popup.setTitle("Constellation Complete");
             popup.setHeaderText(null);
-            popup.setContentText("Constellation here");
-            popup.show();
+           // popup.setContentText("Constellation here");
+           // popup.show();
         }
     }
 }

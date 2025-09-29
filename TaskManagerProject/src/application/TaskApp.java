@@ -12,12 +12,18 @@ import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
 
+import application.TaskListScene;
+
+
 public class TaskApp extends Application {
     @Override
     public void start(Stage stage) {
         // vertical layout of everything
         VBox contentLayout = new VBox(20);
         contentLayout.getStyleClass().add("root");
+        
+        //add start progress bar 
+        contentLayout.getChildren().add(TaskListScene.getStarBar());
 
         // FlowPane allows task lists to wrap side-by-side
         FlowPane listContainer = new FlowPane();
@@ -51,6 +57,8 @@ public class TaskApp extends Application {
             scale.play();
             
             listContainer.getChildren().add(newList);
+            
+           
         });
 
         // Add button and scrollable container to content layout

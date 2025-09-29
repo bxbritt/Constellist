@@ -1,3 +1,4 @@
+package application;
 import javafx.animation.ScaleTransition; //changes an objects size over time
 import javafx.animation.ParallelTransition; //allows for simultaneous animations
 import javafx.application.Application; //not really sure what this is yet

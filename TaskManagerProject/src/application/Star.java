@@ -1,3 +1,4 @@
+package application;
 import javafx.animation.ScaleTransition;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color; //used for coloring shapes

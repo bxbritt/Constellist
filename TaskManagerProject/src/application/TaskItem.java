@@ -6,6 +6,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
+import javafx.stage.Stage;
+import javafx.stage.Window;
+
 public class TaskItem extends HBox {
     private CheckBox checkBox;
     private Text taskText;
@@ -28,11 +31,17 @@ public class TaskItem extends HBox {
             completed = checkBox.isSelected();
             if (completed) {
                 taskText.getStyleClass().add("completed");
+                
+                
+                Window window = taskText.getScene().getWindow();
+                if (window instanceof Stage) {
+                TaskListScene.taskCompleted((Stage) window);
+   
             } else {
                 taskText.getStyleClass().remove("completed");
             }
             parentContainer.checkCompletion();
-        });
+            }});
 
         deleteButton.setOnAction(e -> {
             parentList.getChildren().remove(this);

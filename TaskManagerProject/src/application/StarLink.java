@@ -1,3 +1,4 @@
+package application;
 import javafx.scene.shape.Line;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
