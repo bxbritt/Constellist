@@ -11,69 +11,66 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-public class Main extends Application {
+public class SignUp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Start Screen");
+        primaryStage.setTitle("Sign Up");
 
-        // Title and tagline
-        Label title = new Label("Welcome");
+        // Title 
+        Label title = new Label("Create Account");
         title.setFont(Font.font("Verdana", 28));
-        title.setTextFill(Color.DARKTURQUOISE);
+        title.setTextFill(Color.LIGHTSKYBLUE);
 
-        Label tagline = new Label("Log in to begin");
+        Label tagline = new Label("Begin your constellation journey");
         tagline.setFont(Font.font("Verdana", 14));
-        tagline.setTextFill(Color.DARKTURQUOISE);
+        tagline.setTextFill(Color.LIGHTGRAY);
 
         VBox header = new VBox(5, title, tagline);
         header.setAlignment(Pos.CENTER);
 
-        // email and password fields
+        // Input fields
+        TextField nameField = new TextField();
+        nameField.setPromptText("Username");
+
         TextField emailField = new TextField();
         emailField.setPromptText("Email");
 
         PasswordField passwordField = new PasswordField();
         passwordField.setPromptText("Password");
 
-        VBox inputBox = new VBox(10, emailField, passwordField);
+        PasswordField confirmPasswordField = new PasswordField();
+        confirmPasswordField.setPromptText("Confirm Password");
+
+        VBox inputBox = new VBox(10, nameField, emailField, passwordField, confirmPasswordField);
         inputBox.setAlignment(Pos.CENTER);
 
-        //Login/signup Buttons
-        Button loginButton = new Button("Log In");
-        Button signupButton = new Button("Sign Up");
-        loginButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-border-color: white;");
-        signupButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-border-color: white;");
+        // Buttons
+        Button createAccountButton = new Button("Create Account");
+        Button backButton = new Button("Back to Login");
 
-        HBox buttonBox = new HBox(20, loginButton, signupButton);
+        HBox buttonBox = new HBox(20, createAccountButton, backButton);
         buttonBox.setAlignment(Pos.CENTER);
 
-        // Forgot password (phase 3) 
-        //Hyperlink forgotPassword = new Hyperlink("Forgot password?");
-        //forgotPassword.setTextFill(Color.DARKTURQUOISE);
-
-        //  Main layout
         VBox layout = new VBox(20, header, inputBox, buttonBox);
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(40));
-        layout.setPrefSize(400, 400); // Ensure VBox fills the scene
+        layout.setPrefSize(400, 400);
 
         // Background image
-        Image bgImage = new Image(Main.class.getResource("starsbackground.jpg").toExternalForm());
+        Image bgImage = new Image(SignUp.class.getResource("starsbackground.jpg").toExternalForm());
         BackgroundImage backgroundImage = new BackgroundImage(
             bgImage,
             BackgroundRepeat.NO_REPEAT,
             BackgroundRepeat.NO_REPEAT,
             BackgroundPosition.DEFAULT,
-            new BackgroundSize(100, 100, true, true, false, true) // Stretch to fill VBox
-            
+            new BackgroundSize(100, 100, true, true, false, true)
         );
         layout.setBackground(new Background(backgroundImage));
 
-        //Scene setup
         Scene scene = new Scene(layout, 400, 400);
 
-        // Optional: bind VBox size to scene size for full coverage
+        
         scene.widthProperty().addListener((obs, oldVal, newVal) -> layout.setPrefWidth(newVal.doubleValue()));
         scene.heightProperty().addListener((obs, oldVal, newVal) -> layout.setPrefHeight(newVal.doubleValue()));
 

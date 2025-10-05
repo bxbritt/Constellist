@@ -32,6 +32,8 @@ public class TaskList extends VBox {
         // press enter to confirm edit
         titleField.setOnAction(e -> {
         	titleField.setEditable(false);
+        	
+        	//this is a test 
         });
         
         // close button to remove the entire list

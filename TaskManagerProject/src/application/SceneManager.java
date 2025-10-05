@@ -5,12 +5,7 @@ import javafx.stage.Stage;
 import java.util.HashMap;
 import java.util.Map;
 
-// this will handle the switching between the scenes 
 
-//TODO: Create a static method to set the main Stage
-//TODO: Create a method to register scenes by name
-//TODO: Create a method to switch scenes by name
-//TODO: Store scenes in a HashMap for easy access
 
 
 public class SceneManager {
