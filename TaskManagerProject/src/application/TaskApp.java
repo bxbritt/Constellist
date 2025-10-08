@@ -12,9 +12,6 @@ import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
 
-import application.TaskListScene;
-
-
 public class TaskApp extends Application {
     @Override
     public void start(Stage stage) {

@@ -47,30 +47,43 @@ public class TaskList extends VBox {
         HBox titleBar = new HBox(10, titleField, closeButton);
         titleBar.setStyle("-fx-alignment: center-right;");
         
-        // input field and button
-        TextField inputField = new TextField();
-        inputField.setPromptText("Enter a task...");
-        Button addButton = new Button("Add Task");
-        addButton.getStyleClass().add("bubble-button");
-
-        addButton.setOnAction(e -> {
+        // add task button
+        Button addTaskButton = new Button("Add Task");
+        addTaskButton.getStyleClass().add("bubble-button");  
+        
+        // hidden input field
+        TextField taskInputField = new TextField();
+        taskInputField.setPromptText("Enter a task...");
+        taskInputField.setVisible(false);	// hidden initially
+        
+        // shows input field when add task is clicked
+        addTaskButton.setOnAction(e -> {
             if (taskContainer.getChildren().size() < TASK_LIMIT) {
-                String text = inputField.getText().trim();
-                if (!text.isEmpty()) {
-                    TaskItem task = new TaskItem(text, taskContainer, this);
-                    taskContainer.getChildren().add(task);
-                    inputField.clear();
-                }
+            	addTaskButton.setVisible(false);
+                taskInputField.setVisible(true);
+                taskInputField.requestFocus();
             } else {
                 Alert limitAlert = new Alert(Alert.AlertType.WARNING);
                 limitAlert.setTitle("Task Limit Reached");
                 limitAlert.setHeaderText(null);
-                limitAlert.setContentText("This list can only hold 5 tasks.\nPlease create a new task list.");
+                limitAlert.setContentText("This list can only hold 10 tasks.\nPlease create a new task list.");
                 limitAlert.show();
             }
         });
 
-        this.getChildren().addAll(titleBar, inputField, addButton, taskContainer);
+        // press enter to confirm and add task to list
+        taskInputField.setOnAction(e -> {
+        	String text = taskInputField.getText().trim();
+        	if (!text.isEmpty()) {
+        		TaskItem task = new TaskItem(text, taskContainer, this);
+        		taskContainer.getChildren().add(task);
+        		taskInputField.clear();
+        		taskInputField.setVisible(false);	// hides again
+        		addTaskButton.setVisible(true);	// shows button again
+        	}
+        });
+        
+        this.getChildren().addAll(titleBar, taskInputField, addTaskButton, taskContainer);
     }
 
     public void checkCompletion() {
