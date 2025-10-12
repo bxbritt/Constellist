@@ -11,11 +11,17 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import java.sql.Connection;
+
+import application.Main;
+
 public class SignUp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Sign Up");
+        
+        Database.createUsersTable(); // Ensures the table exists before inserting
 
         // Title 
         Label title = new Label("Create Account");
@@ -51,6 +57,65 @@ public class SignUp extends Application {
 
         HBox buttonBox = new HBox(20, createAccountButton, backButton);
         buttonBox.setAlignment(Pos.CENTER);
+        
+        //button to go back to main 
+        backButton.setOnAction(e -> {
+            Main mainScreen = new Main();
+            try {
+                mainScreen.start(primaryStage);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+        
+        //button that will take user to TaskApp after signing up 
+        
+        createAccountButton.setOnAction(e -> {
+            TaskApp taskApp = new TaskApp();
+            try {
+                taskApp.start(primaryStage); // Reuse the same window
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+        
+        createAccountButton.setOnAction(e -> {
+            String username = nameField.getText();
+            String email = emailField.getText();
+            String password = passwordField.getText();
+            String confirmPassword = confirmPasswordField.getText();
+
+            if (username.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+                showAlert(Alert.AlertType.WARNING, "Please fill in all fields.");
+                return;
+            }
+
+            if (!password.equals(confirmPassword)) {
+                showAlert(Alert.AlertType.ERROR, "Passwords do not match.");
+                return;
+            }
+
+            // Connect and insert into database
+            String sql = "INSERT INTO users(username, email, password) VALUES(?, ?, ?)";
+
+            try (Connection conn = Database.connect();
+                 java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+                pstmt.setString(1, username);
+                pstmt.setString(2, email);
+                pstmt.setString(3, password); // You can hash this later
+
+                pstmt.executeUpdate();
+                showAlert(Alert.AlertType.INFORMATION, "Account created successfully!");
+
+                // Transition to TaskApp
+                TaskApp taskApp = new TaskApp();
+                taskApp.start(primaryStage);
+
+            } catch (Exception ex) {
+                showAlert(Alert.AlertType.ERROR, "Database error: " + ex.getMessage());
+            }
+        });
 
         VBox layout = new VBox(20, header, inputBox, buttonBox);
         layout.setAlignment(Pos.CENTER);
@@ -81,4 +146,16 @@ public class SignUp extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
+	public static Scene getSignUp(Stage primaryStage) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	//used to make alerts if user got wrong password or other messages 
+	private void showAlert(Alert.AlertType type, String message) {
+	    Alert alert = new Alert(type);
+	    alert.setContentText(message);
+	    alert.showAndWait();
+	}
 }
