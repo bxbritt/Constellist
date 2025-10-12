@@ -42,11 +42,31 @@ public class Main extends Application {
         //Login/signup Buttons
         Button loginButton = new Button("Log In");
         Button signupButton = new Button("Sign Up");
+        
         loginButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-border-color: white;");
         signupButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-border-color: white;");
 
         HBox buttonBox = new HBox(20, loginButton, signupButton);
         buttonBox.setAlignment(Pos.CENTER);
+        
+        //sign up button takes you to signup.java 
+        signupButton.setOnAction(e -> {
+            SignUp signupScreen = new SignUp();
+            try {
+                signupScreen.start(primaryStage);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+        
+        loginButton.setOnAction(e -> {
+            TaskApp taskApp = new TaskApp();
+            try {
+                taskApp.start(primaryStage); // Reuse the same window
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
 
         // Forgot password (phase 3) 
         //Hyperlink forgotPassword = new Hyperlink("Forgot password?");
@@ -84,4 +104,9 @@ public class Main extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
+	public static Scene getLogin(Stage primaryStage) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
