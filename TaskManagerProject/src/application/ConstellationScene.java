@@ -44,6 +44,7 @@ public class ConstellationScene {
         stage.setTitle("Constellation Demo");
         
         PauseTransition delay = new PauseTransition(Duration.seconds(2));
+        
         delay.setOnFinished(event -> {
             VBox messageBox = new VBox(10);
            
@@ -66,9 +67,22 @@ public class ConstellationScene {
                 }
             });
 
-            messageBox.getChildren().addAll(message, returnButton);
+            Button galleryButton = new Button("Go to Gallery");
+            galleryButton.getStyleClass().add("bubble-button");
+            
+            galleryButton.setOnAction(e -> {
+            ConstellationGallery gallery = new ConstellationGallery();
+                try {
+                    gallery.start(stage); // switch stage to ConstellationGallery
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            });
+            //add buttons return and go to gallery
+            messageBox.getChildren().addAll(message, returnButton, galleryButton);
             ((Pane) stage.getScene().getRoot()).getChildren().add(messageBox);
         });
+        
         delay.play();
     }
 }
