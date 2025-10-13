@@ -1,11 +1,10 @@
+// Java
 package application;
 
 import javafx.application.Application;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -13,59 +12,67 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import application.TaskApp;
-import application.ConstellationScene;
 
-
-/* THIS IS THE PAGE 'go to galley' LEADS THE USER TO
- * 
- * 
- * class GalleryPage extends Application
-*    start(Stage stage):
-*        create HBox to hold constellations
-*        for each constellation:
-*            create a card with constellation name + progress bar
-*            add card to HBox
-*
-*        wrap HBox inside a ScrollPane
-*        set ScrollPane to scroll -- horizontally
-*
-*        add a "Back to Tasks" button to return to TaskApp
-*
-*        create scene with scrollable constellation list
-*        set stage scene to this new scene*/
-
+import java.util.ArrayList;
 
 public class ConstellationGallery extends Application {
+    private int selectedIndex = 0; // track which card is centered
+    private ArrayList<VBox> galleryCards = new ArrayList<>(); // store all cards
+    private HBox constellationRow = new HBox(40); //container for visible cards
 
     @Override
     public void start(Stage stage) {
-        // container for constellation cards
-        HBox constellationRow = new HBox(20);
-        constellationRow.setPadding(new Insets(20));
-        constellationRow.setAlignment(Pos.CENTER_LEFT);
+        double cardWidth = 300;
+        double cardHeight = 220;
+        double windowWidth = 1000;
+        double windowHeight = 600;
 
-        // placeholder cards
-        for (int i = 1; i <= 5; i++) {
-            VBox card = new VBox(10);
-            card.setPadding(new Insets(10));
-            card.setAlignment(Pos.CENTER);
-            card.setStyle("-fx-border-color: gray; -fx-border-radius: 10; -fx-padding: 15; -fx-background-radius: 10; -fx-background-color: #f9f9f9;");
-
-            Text name = new Text("Constellation " + i); //later change to list name
-
-            constellationRow.getChildren().add(card);
+        // create all cards and add to galleryCards list
+        for (int i = 1; i <= 10; i++) {
+            VBox galleryCard = new VBox(8);
+            galleryCard.setAlignment(Pos.CENTER);
+            galleryCard.setPrefSize(cardWidth, cardHeight);
+            galleryCard.getStyleClass().add("galleryCard");
+            Text name = new Text("Constellation " + i);
+            galleryCard.getChildren().add(name);
+            galleryCards.add(galleryCard);
         }
 
-        // ScrollPane for horizontal scrolling
-        ScrollPane scrollPane = new ScrollPane(constellationRow);
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scrollPane.setFitToHeight(true);
-        scrollPane.setPannable(true);
+        constellationRow.getStyleClass().add("constellation-row");
 
-        // back button to go back to TaskApp
-        Button backButton = new Button("Back to Tasks");
-        backButton.setOnAction(e -> {
+        // scrollPane for horizontal scrolling
+        // Remove all image-related code and use only the carousel row
+        ScrollPane scrollPane = new ScrollPane(constellationRow);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.getStyleClass().add("scroll-pane"); // use css for background
+        scrollPane.setFitToHeight(true);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPrefSize(windowWidth, windowHeight);
+
+        // navigation buttons
+        Button leftButton = new Button("<");
+        Button rightButton = new Button(">");
+        leftButton.getStyleClass().add("bubble-button");
+        rightButton.getStyleClass().add("bubble-button");
+        leftButton.setOnAction(e -> {
+            if (selectedIndex > 0) {
+                selectedIndex--;
+                updateCarousel();
+            }
+        });
+        rightButton.setOnAction(e -> {
+            if (selectedIndex < galleryCards.size() - 1) {
+                selectedIndex++;
+                updateCarousel();
+            }
+        });
+
+        updateCarousel();
+
+        Button taskButton = new Button("Back to Tasks");
+        taskButton.getStyleClass().add("bubble-button");
+        taskButton.setOnAction(e -> {
             TaskApp taskApp = new TaskApp();
             try {
                 taskApp.start(stage);
@@ -73,21 +80,38 @@ public class ConstellationGallery extends Application {
                 ex.printStackTrace();
             }
         });
-        
 
-        // layout for the gallery
-        VBox layout = new VBox(20, backButton, scrollPane);
-        layout.setPadding(new Insets(20));
+        VBox layout = new VBox(20, taskButton, leftButton, scrollPane, rightButton);
+        layout.setAlignment(Pos.TOP_CENTER);
 
-        // scene
-        Scene scene = new Scene(layout, 1000, 600);
-        stage.setScene(scene);
+        Scene gallery = new Scene(layout, windowWidth, windowHeight);
+        gallery.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        stage.setScene(gallery);
         stage.setTitle("Constellation Gallery");
         stage.show();
+    }
+
+    // show previous, current, and next card in the row
+    private void updateCarousel() {
+        constellationRow.getChildren().clear();
+        if (selectedIndex > 0) {
+            constellationRow.getChildren().add(galleryCards.get(selectedIndex - 1));
+        }
+        VBox centerCard = galleryCards.get(selectedIndex);
+        centerCard.getStyleClass().add("center-card"); // add emphasis class
+        constellationRow.getChildren().add(centerCard);
+        if (selectedIndex < galleryCards.size() - 1) {
+            constellationRow.getChildren().add(galleryCards.get(selectedIndex + 1));
+        }
+        // remove highlight from other cards
+        for (int i = 0; i < galleryCards.size(); i++) {
+            if (i != selectedIndex) {
+                galleryCards.get(i).getStyleClass().remove("center-card");
+            }
+        }
     }
 
     public static void main(String[] args) {
         launch();
     }
 }
-
