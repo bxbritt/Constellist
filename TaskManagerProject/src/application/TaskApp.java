@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Region;
@@ -13,14 +14,19 @@ import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
 
 public class TaskApp extends Application {
-
+    @Override
     public void start(Stage stage) {
-        // vertical layout of everything
-        VBox contentLayout = new VBox(20);
-        contentLayout.getStyleClass().add("root");
+    	// Button to create new task list cards
+        Button createListButton = new Button("Create New List");
+        createListButton.getStyleClass().add("bubble-button");
         
-        //add start progress bar 
-        contentLayout.getChildren().add(TaskListScene.getStarBar());
+        Button galleryButton = new Button("Go to Gallery");
+        galleryButton.getStyleClass().add("bubble-button");
+    	
+    	// Horizontal menu bar
+    	HBox menuBar = new HBox(15);	// spacing between buttons
+    	menuBar.getChildren().addAll(createListButton, galleryButton);
+    	menuBar.setStyle("-fx-alignment: center-left; -fx-padding: 10;");
 
         // FlowPane allows task lists to wrap side-by-side
         FlowPane listContainer = new FlowPane();
@@ -31,11 +37,19 @@ public class TaskApp extends Application {
         listContainer.setMinHeight(Region.USE_PREF_SIZE);
         listContainer.setMaxHeight(Region.USE_COMPUTED_SIZE);
         listContainer.getStyleClass().add("list-container");
+    	
+        // vertical layout of everything
+        VBox contentLayout = new VBox(20, menuBar, listContainer);
+        contentLayout.getStyleClass().add("root");
         
-        // Button to create new task list cards
-        Button createListButton = new Button("Create New List");
-        createListButton.getStyleClass().add("bubble-button");
+        // ScrollPane wraps the FlowPane to enable scrolling
+        ScrollPane scrollPane = new ScrollPane(contentLayout);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setStyle("-fx-background: transparent;");
 
+        // add new task list on button click
         createListButton.setOnAction(e -> {
             TaskList newList = new TaskList("Task List");
             
@@ -47,7 +61,7 @@ public class TaskApp extends Application {
             ScaleTransition scale = new ScaleTransition(Duration.millis(500), newList);
             scale.setFromX(0.8);
             scale.setFromY(0.8);
-            scale.setToY(1);
+            scale.setToX(1);
             scale.setToY(1);
             
             fade.play();
@@ -57,9 +71,6 @@ public class TaskApp extends Application {
             
            
         });
-
-        Button galleryButton = new Button("Go to Gallery");
-            galleryButton.getStyleClass().add("bubble-button");
             
             galleryButton.setOnAction(e -> {
             ConstellationGallery gallery = new ConstellationGallery();
@@ -69,16 +80,6 @@ public class TaskApp extends Application {
                     ex.printStackTrace();
                 }
             });
-
-        // Add button and scrollable container to content layout
-        contentLayout.getChildren().addAll(createListButton, galleryButton, listContainer);
-
-        // ScrollPane wraps the FlowPane to enable scrolling
-        ScrollPane scrollPane = new ScrollPane(contentLayout);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setFitToHeight(true);
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scrollPane.setStyle("-fx-background: transparent;");
 
         // Scene setup
         Scene scene = new Scene(scrollPane, 1000, 600);
@@ -97,10 +98,4 @@ public class TaskApp extends Application {
     public static void main(String[] args) {
         launch();
     }
-
-	public static Scene getTaskApp(Stage primaryStage) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

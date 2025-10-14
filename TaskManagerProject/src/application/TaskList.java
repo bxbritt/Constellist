@@ -5,6 +5,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.FlowPane;
 
@@ -51,6 +52,10 @@ public class TaskList extends VBox {
         Button addTaskButton = new Button("Add Task");
         addTaskButton.getStyleClass().add("bubble-button");  
         
+        // progress button
+        Button viewProgressButton = new Button("View Progress");
+        viewProgressButton.getStyleClass().add("bubble-button");
+        
         // hidden input field
         TextField taskInputField = new TextField();
         taskInputField.setPromptText("Enter a task...");
@@ -83,7 +88,20 @@ public class TaskList extends VBox {
         	}
         });
         
-        this.getChildren().addAll(titleBar, taskInputField, addTaskButton, taskContainer);
+        viewProgressButton.setOnAction(e -> {
+            Stage progressStage = new Stage();
+            VBox layout = new VBox(20);
+            layout.setStyle("-fx-padding: 20; -fx-background-color: #1B1640;");
+            Text placeholder = new Text("Constellation progress will appear here.");
+            placeholder.getStyleClass().add("constellation-label");
+            layout.getChildren().add(placeholder);
+            Scene scene = new Scene(layout, 400, 200);
+            progressStage.setScene(scene);
+            progressStage.setTitle("Constellation Progress");
+            progressStage.show();
+        });
+        
+        this.getChildren().addAll(titleBar, taskInputField, addTaskButton, viewProgressButton, taskContainer);
     }
 
     public void checkCompletion() {
