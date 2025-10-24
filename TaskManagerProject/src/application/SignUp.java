@@ -70,14 +70,6 @@ public class SignUp extends Application {
         
         //button that will take user to TaskApp after signing up 
         
-        createAccountButton.setOnAction(e -> {
-            TaskApp taskApp = new TaskApp();
-            try {
-                taskApp.start(primaryStage); // Reuse the same window
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        });
         
         createAccountButton.setOnAction(e -> {
             String username = nameField.getText();
@@ -99,8 +91,9 @@ public class SignUp extends Application {
             String sql = "INSERT INTO users(username, email, password) VALUES(?, ?, ?)";
 
             try (Connection conn = Database.connect();
+            
                  java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
+            	System.out.println("Using DB file at: " + new java.io.File("users.db").getAbsolutePath());
                 pstmt.setString(1, username);
                 pstmt.setString(2, email);
                 pstmt.setString(3, password); // You can hash this later

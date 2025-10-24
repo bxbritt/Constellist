@@ -12,10 +12,16 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class Main extends Application {
+	
+	
 
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Start Screen");
+        
+        Database.createUsersTable(); // Ensure the users table exists before login
+        TextField UserInput = new TextField();
+        UserInput.setPromptText("Username or Email"); //checks for username and/or email 
 
         // Title and tagline
         Label title = new Label("Welcome");
@@ -29,14 +35,13 @@ public class Main extends Application {
         VBox header = new VBox(5, title, tagline);
         header.setAlignment(Pos.CENTER);
 
-        // email and password fields
-        TextField emailField = new TextField();
-        emailField.setPromptText("Email");
+        // email/username input and password fields
+        
 
         PasswordField passwordField = new PasswordField();
         passwordField.setPromptText("Password");
 
-        VBox inputBox = new VBox(10, emailField, passwordField);
+        VBox inputBox = new VBox(10, UserInput, passwordField);
         inputBox.setAlignment(Pos.CENTER);
 
         //Login/signup Buttons
@@ -60,11 +65,28 @@ public class Main extends Application {
         });
         
         loginButton.setOnAction(e -> {
-            TaskApp taskApp = new TaskApp();
-            try {
-                taskApp.start(primaryStage); // Reuse the same window
-            } catch (Exception ex) {
-                ex.printStackTrace();
+        	String input = UserInput.getText().trim();
+        	String password = passwordField.getText().trim();
+
+        	if (input.isEmpty() || password.isEmpty()) {
+        	    Alert alert = new Alert(Alert.AlertType.WARNING, "Please enter both username/email and password.", ButtonType.OK);
+        	    alert.showAndWait();
+        	    return;
+        	}
+        
+
+            boolean isValid = Database.validateLogin(input, password);
+
+            if (isValid) {
+                TaskApp taskApp = new TaskApp();
+                try {
+                    taskApp.start(primaryStage);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Invalid username/email or password.", ButtonType.OK);
+                alert.showAndWait();
             }
         });
 
