@@ -17,7 +17,7 @@ public class Database {
         }
         return conn;
     }
-    
+
     public static void createUsersTable() {
         String sql = "CREATE TABLE IF NOT EXISTS users (" +
                      "id INTEGER PRIMARY KEY AUTOINCREMENT," +
