@@ -20,6 +20,5 @@ public class SceneManager {
         primaryStage.setScene(signUpScene);
     }
 
-    // Add more transitions as your app grows
-    
 }
+    // Add more transitions as your app grows
