@@ -11,6 +11,7 @@ import javafx.scene.layout.FlowPane;
 public class TaskList extends VBox {
     private VBox taskContainer = new VBox(5);
     private final int TASK_LIMIT = 5;
+    
 
     public TaskList(String initialTitle) {
         this.setSpacing(10);
