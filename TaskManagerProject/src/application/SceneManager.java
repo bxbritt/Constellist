@@ -21,8 +21,5 @@ public class SceneManager {
     }
 
     // Add more transitions as your app grows
-    public static void switchToTaskView() {
-        Scene taskScene = TaskApp.getTaskApp(primaryStage);
-        primaryStage.setScene(taskScene);
-    }
+    
 }
