@@ -13,10 +13,19 @@ import javafx.scene.layout.FlowPane;
 public class TaskList extends VBox {
     private VBox taskContainer = new VBox(10);
     private final int TASK_LIMIT = 10;
+    
+    private int listId;
+    
+    public TaskList(String initialTitle, int listId) {
+    	this(initialTitle);
+    	this.listId = listId;
+    }
 
     public TaskList(String initialTitle) {
         this.setSpacing(10);
         this.getStyleClass().add("task-box");
+        
+       
         
         // title bar with close button
         TextField titleField = new TextField(initialTitle);
@@ -30,6 +39,7 @@ public class TaskList extends VBox {
         		titleField.requestFocus();
         	}
         });
+        
         
         // press enter to confirm edit
         titleField.setOnAction(e -> {
@@ -62,6 +72,10 @@ public class TaskList extends VBox {
         taskInputField.setPromptText("Enter a task...");
         taskInputField.setVisible(false);	// hidden initially
         
+        
+        
+        
+        
         // shows input field when add task is clicked
         addTaskButton.setOnAction(e -> {
             if (taskContainer.getChildren().size() < TASK_LIMIT) {
@@ -83,6 +97,9 @@ public class TaskList extends VBox {
         	if (!text.isEmpty()) {
         		TaskItem task = new TaskItem(text, taskContainer, this);
         		taskContainer.getChildren().add(task);
+        		
+        		Database.saveTaskItem(listId, text);//autosave 
+        		
         		taskInputField.clear();
         		taskInputField.setVisible(false);	// hides again
         		addTaskButton.setVisible(true);	// shows button again
@@ -119,4 +136,11 @@ public class TaskList extends VBox {
            // popup.show();
         }
     }
+
+    public void addItem(String content) {
+        TaskItem task = new TaskItem(content, taskContainer, this);
+        taskContainer.getChildren().add(task);
+    }
+    
+   
 }
