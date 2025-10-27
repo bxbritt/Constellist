@@ -8,9 +8,11 @@ import javafx.scene.text.Text;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.FlowPane;
 
+
 public class TaskList extends VBox {
     private VBox taskContainer = new VBox(10);
     private final int TASK_LIMIT = 10;
+	
 
     public TaskList(String initialTitle) {
         this.setSpacing(10);
@@ -82,8 +84,11 @@ public class TaskList extends VBox {
         		addTaskButton.setVisible(true);	// shows button again
         	}
         });
+ 
         
         this.getChildren().addAll(titleBar, taskInputField, addTaskButton, taskContainer);
+        
+        
     }
 
     public void checkCompletion() {
@@ -100,4 +105,8 @@ public class TaskList extends VBox {
            // popup.show();
         }
     }
+    
+    
+    
 }
+

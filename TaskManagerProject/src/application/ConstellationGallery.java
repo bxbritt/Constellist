@@ -95,7 +95,7 @@ public class ConstellationGallery extends Application {
     private void updateCarousel() {
         constellationRow.getChildren().clear();
         if (selectedIndex > 0) {
-            constellationRow.getChildren().add(galleryCards.get(selectedIndex - 1));
+            constellationRow.getChildren().add(galleryCards.get(selectedIndex  + 1));
         }
         VBox centerCard = galleryCards.get(selectedIndex);
         centerCard.getStyleClass().add("center-card"); // add emphasis class
