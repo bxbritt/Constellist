@@ -156,7 +156,7 @@ public class ProgressScene extends Application {
         constView.getStyleClass().add("constView");
         constView.relocate(625,150); //ranges from 0px - 675px for width
         
-        Image constTest = new Image(getClass().getResourceAsStream("progressConstellationPrototype.png"));
+        Image constTest = new Image(getClass().getResourceAsStream("constellationPrototype.png"));
         ImageView constallationView = new ImageView(constTest);
        constallationView.fitWidthProperty().bind(constView.widthProperty());
        constallationView.fitHeightProperty().bind(constView.heightProperty());
