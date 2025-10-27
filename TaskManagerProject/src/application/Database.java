@@ -213,4 +213,43 @@ public class Database {
 
         return items;
     }
+    
+    public static void deleteTaskItem(int listId, String content) {
+        String sql = "DELETE FROM task_items WHERE list_id = ? AND content = ?";
+
+        try (Connection conn = connect();
+             java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, listId);
+            pstmt.setString(2, content);
+            int affectedRows = pstmt.executeUpdate();
+
+            if (affectedRows > 0) {
+                System.out.println("🗑️ Deleted task item: " + content + " from list " + listId);
+            } else {
+                System.out.println("⚠️ No matching task item found to delete: " + content);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Failed to delete task item: " + e.getMessage());
+        }
+    }
+    
+    public static boolean taskListExists(int userId, String title) {
+        String sql = "SELECT COUNT(*) FROM tasks WHERE user_id = ? AND description = ?";
+
+        try (Connection conn = connect();
+             java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, userId);
+            pstmt.setString(2, title);
+
+            java.sql.ResultSet rs = pstmt.executeQuery();
+            return rs.next() && rs.getInt(1) > 0;
+
+        } catch (SQLException e) {
+            System.out.println("Failed to check task list existence: " + e.getMessage());
+            return false;
+        }
+    }
 }

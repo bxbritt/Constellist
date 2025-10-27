@@ -10,6 +10,8 @@ import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.FlowPane;
 
+import application.ProgressScene;
+
 public class TaskList extends VBox {
     private VBox taskContainer = new VBox(10);
     private final int TASK_LIMIT = 10;
@@ -64,8 +66,8 @@ public class TaskList extends VBox {
         addTaskButton.getStyleClass().add("bubble-button");  
         
         // progress button
-        Button viewProgressButton = new Button("View Progress");
-        viewProgressButton.getStyleClass().add("bubble-button");
+      //  Button viewProgressButton = new Button("View Progress");
+        //viewProgressButton.getStyleClass().add("bubble-button");
         
         // hidden input field
         TextField taskInputField = new TextField();
@@ -99,6 +101,7 @@ public class TaskList extends VBox {
         		taskContainer.getChildren().add(task);
         		
         		Database.saveTaskItem(listId, text);//autosave 
+        		startCompletionWatcher(); 
         		
         		taskInputField.clear();
         		taskInputField.setVisible(false);	// hides again
@@ -106,40 +109,53 @@ public class TaskList extends VBox {
         	}
         });
         
-        viewProgressButton.setOnAction(e -> {
-            Stage progressStage = new Stage();
-            VBox layout = new VBox(20);
-            layout.setStyle("-fx-padding: 20; -fx-background-color: #1B1640;");
-            Text placeholder = new Text("Constellation progress will appear here.");
-            placeholder.getStyleClass().add("constellation-label");
-            layout.getChildren().add(placeholder);
-            Scene scene = new Scene(layout, 400, 200);
-            progressStage.setScene(scene);
-            progressStage.setTitle("Constellation Progress");
-            progressStage.show();
-        });
+     //   viewProgressButton.setOnAction(e -> {
+   //        ProgressScene progress = new ProgressScene();
+        //   try {
+      //  	   progress.start(stage);
+     //      } catch (Exception ex) {
+      //  	   ex.printStackTrace();
+      //     }
+      //  });
         
-        this.getChildren().addAll(titleBar, taskInputField, addTaskButton, viewProgressButton, taskContainer);
+        this.getChildren().addAll(titleBar, taskInputField, addTaskButton, taskContainer);
     }
 
     public void checkCompletion() {
+        long taskCount = taskContainer.getChildren().stream()
+            .filter(node -> node instanceof TaskItem)
+            .count();
+
         boolean allDone = taskContainer.getChildren().stream()
             .filter(node -> node instanceof TaskItem)
             .map(node -> (TaskItem) node)
             .allMatch(TaskItem::isCompleted);
 
-        if (allDone && taskContainer.getChildren().size() > 0) {
-            Alert popup = new Alert(Alert.AlertType.INFORMATION);
-            popup.setTitle("Constellation Complete");
-            popup.setHeaderText(null);
-           // popup.setContentText("Constellation here");
-           // popup.show();
+        System.out.println("🔍 Completion check: " + taskCount + " tasks, allDone=" + allDone);
+
+        if (allDone && taskCount == 10) {
+            javafx.application.Platform.runLater(() -> {
+                Stage stage = (Stage) this.getScene().getWindow();
+                C1_Heart.show(stage); // ✅ Show the heart constellation directly
+            });
         }
+    }
+    
+    private void startCompletionWatcher() {
+        javafx.animation.Timeline watcher = new javafx.animation.Timeline(
+            new javafx.animation.KeyFrame(javafx.util.Duration.seconds(1), e -> checkCompletion())
+        );
+        watcher.setCycleCount(10); // check 10 times, once per second
+        watcher.play();
     }
 
     public void addItem(String content) {
         TaskItem task = new TaskItem(content, taskContainer, this);
         taskContainer.getChildren().add(task);
+    }
+
+    public int getListId() {
+        return listId;
     }
     
    
