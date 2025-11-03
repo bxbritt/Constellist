@@ -2,12 +2,31 @@
 .root {
     -fx-background-color: linear-gradient(to bottom, #1A103F, #1B1640, #2A1E63);
     -fx-padding: 20;
-    -fx-font-family: "Consolas"; /* Monospaced, code-like aesthetic */
+    -fx-font-family: "Consolas";
 }
 
-/* Optional: ScrollPane transparency */
-.scroll-pane {
-    -fx-background-color: transparent;
+/* ======= Sidebar (Fixed Navigation) ======= */
+.sidebar {
+    -fx-background-color: #21144F;
+    -fx-padding: 20;
+    -fx-spacing: 15;
+    -fx-min-width: 150;
+    -fx-alignment: top-center;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 8, 0.3, 0, 2);
+}
+
+.sidebar-button {
+    -fx-background-color: #3B2A78;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10;
+    -fx-padding: 8 12;
+    -fx-font-family: "Consolas";
+    -fx-cursor: hand;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #5A4FCF;
 }
 
 /* ======= Layout Containers ======= */
@@ -15,22 +34,21 @@
     -fx-padding: 10;
 }
 
-/* ===== horizontal layout ===== */
 .hbox {
-	-fx-spacing: 15;
-	-fx-alignment: center-left;
+    -fx-spacing: 15;
+    -fx-alignment: center-left;
 }
 
 /* ======= Task List Card ======= */
 .task-box {
-    -fx-background-color: rgba(180, 160, 255, 0.3); /* Deep nebula tone */
+    -fx-background-color: rgba(180, 160, 255, 0.3);
     -fx-background-radius: 15;
     -fx-padding: 15;
     -fx-spacing: 10;
     -fx-effect: dropshadow(gaussian, rgba(179, 136, 255, 0.4), 10, 0.5, 0, 2);
     -fx-border-color: #B388FF;
     -fx-border-radius: 15;
-    -fx-border-width: 5;
+    -fx-border-width: 3;
     -fx-pref-width: 250;
     -fx-pref-height: 300;
 }
@@ -45,7 +63,6 @@
     -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.3), 2, 0.5, 0, 1);
     -fx-pref-width: 180;
 }
-
 .task-title-field:focused {
     -fx-background-color: #2c2c54;
     -fx-border-color: #6a5acd;
@@ -56,10 +73,8 @@
 .task-text {
     -fx-fill: #dcdcff;
     -fx-font-size: 14px;
-    /* Optional: keep monospaced font for code-like feel */
     -fx-font-family: "Consolas";
 }
-
 .task-text.completed {
     -fx-fill: #87cefa;
     -fx-strikethrough: true;
@@ -76,12 +91,11 @@
     -fx-cursor: hand;
     -fx-font-family: "Consolas";
 }
-
 .bubble-button:hover {
     -fx-background-color: radial-gradient(center 50% 50%, radius 100%, #7b68ee, #5a4fcf);
 }
 
-/* ======= Close Button (X) ======= */
+/* ======= Close Button ======= */
 .close-button {
     -fx-background-color: transparent;
     -fx-text-fill: #ff6b6b;
@@ -90,45 +104,13 @@
     -fx-cursor: hand;
     -fx-padding: 0 5 0 5;
 }
-
 .close-button:hover {
     -fx-text-fill: #ff4c4c;
 }
 
 /* ======= Completion Popup Label ======= */
 .constellation-label {
-    -fx-text-fill: #FFB6C1; /* Light pink for celebratory tone */
+    -fx-text-fill: #FFB6C1;
     -fx-font-size: 24px;
     -fx-font-weight: bold;
-}
-
-
-.taskDetails{
-    -fx-background-color: transparent;
-    -fx-background-radius: 12;
-}
-
-.constView{
-    -fx-background-color: blue;
-    -fx-background-radius: 15;
-    -fx-border-radius: 12;
-    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.3), 2, 0.5, 0, 1);
-}
-
-.tasksRemain{
-    -fx-background-color: #490485;
-    -fx-background-radius: 15;
-    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.3), 2, 0.5, 0, 1);
-
-}
-
-.tasksComplete{
-    -fx-background-color: #490485;
-    -fx-background-radius: 15;
-    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.3), 2, 0.5, 0, 1);
-
-}
-.itemsComplete{
-    -fx-background-color: black; /* Deep nebula tone */
-    -fx-text-fill: white;
 }

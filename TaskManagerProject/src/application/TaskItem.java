@@ -1,13 +1,14 @@
 package application;
 
+import javafx.animation.FadeTransition;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import javafx.util.Duration;
 
 public class TaskItem extends HBox {
     private CheckBox checkBox;
@@ -31,21 +32,26 @@ public class TaskItem extends HBox {
             completed = checkBox.isSelected();
             if (completed) {
                 taskText.getStyleClass().add("completed");
-                
-                
+
+                // Fade out and remove automatically
+                FadeTransition fade = new FadeTransition(Duration.millis(500), this);
+                fade.setFromValue(1);
+                fade.setToValue(0);
+                fade.setOnFinished(event -> parentList.getChildren().remove(this));
+                fade.play();
+
                 Window window = taskText.getScene().getWindow();
                 if (window instanceof Stage) {
-                TaskListScene.taskCompleted((Stage) window);
-   
+                    TaskListScene.taskCompleted((Stage) window);
+                }
+                parentContainer.checkCompletion();
             } else {
                 taskText.getStyleClass().remove("completed");
             }
-            parentContainer.checkCompletion();
-            }});
+        });
 
         deleteButton.setOnAction(e -> {
             parentList.getChildren().remove(this);
-            Database.deleteTaskItem(parentContainer.getListId(), taskText.getText()); 
             parentContainer.checkCompletion();
         });
     }
