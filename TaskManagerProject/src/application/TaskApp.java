@@ -26,10 +26,23 @@ public class TaskApp extends Application {
 
         Button galleryButton = new Button("Go to Gallery");
         galleryButton.getStyleClass().add("bubble-button");
+        
+        Button viewProgressButton = new Button("View Progress");
+        viewProgressButton.getStyleClass().add("bubble-button");
+        
+        viewProgressButton.setOnAction(e -> {
+            ProgressScene progress = new ProgressScene();
+            try {
+         	   progress.start(stage);
+            } catch (Exception ex) {
+         	   ex.printStackTrace();
+            }
+         });
+        
 
         // Horizontal menu bar
         HBox menuBar = new HBox(15);
-        menuBar.getChildren().addAll(createListButton, galleryButton);
+        menuBar.getChildren().addAll(createListButton, galleryButton, viewProgressButton);
         menuBar.setStyle("-fx-alignment: center-left; -fx-padding: 10;");
 
         // FlowPane allows task lists to wrap side-by-side
@@ -42,7 +55,7 @@ public class TaskApp extends Application {
         listContainer.setMaxHeight(Region.USE_COMPUTED_SIZE);
         listContainer.getStyleClass().add("list-container");
 
-        // ✅ Load saved progress for the logged-in user
+        // Load saved progress for the logged-in user
         int userId = LoggedInUser.getId();
         List<SaveProgress> savedLists = Database.loadProgressForUser(userId);
       
@@ -54,7 +67,7 @@ public class TaskApp extends Application {
         for (SaveProgress progress : savedLists) {
             TaskList list = new TaskList(progress.getDescription(), progress.getId());
 
-            // ✅ Load saved items for this list
+            // Load saved items for this list
             List<String> items = Database.loadTaskItemsForList(progress.getId());
             for (String item : items) {
                 list.addItem(item); 
@@ -80,7 +93,7 @@ public class TaskApp extends Application {
         	SaveProgress progress = new SaveProgress(LoggedInUser.getId(), "Task List", false);
         	Database.saveProgress(progress);
 
-        	// ✅ Now create the TaskList with the saved list ID
+        	//  Now create the TaskList with the saved list ID
         	TaskList newList = new TaskList("Task List", progress.getId());
         	 
             
@@ -126,6 +139,8 @@ public class TaskApp extends Application {
         stage.setTitle("Task Manager");
         stage.show();
     }
+    
+
 
     public static void main(String[] args) {
         launch();
