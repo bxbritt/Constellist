@@ -113,5 +113,4 @@ public class ConstellationGallery extends Application {
 
     public static void main(String[] args) {
         launch();
-    }
-}
+    }}

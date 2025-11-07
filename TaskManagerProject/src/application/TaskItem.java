@@ -45,6 +45,7 @@ public class TaskItem extends HBox {
 
         deleteButton.setOnAction(e -> {
             parentList.getChildren().remove(this);
+            Database.deleteTaskItem(parentContainer.getListId(), taskText.getText()); 
             parentContainer.checkCompletion();
         });
     }

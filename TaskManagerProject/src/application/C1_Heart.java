@@ -72,9 +72,16 @@ public class C1_Heart extends Application {
 		
 	}
 	
+	public static void show(Stage stage) {
+	    C1_Heart heart = new C1_Heart();
+	    heart.start(stage);
+	}
+	
 	
 	public static void main(String[] args) {
         launch(args);
     }
+
+	
 
 }
