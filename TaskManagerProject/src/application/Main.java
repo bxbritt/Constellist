@@ -16,6 +16,8 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
     	
+    	
+    	
         primaryStage.setTitle("Start Screen");
      
         Database.createUsersTable();
@@ -65,8 +67,8 @@ public class Main extends Application {
             String password = passwordField.getText();
 
             if (Database.validateLogin(input, password)) {
-                int userId = Database.getUserId(input);         // 🔹 Get the user's ID from the database
-                LoggedInUser.setId(userId);                     // 🔹 Store it globally for later use
+                int userId = Database.getUserId(input);         //  Get the user's ID from the database
+                LoggedInUser.setId(userId);                     //  Store it globally for later use
 
                 
                 TaskApp taskApp = new TaskApp();                // Launch TaskApp as before
@@ -82,9 +84,22 @@ public class Main extends Application {
             }
         });
         
+        Hyperlink forgotPasswordLink = new Hyperlink("Forgot Password?");
+        forgotPasswordLink.setTextFill(Color.DARKTURQUOISE);
+        forgotPasswordLink.setFont(Font.font("Verdana", 12));
+
+        forgotPasswordLink.setOnAction(e -> {
+            ForgotPassword forgotScreen = new ForgotPassword();
+            try {
+                forgotScreen.start(primaryStage);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
        
+    
         
-        VBox layout = new VBox(20, header, inputBox, buttonBox);
+        VBox layout = new VBox(20, header, inputBox, buttonBox, forgotPasswordLink);
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(40));
         layout.setPrefSize(400, 400);
@@ -102,6 +117,9 @@ public class Main extends Application {
         Scene scene = new Scene(layout, 400, 400);
         scene.widthProperty().addListener((obs, oldVal, newVal) -> layout.setPrefWidth(newVal.doubleValue()));
         scene.heightProperty().addListener((obs, oldVal, newVal) -> layout.setPrefHeight(newVal.doubleValue()));
+        
+    
+
 
         primaryStage.setScene(scene);
         primaryStage.show();

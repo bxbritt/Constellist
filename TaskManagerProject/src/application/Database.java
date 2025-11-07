@@ -3,6 +3,7 @@ package application;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -50,7 +51,8 @@ public class Database {
 
             pstmt.setString(1, usernameOrEmail);
             pstmt.setString(2, usernameOrEmail);
-            pstmt.setString(3, password);
+            String hashedInput = PasswordUtils.hashPassword(password);
+            pstmt.setString(3, hashedInput);
 
             java.sql.ResultSet rs = pstmt.executeQuery();
             return rs.next();
@@ -257,4 +259,85 @@ public class Database {
             e.printStackTrace();
         }
     }
+    
+    //tempory to migrate the old passwords 
+    public static void migratePasswords() {
+        try (Connection conn = connect();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT id, password FROM users")) {
+
+            while (rs.next()) {
+                int userId = rs.getInt("id");
+                String plainPassword = rs.getString("password");
+
+                // Skip if already looks hashed (64 hex chars)
+                if (plainPassword.length() == 64 && plainPassword.matches("[0-9a-f]+")) {
+                    continue;
+                }
+
+                String hashed = PasswordUtils.hashPassword(plainPassword);
+
+                try (PreparedStatement updateStmt = conn.prepareStatement(
+                        "UPDATE users SET password = ? WHERE id = ?")) {
+                    updateStmt.setString(1, hashed);
+                    updateStmt.setInt(2, userId);
+                    updateStmt.executeUpdate();
+                }
+            }
+
+            System.out.println("Password migration complete.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+    }
+    
+ // Create password_resets table
+    public static void createPasswordResetsTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS password_resets (" +
+                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                     "user_id INTEGER NOT NULL," +
+                     "token TEXT NOT NULL," +
+                     "expires_at DATETIME NOT NULL," +
+                     "FOREIGN KEY(user_id) REFERENCES users(id)" +
+                     ");";
+
+        try (Connection conn = connect();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Password resets table created or already exists.");
+        } catch (SQLException e) {
+            System.out.println("Password resets table creation failed: " + e.getMessage());
+        }
+    }
+    
+    //Password reset tokens
+    
+    public static void saveResetToken(String email, String token) {
+        String sqlUser = "SELECT id FROM users WHERE email = ?";
+        String sqlInsert = "INSERT INTO password_resets(user_id, token, expires_at) VALUES(?, ?, ?)";
+
+        try (Connection conn = connect();
+             PreparedStatement findUser = conn.prepareStatement(sqlUser)) {
+
+            findUser.setString(1, email);
+            ResultSet rs = findUser.executeQuery();
+
+            if (rs.next()) {
+                int userId = rs.getInt("id");
+
+                try (PreparedStatement insert = conn.prepareStatement(sqlInsert)) {
+                    insert.setInt(1, userId);
+                    insert.setString(2, token);
+                    insert.setString(3, java.time.LocalDateTime.now().plusHours(1).toString());
+                    insert.executeUpdate();
+                }
+            } else {
+                System.out.println("No user found with email: " + email);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
 }

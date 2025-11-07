@@ -95,7 +95,6 @@ public class SignUp extends Application {
                 return;
             }
 
-            // Connect and insert into database
             String sql = "INSERT INTO users(username, email, password) VALUES(?, ?, ?)";
 
             try (Connection conn = Database.connect();
@@ -103,12 +102,17 @@ public class SignUp extends Application {
 
                 pstmt.setString(1, username);
                 pstmt.setString(2, email);
-                pstmt.setString(3, password); // You can hash this later
-
+                String hashedPassword = PasswordUtils.hashPassword(password);
+                pstmt.setString(3, hashedPassword);
                 pstmt.executeUpdate();
+
                 showAlert(Alert.AlertType.INFORMATION, "Account created successfully!");
 
-                // Transition to TaskApp
+                //  Get the new user's ID and set it in LoggedInUser
+                int newUserId = Database.getUserId(username);
+                LoggedInUser.setId(newUserId);
+
+                // Transition to TaskApp with the new user
                 TaskApp taskApp = new TaskApp();
                 taskApp.start(primaryStage);
 

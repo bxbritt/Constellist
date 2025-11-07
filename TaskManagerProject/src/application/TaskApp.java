@@ -11,7 +11,10 @@ import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
 import javafx.scene.text.Text;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
+
 import java.util.List;
+import java.util.Optional;
 
 public class TaskApp extends Application {
 
@@ -109,40 +112,38 @@ public class TaskApp extends Application {
 
         // Prevent duplicate blank lists by checking existing titles
         createListButton.setOnAction(e -> {
+            // Ask the user for a list name
+            TextInputDialog dialog = new TextInputDialog("New List");
+            dialog.setHeaderText("Enter a name for your list:");
+            Optional<String> result = dialog.showAndWait();
 
-            boolean duplicateExists = listContainer.getChildren().stream()
-                .filter(node -> node instanceof TaskList)
-                .map(node -> (TaskList) node)
-                .anyMatch(list -> {
-                    TextField titleField = (TextField) ((HBox) list.getChildren().get(0)).getChildren().get(0);
-                    String title = titleField.getText().trim();
-                    return title.isEmpty() || title.equals("Task List");
-                });
+            if (result.isPresent()) {
+                String listName = result.get().trim();
+                if (listName.isEmpty()) {
+                    listName = "Untitled List"; // fallback if blank
+                }
 
-            if (duplicateExists) {
-                System.out.println("A blank or untitled list already exists. Please name it first.");
-                return;
+                // Save to DB with the real title
+                SaveProgress progress = new SaveProgress(LoggedInUser.getId(), listName, false);
+                Database.saveProgress(progress);
+
+                // Create TaskList with the real title
+                TaskList newList = new TaskList(listName, progress.getId());
+
+                // Animation
+                FadeTransition fade = new FadeTransition(Duration.millis(500), newList);
+                fade.setFromValue(0);
+                fade.setToValue(1);
+                ScaleTransition scale = new ScaleTransition(Duration.millis(500), newList);
+                scale.setFromX(0.8);
+                scale.setFromY(0.8);
+                scale.setToX(1);
+                scale.setToY(1);
+                fade.play();
+                scale.play();
+
+                listContainer.getChildren().add(newList);
             }
-
-            // Otherwise create a fresh list
-            SaveProgress progress = new SaveProgress(LoggedInUser.getId(), "Task List", false);
-            Database.saveProgress(progress);
-            TaskList newList = new TaskList("Task List", progress.getId());
-
-            // Animation
-
-            FadeTransition fade = new FadeTransition(Duration.millis(500), newList);
-            fade.setFromValue(0);
-            fade.setToValue(1);
-            ScaleTransition scale = new ScaleTransition(Duration.millis(500), newList);
-            scale.setFromX(0.8);
-            scale.setFromY(0.8);
-            scale.setToX(1);
-            scale.setToY(1);
-            fade.play();
-            scale.play();
-
-            listContainer.getChildren().add(newList);
         });
 
         // Sidebar button actions
