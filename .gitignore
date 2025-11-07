@@ -1,1 +1,14 @@
-TaskManagerProject/.classpath
+.classpath
+# Eclipse/Java build outputs
+TaskManagerProject/bin/
+
+# Eclipse project files
+TaskManagerProject/.project
+TaskManagerProject/.settings/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+
+# Local runtime database (ignore live DB, commit schema/seed instead)
+TaskManagerProject/users.db
