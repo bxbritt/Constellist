@@ -18,26 +18,52 @@ public class TaskList extends VBox {
     private final int TASK_LIMIT = 10;
     private int listId;
 
-    // ✅ Only one constructor — always sets listId correctly
     public TaskList(String initialTitle, int listId) {
         this.listId = listId;
         this.setSpacing(10);
         this.getStyleClass().add("task-box");
 
         // Title field
-        TextField titleField = new TextField(initialTitle);
+        TextField titleField = new TextField(initialTitle.equals("Task List") ? "" : initialTitle);
         titleField.getStyleClass().add("task-title-field");
-        titleField.setEditable(false);
+        titleField.setEditable(true);
+        if (titleField.getText().isEmpty()) {
+            titleField.setPromptText("Enter a title...");
+        }
 
+        // Buttons
+        Button addTaskButton = new Button("Add Task");
+        addTaskButton.getStyleClass().add("bubble-button");
+        addTaskButton.setVisible(false);
+
+        Button viewProgressButton = new Button("View Progress");
+        viewProgressButton.getStyleClass().add("bubble-button");
+        viewProgressButton.setVisible(false);
+
+        // Double-click to edit
         titleField.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
                 titleField.setEditable(true);
                 titleField.requestFocus();
+                addTaskButton.setVisible(false);
+                viewProgressButton.setVisible(false);
             }
         });
 
+        // Press Enter to confirm edit
         titleField.setOnAction(e -> {
-            titleField.setEditable(false);
+            String title = titleField.getText().trim();
+            if (!title.isEmpty()) {
+                titleField.setEditable(false);
+                addTaskButton.setVisible(true);
+                viewProgressButton.setVisible(true);
+            } else {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Missing Title");
+                alert.setHeaderText(null);
+                alert.setContentText("Please enter a title before adding tasks.");
+                alert.show();
+            }
         });
 
         // Close button
@@ -46,23 +72,20 @@ public class TaskList extends VBox {
         closeButton.setOnAction(e -> {
             if (this.getParent() instanceof FlowPane container) {
                 container.getChildren().remove(this);
-
                 System.out.println("🗑 Deleting list with ID: " + listId);
                 Database.deleteTaskList(listId);
             }
         });
+
         HBox titleBar = new HBox(10, titleField, closeButton);
         titleBar.setStyle("-fx-alignment: center-right;");
 
-        // Add task button
-        Button addTaskButton = new Button("Add Task");
-        addTaskButton.getStyleClass().add("bubble-button");
-
-        // Input field
+        // Task input
         TextField taskInputField = new TextField();
         taskInputField.setPromptText("Enter a task...");
         taskInputField.setVisible(false);
 
+        // Add task button logic
         addTaskButton.setOnAction(e -> {
             if (taskContainer.getChildren().size() < TASK_LIMIT) {
                 addTaskButton.setVisible(false);
@@ -77,6 +100,7 @@ public class TaskList extends VBox {
             }
         });
 
+        // Task input logic
         taskInputField.setOnAction(e -> {
             String text = taskInputField.getText().trim();
             if (!text.isEmpty()) {
@@ -93,22 +117,38 @@ public class TaskList extends VBox {
             }
         });
 
-        this.getChildren().addAll(titleBar, taskInputField, addTaskButton, taskContainer);
+        // View progress button
+        viewProgressButton.setOnAction(e -> {
+            Stage progressStage = new Stage();
+            VBox layout = new VBox(20);
+            layout.setStyle("-fx-padding: 20; -fx-background-color: #1B1640;");
+            Text placeholder = new Text("Constellation progress will appear here.");
+            placeholder.getStyleClass().add("constellation-label");
+            layout.getChildren().add(placeholder);
+            Scene scene = new Scene(layout, 400, 200);
+            progressStage.setScene(scene);
+            progressStage.setTitle("Constellation Progress");
+            progressStage.show();
+        });
+
+        this.getChildren().addAll(titleBar, taskInputField, addTaskButton, viewProgressButton, taskContainer);
+
+        if (!titleField.getText().trim().isEmpty()) {
+            titleField.setEditable(false);
+            addTaskButton.setVisible(true);
+            viewProgressButton.setVisible(true);
+        }
     }
 
     public void checkCompletion() {
-        long taskCount = taskContainer.getChildren().stream()
-            .filter(node -> node instanceof TaskItem)
-            .count();
-
         boolean allDone = taskContainer.getChildren().stream()
             .filter(node -> node instanceof TaskItem)
             .map(node -> (TaskItem) node)
             .allMatch(TaskItem::isCompleted);
 
-        System.out.println("🔍 Completion check: " + taskCount + " tasks, allDone=" + allDone);
+        System.out.println("🔍 Completion check: " + taskContainer.getChildren().size() + " tasks, allDone=" + allDone);
 
-        if (allDone && taskCount == 10) {
+        if (allDone && taskContainer.getChildren().size() == 10) {
             javafx.application.Platform.runLater(() -> {
                 Stage stage = (Stage) this.getScene().getWindow();
                 C1_Heart.show(stage);
