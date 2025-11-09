@@ -127,6 +127,7 @@ public class Main extends Application {
 
     public static void main(String[] args) {
         launch(args);
+
     }
 
     private void showAlert(Alert.AlertType type, String message) {
