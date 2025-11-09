@@ -1,0 +1,33 @@
+package application;
+
+import javafx.scene.media.AudioClip;
+import java.net.URL;
+import java.util.Objects;
+
+public class Sound_Effects {
+	
+	 public static final AudioClip piano_key = load("/sfx/piano_key.wav");
+	
+	private static AudioClip load(String path) {
+		URL url = Objects.requireNonNull(
+		        Sound_Effects.class.getResource(path),
+		        "Missing audio resource: " + path + " (check folder & path)"
+		    );
+		
+		
+		AudioClip clip = new AudioClip(url.toExternalForm());
+		//this is super low to help it not drown out the song
+        clip.setVolume(0.08);
+        return clip;
+    }
+	
+	//adds randomness to piano pitch
+	public static void playPianoKey() {
+        double pitch = 0.95 + (Math.random() * 0.05);
+        piano_key.setRate(pitch);
+        piano_key.play();
+    }
+	
+	
+	
+}

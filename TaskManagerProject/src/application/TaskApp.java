@@ -156,15 +156,28 @@ public class TaskApp extends Application {
             }
         });
 
-        // Sidebar button actions
-        mainButton.setOnAction(e -> setCenterContent(mainContent));
-        galleryButton.setOnAction(e -> setCenterContent(galleryContent));
-        progressButton.setOnAction(e -> setCenterContent(progressContent));
-        logoutButton.setOnAction(e -> setCenterContent(loginContent));
+        // Sidebar button actions and SOUND EFFECTS
+        mainButton.setOnAction(e -> { 
+        	    Sound_Effects.playPianoKey();
+        		setCenterContent(mainContent);});
+        galleryButton.setOnAction(e -> {
+        	    Sound_Effects.playPianoKey();
+        		setCenterContent(galleryContent);});
+        progressButton.setOnAction(e -> {
+        		Sound_Effects.playPianoKey();
+        		setCenterContent(progressContent);});
+        logoutButton.setOnAction(e -> {
+        		Sound_Effects.playPianoKey();
+        		setCenterContent(loginContent);});
 
+        
         // Set default content
         rootLayout.setCenter(mainContent);
-
+        
+        
+        //plays the music
+        music.play("/music/menu_music.mp3", 0.25);
+        
         // scene setup
         Scene scene = new Scene(rootLayout, 1000, 600);
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
