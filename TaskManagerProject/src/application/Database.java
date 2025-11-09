@@ -1,17 +1,12 @@
 package application;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Database {
 
-    // Connect to SQLite database
+    // ✅ Single connection method — always use users.db
     public static Connection connect() {
         try {
             String url = "jdbc:sqlite:users.db"; // creates users.db if not exists
@@ -24,7 +19,7 @@ public class Database {
         }
     }
 
-    // Create users table
+    // ---------------- USERS ----------------
     public static void createUsersTable() {
         String sql = "CREATE TABLE IF NOT EXISTS users (" +
                      "id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -32,7 +27,6 @@ public class Database {
                      "email TEXT NOT NULL," +
                      "password TEXT NOT NULL" +
                      ");";
-
         try (Connection conn = connect();
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
@@ -42,28 +36,41 @@ public class Database {
         }
     }
 
-    // Validate login
+    // Validate login (accepts plain or hashed for now)
     public static boolean validateLogin(String usernameOrEmail, String password) {
-        String sql = "SELECT * FROM users WHERE (username = ? OR email = ?) AND password = ?";
-
+        String sql = "SELECT password FROM users WHERE username = ? OR email = ?";
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
             pstmt.setString(1, usernameOrEmail);
             pstmt.setString(2, usernameOrEmail);
-            String hashedInput = PasswordUtils.hashPassword(password);
-            pstmt.setString(3, hashedInput);
-
-            java.sql.ResultSet rs = pstmt.executeQuery();
-            return rs.next();
-
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                String stored = rs.getString("password");
+                String hashedInput = PasswordUtils.hashPassword(password);
+                return stored.equals(password) || stored.equals(hashedInput);
+            }
         } catch (SQLException e) {
             System.out.println("Login validation failed: " + e.getMessage());
-            return false;
         }
+        return false;
     }
 
-    // Create tasks table (lists)
+    // Get user ID
+    public static int getUserId(String usernameOrEmail) {
+        String sql = "SELECT id FROM users WHERE username = ? OR email = ?";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, usernameOrEmail);
+            pstmt.setString(2, usernameOrEmail);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) return rs.getInt("id");
+        } catch (SQLException e) {
+            System.out.println("Failed to get user ID: " + e.getMessage());
+        }
+        return -1;
+    }
+
+    // ---------------- TASK LISTS ----------------
     public static void createTasksTable() {
         String sql = "CREATE TABLE IF NOT EXISTS tasks (" +
                      "id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -72,52 +79,45 @@ public class Database {
                      "completed INTEGER NOT NULL DEFAULT 0," +
                      "FOREIGN KEY(user_id) REFERENCES users(id)" +
                      ");";
-
         try (Connection conn = connect();
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
             System.out.println("Tasks table created or already exists.");
         } catch (SQLException e) {
-            System.out.println("Task table creation failed: " + e.getMessage());
+            System.out.println("Failed to create tasks table: " + e.getMessage());
         }
     }
 
     // Save a new list
     public static void saveProgress(SaveProgress progress) {
         String sql = "INSERT INTO tasks(user_id, description, completed) VALUES(?, ?, ?)";
-
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             pstmt.setInt(1, progress.getUserId());
             pstmt.setString(2, progress.getDescription());
             pstmt.setInt(3, progress.isCompleted() ? 1 : 0);
-            pstmt.executeUpdate();
 
-            java.sql.ResultSet rs = pstmt.getGeneratedKeys();
+            int rows = pstmt.executeUpdate();
+            System.out.println("Rows inserted into tasks: " + rows);
+
+            ResultSet rs = pstmt.getGeneratedKeys();
             if (rs.next()) {
-                int generatedId = rs.getInt(1);
-                progress.setId(generatedId);
+                progress.setId(rs.getInt(1));
+                System.out.println("New list ID: " + progress.getId());
             }
-
-            System.out.println("Saving progress: " + progress.getDescription() + " for user " + progress.getUserId());
-
         } catch (SQLException e) {
-            System.out.println("Failed to save progress: " + e.getMessage());
+            e.printStackTrace();
         }
     }
-
     // Load lists for a user
     public static List<SaveProgress> loadProgressForUser(int userId) {
         List<SaveProgress> progressList = new ArrayList<>();
         String sql = "SELECT * FROM tasks WHERE user_id = ?";
-
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
             pstmt.setInt(1, userId);
-            java.sql.ResultSet rs = pstmt.executeQuery();
-
+            ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 SaveProgress progress = new SaveProgress(
                     rs.getInt("id"),
@@ -127,45 +127,45 @@ public class Database {
                 );
                 progressList.add(progress);
             }
-
         } catch (SQLException e) {
             System.out.println("Failed to load progress: " + e.getMessage());
         }
-
         return progressList;
     }
 
-    // Get user ID
-    public static int getUserId(String usernameOrEmail) {
-        String sql = "SELECT id FROM users WHERE username = ? OR email = ?";
-
+ // Delete a whole list and its items
+    public static void deleteTaskList(int listId) {
+        // First delete the list itself
+        String sql = "DELETE FROM tasks WHERE id = ?";
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setString(1, usernameOrEmail);
-            pstmt.setString(2, usernameOrEmail);
-
-            java.sql.ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt("id");
-            }
-
+            pstmt.setInt(1, listId);
+            int rows = pstmt.executeUpdate();
+            System.out.println("Deleted " + rows + " row(s) from tasks with id=" + listId);
         } catch (SQLException e) {
-            System.out.println("Failed to get user ID: " + e.getMessage());
+            System.out.println("Failed to delete list: " + e.getMessage());
         }
 
-        return -1;
+        // Then delete all items belonging to that list
+        String sqlItems = "DELETE FROM task_items WHERE list_id = ?";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sqlItems)) {
+            pstmt.setInt(1, listId);
+            int rows = pstmt.executeUpdate();
+            System.out.println("Deleted " + rows + " task item(s) from list " + listId);
+        } catch (SQLException e) {
+            System.out.println("Failed to delete task items: " + e.getMessage());
+        }
     }
-
-    // Create task_items table
+    // ---------------- TASK ITEMS ----------------
     public static void createTaskItemsTable() {
         String sql = "CREATE TABLE IF NOT EXISTS task_items (" +
                      "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                      "list_id INTEGER NOT NULL," +
                      "content TEXT NOT NULL," +
+                     "completed INTEGER NOT NULL DEFAULT 0," +
                      "FOREIGN KEY(list_id) REFERENCES tasks(id)" +
                      ");";
-
         try (Connection conn = connect();
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
@@ -175,124 +175,92 @@ public class Database {
         }
     }
 
-    // Save a task item
-    public static void saveTaskItem(int listId, String content) {
-        String sql = "INSERT INTO task_items (list_id, content) VALUES (?, ?)";
-
+ // One-time schema fix: ensure 'completed' column exists in task_items
+    public static void ensureCompletedColumnExists() {
         try (Connection conn = connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             Statement stmt = conn.createStatement()) {
 
-            pstmt.setInt(1, listId);
-            pstmt.setString(2, content);
-            pstmt.executeUpdate();
-
-            System.out.println("Saved task item: " + content + " to list " + listId);
-
-        } catch (SQLException e) {
-            System.out.println("Failed to save task item: " + e.getMessage());
-        }
-    }
-
-    // Load task items for a list
-    public static List<String> loadTaskItemsForList(int listId) {
-        List<String> items = new ArrayList<>();
-        String sql = "SELECT content FROM task_items WHERE list_id = ?";
-
-        try (Connection conn = connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, listId);
-            java.sql.ResultSet rs = pstmt.executeQuery();
+            // Check table info
+            ResultSet rs = stmt.executeQuery("PRAGMA table_info(task_items);");
+            boolean hasCompleted = false;
 
             while (rs.next()) {
-                items.add(rs.getString("content"));
+                String columnName = rs.getString("name");
+                if ("completed".equalsIgnoreCase(columnName)) {
+                    hasCompleted = true;
+                    break;
+                }
+            }
+
+            if (!hasCompleted) {
+                System.out.println("Adding 'completed' column to task_items...");
+                stmt.execute("ALTER TABLE task_items ADD COLUMN completed INTEGER NOT NULL DEFAULT 0;");
+                System.out.println("'completed' column added successfully.");
+            } else {
+                System.out.println("'completed' column already exists in task_items.");
             }
 
         } catch (SQLException e) {
-            System.out.println("Failed to load task items: " + e.getMessage());
+            System.out.println("Error ensuring completed column: " + e.getMessage());
         }
+    }
+    
+    public static void saveTaskItem(int listId, String content) {
+        String sql = "INSERT INTO task_items (list_id, content, completed) VALUES (?, ?, 0)";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
+            pstmt.setInt(1, listId);
+            pstmt.setString(2, content.trim());
+
+            int rows = pstmt.executeUpdate();
+            System.out.println("Rows inserted into task_items: " + rows);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void markTaskItemCompleted(int listId, String content) {
+        String sql = "UPDATE task_items SET completed = 1 WHERE list_id = ? AND content = ?";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, listId);
+            pstmt.setString(2, content.trim());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Failed to mark task item completed: " + e.getMessage());
+        }
+    }
+
+    public static List<String> loadActiveTaskItemsForList(int listId) {
+        List<String> items = new ArrayList<>();
+        String sql = "SELECT content FROM task_items WHERE list_id = ? AND completed = 0";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, listId);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) items.add(rs.getString("content"));
+        } catch (SQLException e) {
+            System.out.println("Failed to load active task items: " + e.getMessage());
+        }
         return items;
     }
 
-    // Delete a single task item
-    public static void deleteTaskItem(int listId, String content) {
-        String sql = "DELETE FROM task_items WHERE list_id = ? AND content = ?";
-
-        try (Connection conn = connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, listId);
-            pstmt.setString(2, content);
-            int affectedRows = pstmt.executeUpdate();
-
-            if (affectedRows > 0) {
-                System.out.println(" Deleted task item: " + content + " from list " + listId);
-            } else {
-                System.out.println(" No matching task item found to delete: " + content);
-            }
-
-        } catch (SQLException e) {
-            System.out.println("Failed to delete task item: " + e.getMessage());
-        }
-    }
-
-    // Delete a whole list and its items
-    public static void deleteTaskList(int listId) {
-        String sql = "DELETE FROM tasks WHERE id = ?";
+    public static List<String> loadCompletedTaskItemsForList(int listId) {
+        List<String> items = new ArrayList<>();
+        String sql = "SELECT content FROM task_items WHERE list_id = ? AND completed = 1";
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, listId);
-            int rows = pstmt.executeUpdate();
-            System.out.println(" Deleted " + rows + " row(s) from tasks with id=" + listId);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) items.add(rs.getString("content"));
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Failed to load completed task items: " + e.getMessage());
         }
-
-        String sqlItems = "DELETE FROM task_items WHERE list_id = ?";
-        try (Connection conn = connect();
-             PreparedStatement pstmt = conn.prepareStatement(sqlItems)) {
-            pstmt.setInt(1, listId);
-            int rows = pstmt.executeUpdate();
-            System.out.println(" Deleted " + rows + " task item(s) from list " + listId);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        return items;
     }
-    
-    //tempory to migrate the old passwords 
-    public static void migratePasswords() {
-        try (Connection conn = connect();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT id, password FROM users")) {
 
-            while (rs.next()) {
-                int userId = rs.getInt("id");
-                String plainPassword = rs.getString("password");
-
-                // Skip if already looks hashed (64 hex chars)
-                if (plainPassword.length() == 64 && plainPassword.matches("[0-9a-f]+")) {
-                    continue;
-                }
-
-                String hashed = PasswordUtils.hashPassword(plainPassword);
-
-                try (PreparedStatement updateStmt = conn.prepareStatement(
-                        "UPDATE users SET password = ? WHERE id = ?")) {
-                    updateStmt.setString(1, hashed);
-                    updateStmt.setInt(2, userId);
-                    updateStmt.executeUpdate();
-                }
-            }
-
-            System.out.println("Password migration complete.");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-    }
-    
- // Create password_resets table
+    // ---------------- PASSWORD RESETS ----------------
     public static void createPasswordResetsTable() {
         String sql = "CREATE TABLE IF NOT EXISTS password_resets (" +
                      "id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -301,7 +269,6 @@ public class Database {
                      "expires_at DATETIME NOT NULL," +
                      "FOREIGN KEY(user_id) REFERENCES users(id)" +
                      ");";
-
         try (Connection conn = connect();
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
@@ -310,9 +277,7 @@ public class Database {
             System.out.println("Password resets table creation failed: " + e.getMessage());
         }
     }
-    
-    //Password reset tokens
-    
+
     public static void saveResetToken(String email, String token) {
         String sqlUser = "SELECT id FROM users WHERE email = ?";
         String sqlInsert = "INSERT INTO password_resets(user_id, token, expires_at) VALUES(?, ?, ?)";
@@ -339,5 +304,4 @@ public class Database {
             e.printStackTrace();
         }
     }
-    
 }

@@ -17,12 +17,16 @@ public class TaskList extends VBox {
     private VBox taskContainer = new VBox(10);
     private final int TASK_LIMIT = 10;
     private int listId;
+    
+    private StarManager starManager;
 
-    public TaskList(String initialTitle, int listId) {
+    // constructor that accepts StarManager
+    public TaskList(String initialTitle, int listId, StarManager starManager) {
         this.listId = listId;
+        this.starManager = starManager;
         this.setSpacing(10);
         this.getStyleClass().add("task-box");
-
+    
         // Title field
         TextField titleField = new TextField(initialTitle.equals("Task List") ? "" : initialTitle);
         titleField.getStyleClass().add("task-title-field");
@@ -49,6 +53,8 @@ public class TaskList extends VBox {
                 viewProgressButton.setVisible(false);
             }
         });
+        
+      
 
         // Press Enter to confirm edit
         titleField.setOnAction(e -> {
@@ -119,16 +125,13 @@ public class TaskList extends VBox {
 
         // View progress button
         viewProgressButton.setOnAction(e -> {
-            Stage progressStage = new Stage();
-            VBox layout = new VBox(20);
-            layout.setStyle("-fx-padding: 20; -fx-background-color: #1B1640;");
-            Text placeholder = new Text("Constellation progress will appear here.");
-            placeholder.getStyleClass().add("constellation-label");
-            layout.getChildren().add(placeholder);
-            Scene scene = new Scene(layout, 400, 200);
-            progressStage.setScene(scene);
-            progressStage.setTitle("Constellation Progress");
-            progressStage.show();
+            ProgressScene progressScene = new ProgressScene();
+            try {
+                // Reuse the same stage so navigation feels seamless
+                progressScene.start((Stage) this.getScene().getWindow());
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         });
 
         this.getChildren().addAll(titleBar, taskInputField, addTaskButton, viewProgressButton, taskContainer);
@@ -172,4 +175,14 @@ public class TaskList extends VBox {
     public int getListId() {
         return listId;
     }
+    
+ // 
+    public void onTaskCompleted() {
+        if (starManager != null) {
+            starManager.earnStar();
+        }
+    }
+
+    
+    
 }

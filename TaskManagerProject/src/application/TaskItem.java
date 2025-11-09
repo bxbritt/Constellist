@@ -33,26 +33,22 @@ public class TaskItem extends HBox {
             if (completed) {
                 taskText.getStyleClass().add("completed");
 
-                // Fade out and remove automatically
+                // ⭐ Update the database so this task is marked completed
+                Database.markTaskItemCompleted(parentContainer.getListId(), taskText.getText().trim());
+
+                // Fade out and remove from the UI
                 FadeTransition fade = new FadeTransition(Duration.millis(500), this);
                 fade.setFromValue(1);
                 fade.setToValue(0);
                 fade.setOnFinished(event -> parentList.getChildren().remove(this));
                 fade.play();
 
-                Window window = taskText.getScene().getWindow();
-                if (window instanceof Stage) {
-                    TaskListScene.taskCompleted((Stage) window);
-                }
+                // Award a star when task is completed
+                parentContainer.onTaskCompleted();
                 parentContainer.checkCompletion();
             } else {
                 taskText.getStyleClass().remove("completed");
             }
-        });
-
-        deleteButton.setOnAction(e -> {
-            parentList.getChildren().remove(this);
-            parentContainer.checkCompletion();
         });
     }
 

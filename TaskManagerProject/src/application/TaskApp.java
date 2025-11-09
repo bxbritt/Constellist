@@ -25,6 +25,8 @@ public class TaskApp extends Application {
     private VBox galleryContent;
     private VBox progressContent;
     private VBox loginContent;
+    private Pane starPane;
+    private StarManager starManager;
 
     @Override
     public void start(Stage stage) {
@@ -65,16 +67,51 @@ public class TaskApp extends Application {
         listContainer.setMaxHeight(Region.USE_COMPUTED_SIZE);
         listContainer.getStyleClass().add("list-container");
 
+        // gallery page content
+        galleryContent = new VBox(20);
+        galleryContent.setStyle("-fx-padding: 40; -fx-alignment: center; -fx-background-color: #1B1640;");
+        Text galleryText = new Text("Constellation Gallery Placeholder");
+        galleryText.setStyle("-fx-fill: white; -fx-font-size: 20;");
+        galleryContent.getChildren().add(galleryText);
+
+        // progress page content
+        progressContent = new VBox(20);
+        progressContent.setStyle("-fx-padding: 40; -fx-alignment: center; -fx-background-color: #1B1640;");
+        Text progressText = new Text("Your constellation progress will appear here");
+        progressText.setStyle("-fx-fill: white; -fx-font-size: 20;");
+        progressContent.getChildren().add(progressText);
+
+        starManager = new StarManager(() -> {
+            // Switch to the progress page and show a finished constellation
+            setCenterContent(progressContent);
+
+            // Replace placeholder text with your constellation
+            progressContent.getChildren().clear();
+            Text constellation = new Text("🌌 Orion Constellation Unlocked!");
+            constellation.setStyle("-fx-fill: white; -fx-font-size: 24;");
+            progressContent.getChildren().add(constellation);
+        });
+
+        // login page content
+        loginContent = new VBox(20);
+        loginContent.setStyle("-fx-alignment: center; -fx-padding: 40; -fx-background-color: #1A103F;");
+        Text loginText = new Text("Login Screen Placeholder");
+        loginText.setStyle("-fx-fill: white; -fx-font-size: 20;");
+        loginContent.getChildren().add(loginText);
+
         // Load saved lists for the logged-in user
         int userId = LoggedInUser.getId();
         List<SaveProgress> savedLists = Database.loadProgressForUser(userId);
 
         for (SaveProgress progress : savedLists) {
-            TaskList list = new TaskList(progress.getDescription(), progress.getId());
-            List<String> items = Database.loadTaskItemsForList(progress.getId());
+            TaskList list = new TaskList(progress.getDescription(), progress.getId(), starManager);
+
+            // Only load tasks that are not completed
+            List<String> items = Database.loadActiveTaskItemsForList(progress.getId());
             for (String item : items) {
                 list.addItem(item);
             }
+
             listContainer.getChildren().add(list);
         }
 
@@ -87,32 +124,8 @@ public class TaskApp extends Application {
         mainContent.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         mainContent.setStyle("-fx-background: transparent;");
 
-        // gallery page content
-        galleryContent = new VBox(20);
-        galleryContent.setStyle("-fx-padding: 40; -fx-alignment: center; -fx-background-color: #1B1640;");
-        Text galleryText = new Text("Constellation Gallery Placeholder");
-        galleryText.setStyle("-fx-fill: white; -fx-font-size: 20;");
-        galleryContent.getChildren().add(galleryText);
-
-        // progress page place holder
-        progressContent = new VBox(20);
-        progressContent.setStyle("-fx-padding: 40; -fx-alignment: center; -fx-background-color: #1B1640;");
-        Text progressText = new Text("Your constellation progress will appear here");
-        progressText.setStyle("-fx-fill: white; -fx-font-size: 20;");
-        progressContent.getChildren().add(progressText);
-
-        // login place holder
-        loginContent = new VBox(20);
-        loginContent.setStyle("-fx-alignment: center; -fx-padding: 40; -fx-background-color: #1A103F;");
-        Text loginText = new Text("Login Screen Placeholder");
-        loginText.setStyle("-fx-fill: white; -fx-font-size: 20;");
-        loginContent.getChildren().add(loginText);
-
         // button actions
-
-        // Prevent duplicate blank lists by checking existing titles
         createListButton.setOnAction(e -> {
-            // Ask the user for a list name
             TextInputDialog dialog = new TextInputDialog("New List");
             dialog.setHeaderText("Enter a name for your list:");
             Optional<String> result = dialog.showAndWait();
@@ -123,14 +136,11 @@ public class TaskApp extends Application {
                     listName = "Untitled List"; // fallback if blank
                 }
 
-                // Save to DB with the real title
                 SaveProgress progress = new SaveProgress(LoggedInUser.getId(), listName, false);
                 Database.saveProgress(progress);
 
-                // Create TaskList with the real title
-                TaskList newList = new TaskList(listName, progress.getId());
+                TaskList newList = new TaskList(listName, progress.getId(), starManager);
 
-                // Animation
                 FadeTransition fade = new FadeTransition(Duration.millis(500), newList);
                 fade.setFromValue(0);
                 fade.setToValue(1);
@@ -163,7 +173,7 @@ public class TaskApp extends Application {
         stage.show();
     }
 
-    // menu switch 
+    // menu switch
     private void setCenterContent(javafx.scene.Node content) {
         if (rootLayout.getCenter() == content) return;
 

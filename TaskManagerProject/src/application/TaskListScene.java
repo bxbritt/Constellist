@@ -26,7 +26,7 @@ public class TaskListScene {
 
     public static void taskCompleted(Stage stage) {
         if (completedTaskCount < 5) {
-            progressStars.get(completedTaskCount).setComplete(true);
+          //  progressStars.get(completedTaskCount).setComplete(true);
             completedTaskCount++;
 
             if (completedTaskCount == 5) {

@@ -106,10 +106,13 @@ public class ProgressScene extends Application {
        remainText.setFill(Color.ANTIQUEWHITE);
        
        ListView<String> remainingItemsList = new ListView<String>();
-       //fake list for now
-       ObservableList<String> itemsRemain =FXCollections.observableArrayList (
-           "Task1", "Task2");
+       //updated remaining list for 
+       ObservableList<String> itemsRemain = FXCollections.observableArrayList();
+       for (SaveProgress progress : Database.loadProgressForUser(LoggedInUser.getId())) {
+           itemsRemain.addAll(Database.loadActiveTaskItemsForList(progress.getId()));
+       }
        remainingItemsList.setItems(itemsRemain);
+
        
        
        tasksRemain.getChildren().addAll(remainText,remainingItemsList);
@@ -131,8 +134,11 @@ public class ProgressScene extends Application {
        
      //  completedItemsList.setPrefSize(50, 50);
        //fake list for now
-       ObservableList<String> itemsComplete = FXCollections.observableArrayList (
-           "Task5", "Task6", "Task7");
+       ObservableList<String> itemsComplete = FXCollections.observableArrayList();
+       for (SaveProgress progress : Database.loadProgressForUser(LoggedInUser.getId())) {
+    	    itemsComplete.addAll(Database.loadCompletedTaskItemsForList(progress.getId()));
+    	}
+
        completedItemsList.setItems(itemsComplete);
  
        
