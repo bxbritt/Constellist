@@ -156,7 +156,7 @@ public class ProgressScene extends Application {
        
         
        // Create the constellation with auto-scaling to fit
-       C2_Capricorn capricorn = new C2_Capricorn();
+       C1_Heart capricorn = new C1_Heart();
        
        // constellation display area size
        double displayWidth = 400;
@@ -192,7 +192,6 @@ public class ProgressScene extends Application {
        constView.relocate(650,200); 
         
         
-       
        
         Pane progressRoot = new Pane();
         progressRoot.getChildren().addAll(label, taskButton, galleryButton, taskDetails, constView); 

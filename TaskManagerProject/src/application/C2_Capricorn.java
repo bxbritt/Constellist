@@ -43,16 +43,16 @@ public class C2_Capricorn extends Pane {
         star6.setComplete(true);
         
         Star star7 = new Star(735, 320, 6);
-        star7.setComplete(true);
+        star7.setComplete(false);
         
         Star star8 = new Star(550, 700, 6);
-        star8.setComplete(true);
+        star8.setComplete(false);
         
         Star star9 = new Star(500, 725, 6);
-        star9.setComplete(true);
+        star9.setComplete(false);
         
         Star star10 = new Star(175, 525, 6);
-        star10.setComplete(true);
+        star10.setComplete(false);
 
         stars = new Star[] { star1, star2, star3, star4, star5, star6, star7, star8, star9, star10 };
 

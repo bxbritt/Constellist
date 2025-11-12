@@ -3,8 +3,11 @@ import javafx.animation.ScaleTransition; //changes an objects size over time
 //import application.StarLink;
 import javafx.animation.ParallelTransition; //allows for simultaneous animations
 import javafx.application.Application; //not really sure what this is yet
+import javafx.scene.Group;
 import javafx.scene.Scene; //content area of a window
+import javafx.scene.control.Button;
 import javafx.scene.layout.Pane; //holds and positions UI elements
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color; //used for coloring shapes
 import javafx.scene.shape.Circle; //(x, y, radius, fillColor)
 import javafx.stage.Stage; //the window, scenes are attached here
@@ -13,10 +16,16 @@ import javafx.scene.effect.DropShadow; //we can use this to add a shadow or glow
 import javafx.scene.shape.Line; //lines to connect shapes
 
 
-public class C1_Heart extends Application {
+public class C1_Heart extends Pane {
+	private Star[] stars;
+	private StarLink[] links;
 	
-	@Override
-    public void start(Stage stage) {
+	public C1_Heart() {
+		createConstellation();
+	}
+	
+	private void createConstellation() {
+		
 		
 		
 		//MAKE CONSTELLATION HERE ********************//
@@ -39,42 +48,118 @@ public class C1_Heart extends Application {
 		star6.setComplete(true);
 		
 		Star star7 = new Star(575, 325, 6);
-		star7.setComplete(true);
+		star7.setComplete(false);
 		
 		Star star8 = new Star(650, 300, 6);
-		star8.setComplete(true);
+		star8.setComplete(false);
 		
 		Star star9 = new Star(700, 400, 6);
-		star9.setComplete(true);
+		star9.setComplete(false);
 		
 		Star star10 = new Star(650, 550, 6);
-		star10.setComplete(true);
+		star10.setComplete(false);
 		
-		StarLink[] links = {
-	            new StarLink(star1, star2), new StarLink(star2, star3), new StarLink(star3, star4), new StarLink(star4, star5), new StarLink(star5, star6),
-	            new StarLink(star6, star7), new StarLink(star7, star8), new StarLink(star8, star9), new StarLink(star9, star10), new StarLink(star1, star10)  };
+		stars = new Star[] { star1, star2, star3, star4, star5, star6, star7, star8, star9, star10};
+		
+	 links = new StarLink[] {
+		            new StarLink(star1, star2), new StarLink(star2, star3), new StarLink(star3, star4),
+		            new StarLink(star4, star5), new StarLink(star5, star6), new StarLink(star6, star7),
+		            new StarLink(star7, star8), new StarLink(star8, star9), new StarLink(star9, star10),
+		            new StarLink(star1, star10)
+		        };
+
+		        for (StarLink link : links) {
+		            getChildren().addAll(link.getGlowLine(), link.getCoreLine());
+		        }
+		        getChildren().addAll(stars);
+
+		      //  setStyle("-fx-background-color: black;");
+		        for (StarLink link : links) link.draw();
 		
 		//*********************************************//
-		Pane root = new Pane();
-		for (StarLink link : links) {
-            root.getChildren().addAll(link.getGlowLine(), link.getCoreLine());
-        }
-        root.getChildren().addAll(star1, star2, star3, star4, star5, star6, star7, star8, star9, star10);
+	//	Pane root = new Pane();
+	//	for (StarLink link : links) {
+    //        root.getChildren().addAll(link.getGlowLine(), link.getCoreLine());
+    //    }
+    //    root.getChildren().addAll(star1, star2, star3, star4, star5, star6, star7, star8, star9, star10);
 		
-		root.setStyle("-fx-background-color: black;");
-		for (StarLink link : links) link.draw();
+	//	root.setStyle("-fx-background-color: black;");
+	//	for (StarLink link : links) link.draw();
 
-        Scene scene = new Scene(root, 1000, 1000); //our canvas and we put our container with a star on it, the numbers are the window size
+      //  Scene scene = new Scene(root, 1000, 1000); //our canvas and we put our container with a star on it, the numbers are the window size
 
-        stage.setTitle("Constellation Demo");
-        stage.setScene(scene);
-        stage.show();   //so we can actually see lol
-		
+        //stage.setTitle("Constellation Demo");
+      //  stage.setScene(scene);
+       // stage.show();   //so we can actually see lol
+        
+      //  Button backButton = new Button("Back to Tasks");
+     //   backButton.setOnAction(e -> {
+      //      TaskApp taskApp = new TaskApp();
+        //    try {
+     //           taskApp.start(stage); // reload TaskApp
+        //    } catch (Exception ex) {
+      //          ex.printStackTrace();
+        //    }
+     //   });
+
+      //  root.getChildren().add(backButton);
+        
 	}
 	
-	
-	public static void main(String[] args) {
-        launch(args);
-    }
+	public static Pane createPreview(double width, double height) {
+	    // Create stars and mark them complete
+	    Star star1 = new Star(500, 700, 6); star1.setComplete(true);
+	    Star star2 = new Star(350, 550, 6); star2.setComplete(true);
+	    Star star3 = new Star(300, 400, 6); star3.setComplete(true);
+	    Star star4 = new Star(350, 300, 6); star4.setComplete(true);
+	    Star star5 = new Star(425, 325, 6); star5.setComplete(true);
+	    Star star6 = new Star(500, 400, 6); star6.setComplete(true);
+	    Star star7 = new Star(575, 325, 6); star7.setComplete(true);
+	    Star star8 = new Star(650, 300, 6); star8.setComplete(true);
+	    Star star9 = new Star(700, 400, 6); star9.setComplete(true);
+	    Star star10 = new Star(650, 550, 6); star10.setComplete(true);
 
+	    StarLink[] links = {
+	        new StarLink(star1, star2), new StarLink(star2, star3), new StarLink(star3, star4),
+	        new StarLink(star4, star5), new StarLink(star5, star6), new StarLink(star6, star7),
+	        new StarLink(star7, star8), new StarLink(star8, star9), new StarLink(star9, star10),
+	        new StarLink(star1, star10)
+	    };
+
+	    Group constellationGroup = new Group();
+	    for (StarLink link : links) {
+	        constellationGroup.getChildren().addAll(link.getGlowLine(), link.getCoreLine());
+	        link.draw();
+	    }
+
+	    constellationGroup.getChildren().addAll(
+	        star1, star2, star3, star4, star5,
+	        star6, star7, star8, star9, star10
+	    );
+
+	    // Scale the constellation
+	    double scaleFactor = 0.25;
+	    constellationGroup.setScaleX(scaleFactor);
+	    constellationGroup.setScaleY(scaleFactor);
+
+	    // Wrap in a StackPane to center automatically
+	    StackPane wrapper = new StackPane(constellationGroup);
+	    wrapper.setPrefSize(width, height);
+	    wrapper.setMinSize(width, height);
+	    wrapper.setMaxSize(width, height);
+	    wrapper.setStyle("-fx-background-color: black;");
+
+	    return wrapper;
+	}
+	//public static void show(Stage stage) {
+	//    C1_Heart heart = new C1_Heart();
+	//    heart.start(stage);
+	//}
+	
+	
+	//public static void main(String[] args) {
+   //     launch(args);
+   // }
+
+	
 }

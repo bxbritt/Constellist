@@ -1,7 +1,7 @@
 /* ======= Background & Global Font ======= */
 .root {
     -fx-background-color: linear-gradient(to bottom, #0D0B2D, #1B1640, #2A1E63);
-    -fx-padding: 10;
+    -fx-padding: 140;
     -fx-font-family: "Consolas";
 }
 
