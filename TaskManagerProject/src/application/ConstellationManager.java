@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConstellationManager {
-    // Singleton instance
+    
     private static ConstellationManager instance;
 
     // List of constellations in order (levels)
@@ -19,7 +19,7 @@ public class ConstellationManager {
     // Total tasks completed
     private int totalTasksCompleted;
 
-    // Private constructor to enforce singleton
+    // Private constructor to enforce singleton,  only one instance 
     private ConstellationManager() {
         initializeConstellations();
         currentConstellationIndex = 0;
@@ -31,7 +31,7 @@ public class ConstellationManager {
         }
     }
 
-    // Singleton access method
+    // access method,
     public static synchronized ConstellationManager getInstance() {
         if (instance == null) {
             instance = new ConstellationManager();
@@ -98,12 +98,12 @@ public class ConstellationManager {
      */
     private void saveProgressToDatabase() {
         try {
-            // Assuming a method in Database class to save constellation progress
+           
             Database.saveConstellationProgress(
                 LoggedInUser.getId(),  // Current user's ID
                 currentConstellationIndex,  // Current constellation index
                 currentConstellation.getStarsLit(),  // Stars lit in current constellation
-                totalTasksCompleted  // Total tasks completed
+                totalTasksCompleted  
             );
         } catch (Exception e) {
             System.err.println("Failed to save constellation progress: " + e.getMessage());
@@ -205,7 +205,7 @@ public class ConstellationManager {
             currentConstellation.setStarsLit(0);
         }
         
-        // Optional: Clear database progress
+ 
         saveProgressToDatabase();
     }
 }
