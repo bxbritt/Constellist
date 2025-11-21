@@ -1,8 +1,9 @@
 module TaskManagerProject {
 	requires javafx.controls;
 	requires javafx.graphics;
+	requires javafx.media;
 	requires java.sql;
-	requires javafx.base;
 	
 	opens application to javafx.graphics, javafx.fxml;
+
 }

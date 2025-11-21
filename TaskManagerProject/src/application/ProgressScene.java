@@ -27,12 +27,6 @@ import javafx.scene.text.Text;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
-import application.TaskListScene;
-import application.ConstellationScene;
-import application.C2_Capricorn;
-import application.TaskList;
-import application.ConstellationGallery;
-
 
 /* THIS IS THE PAGE 'view progress' (button) LEADS TO
  * 
