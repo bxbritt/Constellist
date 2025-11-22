@@ -13,8 +13,6 @@ import javafx.stage.Stage;
 
 import java.sql.Connection;
 
-import application.Main;
-
 public class SignUp extends Application {
 
     @Override

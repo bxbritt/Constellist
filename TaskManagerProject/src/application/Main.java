@@ -23,6 +23,7 @@ public class Main extends Application {
         Database.createUsersTable();
         Database.createTasksTable();
         Database.createTaskItemsTable();
+
         
         Label title = new Label("Welcome");
         title.setFont(Font.font("Verdana", 28));

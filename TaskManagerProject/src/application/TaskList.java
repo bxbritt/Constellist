@@ -151,12 +151,13 @@ public class TaskList extends VBox {
 
         System.out.println("🔍 Completion check: " + taskContainer.getChildren().size() + " tasks, allDone=" + allDone);
 
-        if (allDone && taskContainer.getChildren().size() == 10) {
-            javafx.application.Platform.runLater(() -> {
-                Stage stage = (Stage) this.getScene().getWindow();
-                C1_Heart.show(stage);
-            });
-        }
+
+//        if (allDone && taskContainer.getChildren().size() == 10) {
+//            javafx.application.Platform.runLater(() -> {
+//                Stage stage = (Stage) this.getScene().getWindow();
+//                C1_Heart.show(stage);
+//            });
+//        }
     }
 
     private void startCompletionWatcher() {
@@ -182,6 +183,7 @@ public class TaskList extends VBox {
             starManager.earnStar();
         }
     }
+
 
     
     

@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Database {
 
-    // ✅ Single connection method — always use users.db
+
     public static Connection connect() {
         try {
             String url = "jdbc:sqlite:users.db"; // creates users.db if not exists
@@ -304,4 +304,96 @@ public class Database {
             e.printStackTrace();
         }
     }
+
+    // ---------------- CONSTELLATION PROGRESS ----------------
+
+    public static void createConstellationProgressTable() {
+        try {
+            // Create table to track constellation progress
+            String sql = "CREATE TABLE IF NOT EXISTS constellation_progress (" +
+                         "user_id INTEGER, " +
+                         "constellation_index INTEGER, " +
+                         "stars_lit INTEGER, " +
+                         "total_tasks_completed INTEGER, " +
+                         "PRIMARY KEY (user_id), " +
+                         "FOREIGN KEY (user_id) REFERENCES users(id)" +
+                         ")";
+            
+            try (Connection conn = connect();
+                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.execute();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void saveConstellationProgress(int userId, int constellationIndex, int starsLit, int totalTasksCompleted) {
+        try {
+            // First, try to update existing record
+            String updateSql = "UPDATE constellation_progress " +
+                               "SET constellation_index = ?, " +
+                               "stars_lit = ?, " +
+                               "total_tasks_completed = ? " +
+                               "WHERE user_id = ?";
+            
+            try (Connection conn = connect();
+                 PreparedStatement pstmt = conn.prepareStatement(updateSql)) {
+                pstmt.setInt(1, constellationIndex);
+                pstmt.setInt(2, starsLit);
+                pstmt.setInt(3, totalTasksCompleted);
+                pstmt.setInt(4, userId);
+                
+                int rowsUpdated = pstmt.executeUpdate();
+                
+                // If no rows were updated, insert a new record
+                if (rowsUpdated == 0) {
+                    String insertSql = "INSERT INTO constellation_progress " +
+                                       "(user_id, constellation_index, stars_lit, total_tasks_completed) " +
+                                       "VALUES (?, ?, ?, ?)";
+                    
+                    try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+                        insertStmt.setInt(1, userId);
+                        insertStmt.setInt(2, constellationIndex);
+                        insertStmt.setInt(3, starsLit);
+                        insertStmt.setInt(4, totalTasksCompleted);
+                        insertStmt.executeUpdate();
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public static Object[] loadConstellationProgress(int userId) {
+        try {
+            String sql = "SELECT constellation_index, stars_lit, total_tasks_completed " +
+                         "FROM constellation_progress " +
+                         "WHERE user_id = ?";
+            
+            try (Connection conn = connect();
+                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setInt(1, userId);
+                
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    if (rs.next()) {
+                        return new Object[]{
+                            rs.getInt("constellation_index"),
+                            rs.getInt("stars_lit"),
+                            rs.getInt("total_tasks_completed")
+                        };
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        // Return default progress if no record found
+        return new Object[]{0, 0, 0};
+    }   
+
+
+
 }

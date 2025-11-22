@@ -68,6 +68,7 @@ public class TaskApp extends Application {
         listContainer.getStyleClass().add("list-container");
 
         // gallery page content
+<<<<<<< HEAD
         galleryContent = new VBox(20);
         galleryContent.setStyle("-fx-padding: 40; -fx-alignment: center; -fx-background-color: #1B1640;");
         Text galleryText = new Text("Constellation Gallery Placeholder");
@@ -91,6 +92,31 @@ public class TaskApp extends Application {
             constellation.setStyle("-fx-fill: white; -fx-font-size: 24;");
             progressContent.getChildren().add(constellation);
         });
+=======
+//        galleryContent = new VBox(20);
+//        galleryContent.setStyle("-fx-padding: 40; -fx-alignment: center; -fx-background-color: #1B1640;");
+//        Text galleryText = new Text("Constellation Gallery Placeholder");
+//        galleryText.setStyle("-fx-fill: white; -fx-font-size: 20;");
+//        galleryContent.getChildren().add(galleryText);
+
+        // progress page content
+//        progressContent = new VBox(20);
+//        progressContent.setStyle("-fx-padding: 40; -fx-alignment: center; -fx-background-color: #1B1640;");
+//        Text progressText = new Text("Your constellation progress will appear here");
+//        progressText.setStyle("-fx-fill: white; -fx-font-size: 20;");
+//        progressContent.getChildren().add(progressText);
+//
+//        starManager = new StarManager(() -> {
+//            // Switch to the progress page and show a finished constellation
+//            setCenterContent(progressContent);
+//
+//            // Replace placeholder text with your constellation
+//            progressContent.getChildren().clear();
+//            Text constellation = new Text("🌌 Orion Constellation Unlocked!");
+//            constellation.setStyle("-fx-fill: white; -fx-font-size: 24;");
+//            progressContent.getChildren().add(constellation);
+//        });
+>>>>>>> GalleryandProg
 
         // login page content
         loginContent = new VBox(20);
@@ -156,6 +182,7 @@ public class TaskApp extends Application {
             }
         });
 
+<<<<<<< HEAD
         // Sidebar button actions and SOUND EFFECTS
         mainButton.setOnAction(e -> { 
         	    Sound_Effects.playPianoKey();
@@ -166,6 +193,24 @@ public class TaskApp extends Application {
         progressButton.setOnAction(e -> {
         		Sound_Effects.playPianoKey();
         		setCenterContent(progressContent);});
+=======
+        // Sidebar button actions and SOUND EFFECTS 
+        mainButton.setOnAction(e -> { 
+        	    Sound_Effects.playPianoKey();});
+        	   // TaskApp taskApp = new TaskApp();
+        		//taskApp.start(stage);
+        		//setCenterContent(mainContent);});
+        galleryButton.setOnAction(e -> {
+        	    Sound_Effects.playPianoKey();
+        	    ConstellationGallery galleryScene = new ConstellationGallery();
+        	    galleryScene.start(stage);});
+        		//setCenterContent(galleryContent);});
+        progressButton.setOnAction(e -> {
+        		Sound_Effects.playPianoKey();
+        		ProgressScene progressScene = new ProgressScene();
+        		progressScene.start(stage);});
+        		//setCenterContent(progressContent);});
+>>>>>>> GalleryandProg
         logoutButton.setOnAction(e -> {
         		Sound_Effects.playPianoKey();
         		setCenterContent(loginContent);});

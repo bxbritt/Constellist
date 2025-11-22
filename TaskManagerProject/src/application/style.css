@@ -115,3 +115,53 @@
     -fx-font-weight: bold;
 }
 
+<<<<<<< HEAD
+=======
+
+/*PROGRESS SCENE COMPONENTS */
+.taskDetails{
+	-fx-background-color: transparent;
+	-fx-background-radius: 12;
+}
+
+.constView{
+	-fx-background-color: #0b0114;
+	-fx-background-radius: 15;
+	-fx-border-radius: 12;
+	-fx-border-color: white;
+	-fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.3), 2, 0.5, 0, 1);
+}
+
+.tasksRemain{
+	-fx-background-color: #490485;
+	-fx-background-radius: 15;
+    -fx-border-color: white;
+	-fx-border-radius: 12;
+	-fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.3), 2, 0.5, 0, 1);
+
+}
+
+.tasksComplete{
+	-fx-background-color: #490485;
+	-fx-background-radius: 15;
+	-fx-border-color: white;
+	-fx-border-radius: 12;
+	-fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.3), 2, 0.5, 0, 1);
+
+}
+.itemsComplete{
+	-fx-background-color: black; /* Deep nebula tone */
+	-fx-text-fill: white;
+}
+.progressBox{
+	-fx-background-color: black;
+    -fx-background-radius: 15;
+    -fx-border-color: #B388FF;
+    -fx-border-radius: 15;
+    -fx-border-width: 3;
+    -fx-effect: dropshadow(gaussian, rgba(179, 136, 255, 0.4), 10, 0.5, 0, 2);
+}
+
+/*END OF PROGRESS SCENE COMPONENTS */
+
+>>>>>>> GalleryandProg

@@ -7,6 +7,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -22,12 +24,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-
-import application.TaskListScene;
-import application.ConstellationScene;
-import application.TaskList;
-import application.ConstellationGallery;
 
 
 /* THIS IS THE PAGE 'view progress' (button) LEADS TO
@@ -39,15 +37,20 @@ import application.ConstellationGallery;
  * and a container that holds this.taskList
  *  buttons to go back to home
  * 
+<<<<<<< HEAD
+ *
+=======
+>>>>>>> GalleryandProg
  *
  *
- * 	}
+ * 	
  */
 
 public class ProgressScene extends Application {
-
+	
+	
     @Override
-    public void start(Stage stage) {
+
     	
         // Navigation buttons
         Button taskButton = new Button("Back to Tasks");
@@ -86,9 +89,10 @@ public class ProgressScene extends Application {
         
         //container that holds completes/remaining tasks
         Pane taskDetails = new Pane();
+
        
     
-        //customizing and adding components to taskDetails VBox
+        //customizing and adding components to taskDetails
         
         taskDetails.setPrefHeight(500);
         taskDetails.setPrefWidth(425);
@@ -105,17 +109,18 @@ public class ProgressScene extends Application {
        Text remainText = new Text("Tasks Remaining:");
        remainText.setFill(Color.ANTIQUEWHITE);
        
+      
        ListView<String> remainingItemsList = new ListView<String>();
-       //updated remaining list for 
-       ObservableList<String> itemsRemain = FXCollections.observableArrayList();
-       for (SaveProgress progress : Database.loadProgressForUser(LoggedInUser.getId())) {
-           itemsRemain.addAll(Database.loadActiveTaskItemsForList(progress.getId()));
-       }
+       
+       
+       //fake list for now, this is where the task list data will go
+       ObservableList<String> itemsRemain =FXCollections.observableArrayList ( //node for displaying the list
+           "Task1", "Task2");
        remainingItemsList.setItems(itemsRemain);
-
        
        
        tasksRemain.getChildren().addAll(remainText,remainingItemsList);
+       tasksRemain.getStyleClass().add("progressBox");
        
        
        //completed tasks container
@@ -130,20 +135,19 @@ public class ProgressScene extends Application {
        Text completeText = new Text("Tasks Completed:");
        completeText.setFill(Color.ANTIQUEWHITE);
        
-       ListView<String> completedItemsList = new ListView<String>();
-       
-     //  completedItemsList.setPrefSize(50, 50);
-       //fake list for now
-       ObservableList<String> itemsComplete = FXCollections.observableArrayList();
-       for (SaveProgress progress : Database.loadProgressForUser(LoggedInUser.getId())) {
-    	    itemsComplete.addAll(Database.loadCompletedTaskItemsForList(progress.getId()));
-    	}
 
+       
+       ListView<String> completedItemsList = new ListView<String>(); //node for displaying the list
+       
+       //fake list for now, this is where the task list data will go
+       ObservableList<String> itemsComplete = FXCollections.observableArrayList (
+           "Task5", "Task6", "Task7");
        completedItemsList.setItems(itemsComplete);
  
        
-       //Arrange components of Tasks completed box
+       //arrange components of tasks, completed box
        tasksComplete.getChildren().addAll(completeText,completedItemsList);
+       tasksComplete.getStyleClass().add("progressBox");
        
        
        //layout and style for task details
@@ -151,36 +155,59 @@ public class ProgressScene extends Application {
        taskDetails.getChildren().addAll(tasksRemain, tasksComplete);
        
         
-        //container that holds CURRENT constellation view
-        Pane constView = new Pane();
-        constView.setPadding(new Insets(10)); 
-    
-        //customizing and adding components to constView VBox
+       // Create the constellation with auto-scaling to fit
+       C1_Heart capricorn = new C1_Heart();
+       
+       // constellation display area size
+       double displayWidth = 400;
+       double displayHeight = 400;
+       
+       // find the constellation bounds
+       double constellationWidth = capricorn.getBoundsInLocal().getWidth();
+       double constellationHeight = capricorn.getBoundsInLocal().getHeight();
+       
+       // calculate scale to fit
+       double scaleX = displayWidth / constellationWidth;
+       double scaleY = displayHeight / constellationHeight;
+       double scale = Math.min(scaleX, scaleY) * 0.9; // 0.9 for padding
+       
+       // wrap constellation in a Group for scaling purposes
+       Group scaledGroup = new Group(capricorn);
+       scaledGroup.setScaleX(scale);
+       scaledGroup.setScaleY(scale);
+       
+       // create a StackPane to center the constellation
+       StackPane constView = new StackPane();
+       constView.getChildren().add(scaledGroup);
+       constView.setPrefSize(displayWidth, displayHeight);
+       constView.setMaxSize(displayWidth, displayHeight);
+       constView.setMinSize(displayWidth, displayHeight);
+       
+       // create a clipping rectangle to crop the view
+       Rectangle clip = new Rectangle(displayWidth, displayHeight);
+       constView.setClip(clip);
+       
+     
+       constView.getStyleClass().add("progressBox");
+       constView.relocate(650,200); 
         
-        constView.setPrefHeight(500);
-        constView.setPrefWidth(425);
-        constView.getStyleClass().add("constView");
-        constView.relocate(625,150); //ranges from 0px - 675px for width
         
-        Image constTest = new Image(getClass().getResourceAsStream("constellationPrototype.png"));
-        ImageView constallationView = new ImageView(constTest);
-       constallationView.fitWidthProperty().bind(constView.widthProperty());
-       constallationView.fitHeightProperty().bind(constView.heightProperty());
-      
-        constView.getChildren().add(constallationView);
-        
-        
-        
+       
         Pane progressRoot = new Pane();
-        progressRoot.getChildren().addAll(label,taskButton, galleryButton, taskDetails, constView); //add componetns to scene
+        progressRoot.getChildren().addAll(label, taskButton, galleryButton, taskDetails, constView); 
+        //add components to scene
 
     
-        Scene scene = new Scene(progressRoot,1100,700);
+        Scene scene = new Scene(progressRoot, 1200, 700);
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
         stage.setScene(scene);
         stage.setTitle("Progress");
         stage.show();
+        
+        
     }
+    
+    
 
     public static void main(String[] args) {
     	
