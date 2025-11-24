@@ -13,16 +13,11 @@ import javafx.scene.effect.DropShadow; //we can use this to add a shadow or glow
 import javafx.scene.shape.Line; //lines to connect shapes
 
 
-public class C2_Capricorn extends Pane {
+public class C2_Capricorn extends Constellation {
 
-    private Star[] stars;
-    private StarLink[] links;
+  
 
-    public C2_Capricorn() {
-        createConstellation();
-    }
-
-    private void createConstellation() {
+    protected void createConstellation() {
         // Create stars
         Star star1 = new Star(85, 300, 6);
         star1.setComplete(true);
@@ -54,26 +49,102 @@ public class C2_Capricorn extends Pane {
         Star star10 = new Star(175, 525, 6);
         star10.setComplete(false);
 
-        stars = new Star[] { star1, star2, star3, star4, star5, star6, star7, star8, star9, star10 };
-
+        // All stars start incomplete - they'll be lit by ConstellationManager
+        for (Star star : new Star[]{star1, star2, star3, star4, star5, 
+                                     star6, star7, star8, star9, star10}) {
+            star.setComplete(false);
+        }
+        
+        stars = new Star[] { star1, star2, star3, star4, star5, 
+                            star6, star7, star8, star9, star10 };
+        
+        // Create links between stars
         links = new StarLink[] {
-            new StarLink(star1, star2), new StarLink(star2, star3), new StarLink(star3, star4),
-            new StarLink(star4, star5), new StarLink(star5, star6), new StarLink(star6, star7),
-            new StarLink(star7, star8), new StarLink(star8, star9), new StarLink(star9, star10),
-            new StarLink(star1, star10)
+            new StarLink(star1, star2), new StarLink(star2, star3), 
+            new StarLink(star3, star4), new StarLink(star4, star5), 
+            new StarLink(star5, star6), new StarLink(star6, star7),
+            new StarLink(star7, star8), new StarLink(star8, star9), 
+            new StarLink(star9, star10), new StarLink(star1, star10)
         };
-
+        
+        // Add links to the pane (glow layer first, then core)
         for (StarLink link : links) {
             getChildren().addAll(link.getGlowLine(), link.getCoreLine());
         }
+        
+        // Add stars on top of links
         getChildren().addAll(stars);
+        
+        // Draw all links
+        for (StarLink link : links) {
+            link.draw();
+        }
 
-      //  setStyle("-fx-background-color: black;");
-        for (StarLink link : links) link.draw();
+    }
+    
+    @Override
+    public String getName() {
+        return "Capricorn";
+    }
+    
+    @Override
+    public int getConstellationNumber() {
+        return 2;
+    }
+    
+    @Override
+    public Pane createPreview(double width, double height) {
+        // Create stars for preview (all complete)
+        Star star1 = new Star(85, 300, 6); star1.setComplete(true);
+        Star star2 = new Star(135, 320, 6); star2.setComplete(true);
+        Star star3 = new Star(240, 335, 6); star3.setComplete(true);
+        Star star4 = new Star(350, 360, 6); star4.setComplete(true);
+        Star star5 = new Star(700, 275, 6); star5.setComplete(true);
+        Star star6 = new Star(775, 260, 6); star6.setComplete(true);
+        Star star7 = new Star(735, 320, 6); star7.setComplete(true);
+        Star star8 = new Star(550, 700, 6); star8.setComplete(true);
+        Star star9 = new Star(500, 725, 6); star9.setComplete(true);
+        Star star10 = new Star(175, 525, 6); star10.setComplete(true);
+       
+        Star[] previewStars = {star1, star2, star3, star4, star5, 
+                               star6, star7, star8, star9, star10};
+        
+        StarLink[] previewLinks = {
+            new StarLink(star1, star2), new StarLink(star2, star3),
+            new StarLink(star3, star4), new StarLink(star4, star5),
+            new StarLink(star5, star6), new StarLink(star6, star7),
+            new StarLink(star7, star8), new StarLink(star8, star9),
+            new StarLink(star9, star10), new StarLink(star1, star10)
+        };
+        
+        return createScaledPreview(previewStars, previewLinks, width, height, 0.25);
+    }
+    public Pane createShow(double width, double height) {
+        // Create stars for show (all complete)
+    	  Star star1 = new Star(85, 300, 6); star1.setComplete(true);
+          Star star2 = new Star(135, 320, 6); star2.setComplete(true);
+          Star star3 = new Star(240, 335, 6); star3.setComplete(true);
+          Star star4 = new Star(350, 360, 6); star4.setComplete(true);
+          Star star5 = new Star(700, 275, 6); star5.setComplete(true);
+          Star star6 = new Star(775, 260, 6); star6.setComplete(true);
+          Star star7 = new Star(735, 320, 6); star7.setComplete(true);
+          Star star8 = new Star(550, 700, 6); star8.setComplete(true);
+          Star star9 = new Star(500, 725, 6); star9.setComplete(true);
+          Star star10 = new Star(175, 525, 6); star10.setComplete(true);
+          
+        Star[] showStars = {star1, star2, star3, star4, star5,
+                            star6, star7, star8, star9, star10};
+
+        StarLink[] showLinks = {
+            new StarLink(star1, star2), new StarLink(star2, star3),
+            new StarLink(star3, star4), new StarLink(star4, star5),
+            new StarLink(star5, star6), new StarLink(star6, star7),
+            new StarLink(star7, star8), new StarLink(star8, star9),
+            new StarLink(star9, star10), new StarLink(star1, star10)
+        };
+
+      
+        return createScaledPreview(showStars, showLinks, width, height, 0.75);
     }
 
-}
-
-//NEED TO IMPLEMENT A CLASS THAT CHOOSES CONSTELLATION CLASS BASED ON SIZE, INCLUDES A METHOD TO LIGHT UP STARS WHEN USERS COMPLETE TASKS,
-    //WHEN THE SIZE IS CHOOSEN WE CAN CALL THE createConstellation() METHOD
-
+    }

@@ -3,6 +3,8 @@ package application;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.Group;
+import javafx.geometry.Bounds;
+import javafx.scene.layout.Pane;
 
 /**
   Abstract base class for all constellations.
@@ -139,6 +141,54 @@ public abstract class Constellation extends Pane {
 	        wrapper.setStyle("-fx-background-color: black;");
 	        
 	        return wrapper;
+	    }
+	    
+	    public void normalize() {
+	        // Force layout so bounds are valid
+	        this.applyCss();
+	        this.layout();
+
+	        Bounds bounds = this.getBoundsInLocal();
+	        double minX = bounds.getMinX();
+	        double minY = bounds.getMinY();
+	        double width = bounds.getWidth();
+	        double height = bounds.getHeight();
+
+	        // Compute the center of the constellation
+	        double centerX = minX + width / 2;
+	        double centerY = minY + height / 2;
+
+	        // Shift constellation so its center is at (0,0)
+	        this.setTranslateX(-centerX);
+	        this.setTranslateY(-centerY);
+	    }
+	    
+	    public Pane createShow(double width, double height) {
+	        // Force constellation to normalize its position
+	        this.normalize();
+
+	        // Wrap the constellation in a StackPane so it stays centered
+	        StackPane wrapper = new StackPane(this);
+	        wrapper.setPrefSize(width, height);
+	        wrapper.setMinSize(width, height);
+	        wrapper.setMaxSize(width, height);
+	        wrapper.setStyle("-fx-background-color: black;");
+
+	        // Scale constellation to fit the wrapper
+	        wrapper.layoutBoundsProperty().addListener((obs, oldVal, newVal) -> {
+	            double scaleX = newVal.getWidth() / this.getBoundsInParent().getWidth();
+	            double scaleY = newVal.getHeight() / this.getBoundsInParent().getHeight();
+	            double scale = Math.min(scaleX, scaleY);
+	            this.setScaleX(scale);
+	            this.setScaleY(scale);
+	        });
+
+	        return wrapper;
+	    }
+
+	    public Pane createProgressView(double width, double height) {
+	        //  Use the constellation’s current stars/links state
+	        return createScaledPreview(this.stars, this.links, width, height, 0.85);
 	    }
 	}
 

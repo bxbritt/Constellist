@@ -26,7 +26,7 @@ public class TaskApp extends Application {
     private VBox progressContent;
     private VBox loginContent;
     private Pane starPane;
-    private StarManager starManager;
+   
 
     @Override
     public void start(Stage stage) {
@@ -68,31 +68,7 @@ public class TaskApp extends Application {
         listContainer.getStyleClass().add("list-container");
 
         // gallery page content
-<<<<<<< HEAD
-        galleryContent = new VBox(20);
-        galleryContent.setStyle("-fx-padding: 40; -fx-alignment: center; -fx-background-color: #1B1640;");
-        Text galleryText = new Text("Constellation Gallery Placeholder");
-        galleryText.setStyle("-fx-fill: white; -fx-font-size: 20;");
-        galleryContent.getChildren().add(galleryText);
 
-        // progress page content
-        progressContent = new VBox(20);
-        progressContent.setStyle("-fx-padding: 40; -fx-alignment: center; -fx-background-color: #1B1640;");
-        Text progressText = new Text("Your constellation progress will appear here");
-        progressText.setStyle("-fx-fill: white; -fx-font-size: 20;");
-        progressContent.getChildren().add(progressText);
-
-        starManager = new StarManager(() -> {
-            // Switch to the progress page and show a finished constellation
-            setCenterContent(progressContent);
-
-            // Replace placeholder text with your constellation
-            progressContent.getChildren().clear();
-            Text constellation = new Text("🌌 Orion Constellation Unlocked!");
-            constellation.setStyle("-fx-fill: white; -fx-font-size: 24;");
-            progressContent.getChildren().add(constellation);
-        });
-=======
 //        galleryContent = new VBox(20);
 //        galleryContent.setStyle("-fx-padding: 40; -fx-alignment: center; -fx-background-color: #1B1640;");
 //        Text galleryText = new Text("Constellation Gallery Placeholder");
@@ -116,7 +92,7 @@ public class TaskApp extends Application {
 //            constellation.setStyle("-fx-fill: white; -fx-font-size: 24;");
 //            progressContent.getChildren().add(constellation);
 //        });
->>>>>>> GalleryandProg
+
 
         // login page content
         loginContent = new VBox(20);
@@ -130,7 +106,7 @@ public class TaskApp extends Application {
         List<SaveProgress> savedLists = Database.loadProgressForUser(userId);
 
         for (SaveProgress progress : savedLists) {
-            TaskList list = new TaskList(progress.getDescription(), progress.getId(), starManager);
+            TaskList list = new TaskList(progress.getDescription(), progress.getId());
 
             // Only load tasks that are not completed
             List<String> items = Database.loadActiveTaskItemsForList(progress.getId());
@@ -165,7 +141,7 @@ public class TaskApp extends Application {
                 SaveProgress progress = new SaveProgress(LoggedInUser.getId(), listName, false);
                 Database.saveProgress(progress);
 
-                TaskList newList = new TaskList(listName, progress.getId(), starManager);
+                TaskList newList = new TaskList(listName, progress.getId());
 
                 FadeTransition fade = new FadeTransition(Duration.millis(500), newList);
                 fade.setFromValue(0);
@@ -182,18 +158,7 @@ public class TaskApp extends Application {
             }
         });
 
-<<<<<<< HEAD
-        // Sidebar button actions and SOUND EFFECTS
-        mainButton.setOnAction(e -> { 
-        	    Sound_Effects.playPianoKey();
-        		setCenterContent(mainContent);});
-        galleryButton.setOnAction(e -> {
-        	    Sound_Effects.playPianoKey();
-        		setCenterContent(galleryContent);});
-        progressButton.setOnAction(e -> {
-        		Sound_Effects.playPianoKey();
-        		setCenterContent(progressContent);});
-=======
+
         // Sidebar button actions and SOUND EFFECTS 
         mainButton.setOnAction(e -> { 
         	    Sound_Effects.playPianoKey();});
@@ -206,16 +171,30 @@ public class TaskApp extends Application {
         	    galleryScene.start(stage);});
         		//setCenterContent(galleryContent);});
         progressButton.setOnAction(e -> {
-        		Sound_Effects.playPianoKey();
-        		ProgressScene progressScene = new ProgressScene();
-        		progressScene.start(stage);});
-        		//setCenterContent(progressContent);});
->>>>>>> GalleryandProg
-        logoutButton.setOnAction(e -> {
-        		Sound_Effects.playPianoKey();
-        		setCenterContent(loginContent);});
+            Sound_Effects.playPianoKey();
 
-        
+            List<SaveProgress> lists = Database.loadProgressForUser(LoggedInUser.getId());
+
+            if (!lists.isEmpty()) {
+                int lastListId = lists.get(lists.size() - 1).getId();
+                ProgressScene progressScene = new ProgressScene(lastListId);
+                progressScene.start((Stage) progressButton.getScene().getWindow());
+            } else {
+                System.out.println("No lists found for user");
+            }
+        });
+       
+        	
+        		//setCenterContent(progressContent);});
+
+        logoutButton.setOnAction(e -> {
+            Sound_Effects.playPianoKey();
+            try {
+                new Main().start(stage); // use the stage already passed into your start() method
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
         // Set default content
         rootLayout.setCenter(mainContent);
         

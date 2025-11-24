@@ -1,4 +1,13 @@
+package application;
 
+
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -16,7 +25,6 @@ public class ConstellationGallery extends Application {
     private ArrayList<VBox> galleryCards = new ArrayList<>();
     private HBox constellationRow = new HBox(40);
 
-    @Override
     public void start(Stage stage) {
     	constellationManager = ConstellationManager.getInstance();
         double cardWidth = 280;
@@ -37,7 +45,7 @@ public class ConstellationGallery extends Application {
             galleryCards.add(galleryCard);
         }
 
-        //fill and style the cards
+       // fill and style the cards
         for (int i = 0; i < galleryCards.size(); i++) {
             VBox galleryCard = galleryCards.get(i);
             galleryCard.setAlignment(Pos.CENTER);
@@ -52,12 +60,13 @@ public class ConstellationGallery extends Application {
             );
 
             galleryCard.getChildren().clear();
+            
+            Constellation constellation = constellationManager.getConstellationByIndex(i);
 
             // Unlocked state
-            boolean isUnlocked = i < constellationManager.getCurrentConstellationIndex();
-
-            if (isUnlocked) {
-                Constellation constellation = constellationManager.getConstellationByIndex(i);
+           
+            if (constellation != null && constellation.isComplete()) {
+               
 
                 Pane preview = constellation.createPreview(200, 200);
 
@@ -79,6 +88,8 @@ public class ConstellationGallery extends Application {
                 galleryCard.getChildren().add(placeholder);
             }
         }
+             
+        
 
         constellationRow.setAlignment(Pos.CENTER);
         constellationRow.setPadding(new Insets(20));

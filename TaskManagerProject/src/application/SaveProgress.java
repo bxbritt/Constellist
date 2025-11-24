@@ -6,14 +6,14 @@ public class SaveProgress {
     private String description;
     private boolean completed;
 
-    // ✅ Constructor for new lists (no id yet)
+    //  Constructor for new lists (no id yet)
     public SaveProgress(int userId, String description, boolean completed) {
         this.userId = userId;
         this.description = description;
         this.completed = completed;
     }
 
-    // ✅ Constructor for existing lists loaded from DB (id known)
+    //  Constructor for existing lists loaded from DB (id known)
     public SaveProgress(int id, int userId, String description, boolean completed) {
         this.id = id;
         this.userId = userId;

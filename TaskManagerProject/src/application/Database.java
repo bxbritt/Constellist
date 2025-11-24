@@ -4,11 +4,15 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import application.PasswordUtils;
+import application.SaveProgress;
+
 public class Database {
 
 
     public static Connection connect() {
         try {
+        	System.out.println("DB Path: " + new java.io.File("users.db").getAbsolutePath());
             String url = "jdbc:sqlite:users.db"; // creates users.db if not exists
             Connection conn = DriverManager.getConnection(url);
             System.out.println("Connected to SQLite.");
@@ -37,6 +41,7 @@ public class Database {
     }
 
     // Validate login (accepts plain or hashed for now)
+ // Validate login (hashed passwords only)
     public static boolean validateLogin(String usernameOrEmail, String password) {
         String sql = "SELECT password FROM users WHERE username = ? OR email = ?";
         try (Connection conn = connect();
@@ -47,7 +52,15 @@ public class Database {
             if (rs.next()) {
                 String stored = rs.getString("password");
                 String hashedInput = PasswordUtils.hashPassword(password);
-                return stored.equals(password) || stored.equals(hashedInput);
+                // Only compare hashes, since SignUp stores hashed passwords
+                
+             // Debug print
+                System.out.println("Login attempt for: " + usernameOrEmail);
+                System.out.println("Stored password from DB: " + stored);
+                System.out.println("Hashed input from login: " + hashedInput);
+
+
+                return stored.equals(hashedInput);
             }
         } catch (SQLException e) {
             System.out.println("Login validation failed: " + e.getMessage());
@@ -155,6 +168,22 @@ public class Database {
             System.out.println("Deleted " + rows + " task item(s) from list " + listId);
         } catch (SQLException e) {
             System.out.println("Failed to delete task items: " + e.getMessage());
+        }
+    }
+    
+    //delete individual tasks 
+    public static void deleteTaskItem(int listId, String content) {
+        String sql = "DELETE FROM task_items WHERE list_id = ? AND content = ?";
+
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, listId);
+            pstmt.setString(2, content.trim());
+
+            int rows = pstmt.executeUpdate();
+            System.out.println("Deleted " + rows + " task(s) from list " + listId);
+        } catch (SQLException e) {
+            System.out.println("Failed to delete task: " + e.getMessage());
         }
     }
     // ---------------- TASK ITEMS ----------------
@@ -315,7 +344,7 @@ public class Database {
                          "constellation_index INTEGER, " +
                          "stars_lit INTEGER, " +
                          "total_tasks_completed INTEGER, " +
-                         "PRIMARY KEY (user_id), " +
+                         "PRIMARY KEY (user_id, constellation_index), " +
                          "FOREIGN KEY (user_id) REFERENCES users(id)" +
                          ")";
             
@@ -330,28 +359,23 @@ public class Database {
 
     public static void saveConstellationProgress(int userId, int constellationIndex, int starsLit, int totalTasksCompleted) {
         try {
-            // First, try to update existing record
             String updateSql = "UPDATE constellation_progress " +
-                               "SET constellation_index = ?, " +
-                               "stars_lit = ?, " +
-                               "total_tasks_completed = ? " +
-                               "WHERE user_id = ?";
-            
+                               "SET stars_lit = ?, total_tasks_completed = ? " +
+                               "WHERE user_id = ? AND constellation_index = ?";
+
             try (Connection conn = connect();
                  PreparedStatement pstmt = conn.prepareStatement(updateSql)) {
-                pstmt.setInt(1, constellationIndex);
-                pstmt.setInt(2, starsLit);
-                pstmt.setInt(3, totalTasksCompleted);
-                pstmt.setInt(4, userId);
-                
+                pstmt.setInt(1, starsLit);
+                pstmt.setInt(2, totalTasksCompleted);
+                pstmt.setInt(3, userId);
+                pstmt.setInt(4, constellationIndex);
+
                 int rowsUpdated = pstmt.executeUpdate();
-                
-                // If no rows were updated, insert a new record
+
                 if (rowsUpdated == 0) {
                     String insertSql = "INSERT INTO constellation_progress " +
                                        "(user_id, constellation_index, stars_lit, total_tasks_completed) " +
                                        "VALUES (?, ?, ?, ?)";
-                    
                     try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
                         insertStmt.setInt(1, userId);
                         insertStmt.setInt(2, constellationIndex);
@@ -366,33 +390,82 @@ public class Database {
         }
     }
     
-    public static Object[] loadConstellationProgress(int userId) {
-        try {
-            String sql = "SELECT constellation_index, stars_lit, total_tasks_completed " +
-                         "FROM constellation_progress " +
-                         "WHERE user_id = ?";
-            
-            try (Connection conn = connect();
-                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                pstmt.setInt(1, userId);
-                
-                try (ResultSet rs = pstmt.executeQuery()) {
-                    if (rs.next()) {
-                        return new Object[]{
-                            rs.getInt("constellation_index"),
-                            rs.getInt("stars_lit"),
-                            rs.getInt("total_tasks_completed")
-                        };
+    
+    //counter for constellations progress 
+    
+    public static void incrementConstellationProgress(int userId, int constellationIndex) {
+        String sql = "UPDATE constellation_progress " +
+                     "SET stars_lit = stars_lit + 1, " +
+                     "total_tasks_completed = total_tasks_completed + 1 " +
+                     "WHERE user_id = ? AND constellation_index = ?";
+
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, constellationIndex);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Failed to increment constellation progress: " + e.getMessage());
+        }
+    }
+    
+  
+    
+ // Get stars lit for a specific constellation
+    public static int getStarsLit(int userId, int constellationIndex) {
+        String sql = "SELECT stars_lit FROM constellation_progress WHERE user_id = ? AND constellation_index = ?";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, constellationIndex);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) return rs.getInt("stars_lit");
+            }
+        } catch (SQLException e) {
+            System.out.println("Failed to read stars_lit: " + e.getMessage());
+        }
+        return 0;
+    }
+
+ // Ensure a row exists for this constellation
+    public static void ensureConstellationProgressRow(int userId, int constellationIndex) {
+        String selectSql = "SELECT 1 FROM constellation_progress WHERE user_id = ? AND constellation_index = ?";
+        String insertSql = "INSERT INTO constellation_progress (user_id, constellation_index, stars_lit, total_tasks_completed) VALUES (?, ?, 0, 0)";
+        try (Connection conn = connect();
+             PreparedStatement sel = conn.prepareStatement(selectSql)) {
+            sel.setInt(1, userId);
+            sel.setInt(2, constellationIndex);
+            try (ResultSet rs = sel.executeQuery()) {
+                if (!rs.next()) {
+                    try (PreparedStatement ins = conn.prepareStatement(insertSql)) {
+                        ins.setInt(1, userId);
+                        ins.setInt(2, constellationIndex);
+                        ins.executeUpdate();
                     }
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Failed to ensure progress row: " + e.getMessage());
         }
-        
-        // Return default progress if no record found
-        return new Object[]{0, 0, 0};
-    }   
+    }
+
+    // Get total tasks completed across all constellations
+    public static int getTotalTasksCompleted(int userId) {
+        String sql = "SELECT COALESCE(SUM(total_tasks_completed),0) AS total FROM constellation_progress WHERE user_id = ?";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) return rs.getInt("total");
+            }
+        } catch (SQLException e) {
+            System.out.println("Failed to read total_tasks_completed: " + e.getMessage());
+        }
+        return 0;
+    }
+    
+   
+
 
 
 

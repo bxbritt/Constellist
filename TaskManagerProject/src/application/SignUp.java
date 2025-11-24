@@ -103,6 +103,13 @@ public class SignUp extends Application {
                 String hashedPassword = PasswordUtils.hashPassword(password);
                 pstmt.setString(3, hashedPassword);
                 pstmt.executeUpdate();
+                
+             // Debug print
+                System.out.println("Inserted username: " + username);
+                System.out.println("Inserted email: " + email);
+                System.out.println("Inserted hashed password: " + hashedPassword);
+
+
 
                 showAlert(Alert.AlertType.INFORMATION, "Account created successfully!");
 

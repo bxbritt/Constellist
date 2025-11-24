@@ -1,5 +1,6 @@
 package application;
 
+
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -23,6 +24,7 @@ public class Main extends Application {
         Database.createUsersTable();
         Database.createTasksTable();
         Database.createTaskItemsTable();
+        Database.createConstellationProgressTable();
 
         
         Label title = new Label("Welcome");

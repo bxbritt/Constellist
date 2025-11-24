@@ -9,6 +9,9 @@ import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.FlowPane;
+
+import java.util.List;
+
 import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
@@ -18,12 +21,12 @@ public class TaskList extends VBox {
     private final int TASK_LIMIT = 10;
     private int listId;
     
-    private StarManager starManager;
+  
 
     // constructor that accepts StarManager
-    public TaskList(String initialTitle, int listId, StarManager starManager) {
+    public TaskList(String initialTitle, int listId) {
         this.listId = listId;
-        this.starManager = starManager;
+ 
         this.setSpacing(10);
         this.getStyleClass().add("task-box");
     
@@ -78,7 +81,7 @@ public class TaskList extends VBox {
         closeButton.setOnAction(e -> {
             if (this.getParent() instanceof FlowPane container) {
                 container.getChildren().remove(this);
-                System.out.println("🗑 Deleting list with ID: " + listId);
+                System.out.println(" Deleting list with ID: " + listId);
                 Database.deleteTaskList(listId);
             }
         });
@@ -105,6 +108,8 @@ public class TaskList extends VBox {
                 limitAlert.show();
             }
         });
+        
+   
 
         // Task input logic
         taskInputField.setOnAction(e -> {
@@ -113,7 +118,7 @@ public class TaskList extends VBox {
                 TaskItem task = new TaskItem(text, taskContainer, this);
                 taskContainer.getChildren().add(task);
 
-                System.out.println("📝 Saving task '" + text + "' to list ID: " + listId);
+                System.out.println(" Saving task '" + text + "' to list ID: " + listId);
                 Database.saveTaskItem(listId, text);
                 startCompletionWatcher();
 
@@ -123,17 +128,21 @@ public class TaskList extends VBox {
             }
         });
 
-        // View progress button
+        
         viewProgressButton.setOnAction(e -> {
-            ProgressScene progressScene = new ProgressScene();
+            Sound_Effects.playPianoKey();
+
+            int selectedListId = listId; 
+            ProgressScene progressScene = new ProgressScene(selectedListId);
+
             try {
-                // Reuse the same stage so navigation feels seamless
-                progressScene.start((Stage) this.getScene().getWindow());
+                
+                Stage stage = (Stage) viewProgressButton.getScene().getWindow();
+                progressScene.start(stage);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         });
-
         this.getChildren().addAll(titleBar, taskInputField, addTaskButton, viewProgressButton, taskContainer);
 
         if (!titleField.getText().trim().isEmpty()) {
@@ -158,7 +167,7 @@ public class TaskList extends VBox {
 //                C1_Heart.show(stage);
 //            });
 //        }
-    }
+   }
 
     private void startCompletionWatcher() {
         javafx.animation.Timeline watcher = new javafx.animation.Timeline(
@@ -178,13 +187,19 @@ public class TaskList extends VBox {
     }
     
  // 
-    public void onTaskCompleted() {
-        if (starManager != null) {
-            starManager.earnStar();
-        }
-    }
 
 
+    //storing index in constellation 
     
+  //  private final int constellationIndex;
+
+//    public TaskList(int listId, int constellationIndex) {
+//        this.listId = listId;
+//        this.constellationIndex = constellationIndex;
+//    }
+
+//    public int getConstellationIndex() {
+//        return constellationIndex;
+//    }
     
 }
