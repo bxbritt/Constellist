@@ -116,7 +116,7 @@ public class TaskItem extends HBox {
 
                         // Celebration message
                         Label msg = new Label("✨ " + current.getName() + " Completed! ✨");
-                        msg.setStyle("-fx-font-size: 28px; -fx-text-fill: gold;");
+                        msg.setStyle("-fx-font-size: 28px; -fx-text-fill: white;");
                         BorderPane.setAlignment(msg, Pos.TOP_CENTER);
                         root.setTop(msg);
                         

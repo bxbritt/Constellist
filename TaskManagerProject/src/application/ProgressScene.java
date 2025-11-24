@@ -175,6 +175,7 @@ public class ProgressScene extends Application {
      double boxW = 400;
      double boxH = 400;
 
+     //createProgressView to fit progessbox
      Pane constView = current.createProgressView(boxW, boxH);
      constView.getStyleClass().add("progressBox");
      
