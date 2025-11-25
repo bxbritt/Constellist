@@ -15,9 +15,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-    	
-    	
-    	
+    		
         primaryStage.setTitle("Start Screen");
      
         Database.createUsersTable();
@@ -66,6 +64,8 @@ public class Main extends Application {
             String input = emailField.getText();
             String password = passwordField.getText();
 
+            /* caitlyn commented this out to load username */
+            /*
             if (Database.validateLogin(input, password)) {
                 int userId = Database.getUserId(input);         //  Get the user's ID from the database
                 LoggedInUser.setId(userId);                     //  Store it globally for later use
@@ -82,6 +82,25 @@ public class Main extends Application {
             } else {
                 showAlert(Alert.AlertType.ERROR, "Invalid credentials. Please try again.");
             }
+            */
+            // beginning of caitlyns code
+            if (Database.validateLogin(input, password)) {
+            	int userId = Database.getUserId(input);
+            	LoggedInUser.setId(userId);
+            	
+            	/* new part of this code */
+            	String username = Database.getUsernameById(userId);
+            	LoggedInUser.setUsername(username);
+            	/* end */
+            	
+            	TaskApp taskApp = new TaskApp();
+            	try {
+            		taskApp.start(primaryStage);
+            	} catch (Exception ex) {
+            		ex.printStackTrace();
+            	}
+            }
+            // end of code from caitlyn
         });
         
         Hyperlink forgotPasswordLink = new Hyperlink("Forgot Password?");

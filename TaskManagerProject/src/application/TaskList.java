@@ -3,39 +3,53 @@ package application;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.Priority;
 import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
 
 public class TaskList extends VBox {
+
     private VBox taskContainer = new VBox(10);
     private final int TASK_LIMIT = 10;
     private int listId;
-    
+
     private StarManager starManager;
 
-    // constructor that accepts StarManager
+    // title components
+    private TextField titleField;
+    private Label titleLabel; 
+
     public TaskList(String initialTitle, int listId, StarManager starManager) {
         this.listId = listId;
         this.starManager = starManager;
         this.setSpacing(10);
         this.getStyleClass().add("task-box");
-    
-        // Title field
-        TextField titleField = new TextField(initialTitle.equals("Task List") ? "" : initialTitle);
-        titleField.getStyleClass().add("task-title-field");
-        titleField.setEditable(true);
-        if (titleField.getText().isEmpty()) {
-            titleField.setPromptText("Enter a title...");
-        }
 
-        // Buttons
+        // title field
+        titleField = new TextField(initialTitle.equals("Task List") ? "" : initialTitle);
+        titleField.getStyleClass().add("task-title-field");
+        titleField.setPromptText("Enter a title...");
+
+        // title label and glow
+        titleLabel = new Label(initialTitle);
+        titleLabel.getStyleClass().add("glow-text");
+        titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+        titleLabel.setVisible(false); // hidden until title is confirmed
+        
+        // force label not to shrink
+        titleLabel.setMinWidth(Region.USE_PREF_SIZE);
+        titleLabel.setMaxWidth(Double.MAX_VALUE);
+
+        // buttons
         Button addTaskButton = new Button("Add Task");
         addTaskButton.getStyleClass().add("bubble-button");
         addTaskButton.setVisible(false);
@@ -44,54 +58,52 @@ public class TaskList extends VBox {
         viewProgressButton.getStyleClass().add("bubble-button");
         viewProgressButton.setVisible(false);
 
-        // Double-click to edit
+        // title edit and label
+        titleField.setOnAction(e -> saveTitle(addTaskButton, viewProgressButton));
         titleField.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
                 titleField.setEditable(true);
+                titleField.setDisable(false);
                 titleField.requestFocus();
-                addTaskButton.setVisible(false);
-                viewProgressButton.setVisible(false);
-            }
-        });
-        
-      
-
-        // Press Enter to confirm edit
-        titleField.setOnAction(e -> {
-            String title = titleField.getText().trim();
-            if (!title.isEmpty()) {
-                titleField.setEditable(false);
-                addTaskButton.setVisible(true);
-                viewProgressButton.setVisible(true);
-            } else {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Missing Title");
-                alert.setHeaderText(null);
-                alert.setContentText("Please enter a title before adding tasks.");
-                alert.show();
             }
         });
 
-        // Close button
+        // label and edit
+        titleLabel.setOnMouseClicked(e -> {
+            if (e.getClickCount() == 2) {
+                titleField.setVisible(true);
+                titleLabel.setVisible(false);
+                titleField.setEditable(true);
+                titleField.setDisable(false);
+                titleField.requestFocus();
+            }
+        });
+
+        // close button
         Button closeButton = new Button("X");
         closeButton.getStyleClass().add("close-button");
         closeButton.setOnAction(e -> {
             if (this.getParent() instanceof FlowPane container) {
                 container.getChildren().remove(this);
-                System.out.println("🗑 Deleting list with ID: " + listId);
                 Database.deleteTaskList(listId);
             }
         });
 
-        HBox titleBar = new HBox(10, titleField, closeButton);
-        titleBar.setStyle("-fx-alignment: center-right;");
+        // title bar
+        HBox titleBar = new HBox(10);
+        titleBar.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
-        // Task input
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        titleBar.getChildren().addAll(titleField, titleLabel, spacer, closeButton);
+
+        // task input
         TextField taskInputField = new TextField();
         taskInputField.setPromptText("Enter a task...");
         taskInputField.setVisible(false);
 
-        // Add task button logic
+        // add task button logic
         addTaskButton.setOnAction(e -> {
             if (taskContainer.getChildren().size() < TASK_LIMIT) {
                 addTaskButton.setVisible(false);
@@ -101,19 +113,18 @@ public class TaskList extends VBox {
                 Alert limitAlert = new Alert(Alert.AlertType.WARNING);
                 limitAlert.setTitle("Task Limit Reached");
                 limitAlert.setHeaderText(null);
-                limitAlert.setContentText("This list can only hold 10 tasks.\nPlease create a new task list.");
+                limitAlert.setContentText("This list can only hold 10 tasks.\nPlease create a new list.");
                 limitAlert.show();
             }
         });
 
-        // Task input logic
+        // add task input logic
         taskInputField.setOnAction(e -> {
             String text = taskInputField.getText().trim();
             if (!text.isEmpty()) {
                 TaskItem task = new TaskItem(text, taskContainer, this);
                 taskContainer.getChildren().add(task);
 
-                System.out.println("📝 Saving task '" + text + "' to list ID: " + listId);
                 Database.saveTaskItem(listId, text);
                 startCompletionWatcher();
 
@@ -123,11 +134,10 @@ public class TaskList extends VBox {
             }
         });
 
-        // View progress button
+        // view progress button
         viewProgressButton.setOnAction(e -> {
             ProgressScene progressScene = new ProgressScene();
             try {
-                // Reuse the same stage so navigation feels seamless
                 progressScene.start((Stage) this.getScene().getWindow());
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -136,20 +146,47 @@ public class TaskList extends VBox {
 
         this.getChildren().addAll(titleBar, taskInputField, addTaskButton, viewProgressButton, taskContainer);
 
-        if (!titleField.getText().trim().isEmpty()) {
-            titleField.setEditable(false);
-            addTaskButton.setVisible(true);
-            viewProgressButton.setVisible(true);
+        // if list already has a title → show label, hide field
+        if (!initialTitle.trim().isEmpty()) {
+            activateLabelMode(initialTitle, addTaskButton, viewProgressButton);
         }
     }
 
+    // save title and switch label
+    private void saveTitle(Button addTask, Button viewProgress) {
+        String title = titleField.getText().trim();
+
+        if (!title.isEmpty()) {
+            activateLabelMode(title, addTask, viewProgress);
+        } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Missing Title");
+            alert.setHeaderText(null);
+            alert.setContentText("Please enter a title before adding tasks.");
+            alert.show();
+        }
+    }
+
+    private void activateLabelMode(String title, Button addTask, Button viewProgress) {
+        titleField.setEditable(false);
+        titleField.setDisable(true);
+        titleField.setVisible(false);
+        titleField.setManaged(false);
+
+        titleLabel.setText(title);
+        titleLabel.setVisible(true);
+        titleLabel.setManaged(true);
+
+        addTask.setVisible(true);
+        viewProgress.setVisible(true);
+    }
+
+    // completion tracking
     public void checkCompletion() {
         boolean allDone = taskContainer.getChildren().stream()
-            .filter(node -> node instanceof TaskItem)
-            .map(node -> (TaskItem) node)
-            .allMatch(TaskItem::isCompleted);
-
-        System.out.println("🔍 Completion check: " + taskContainer.getChildren().size() + " tasks, allDone=" + allDone);
+                .filter(node -> node instanceof TaskItem)
+                .map(node -> (TaskItem) node)
+                .allMatch(TaskItem::isCompleted);
 
         if (allDone && taskContainer.getChildren().size() == 10) {
             javafx.application.Platform.runLater(() -> {
@@ -161,7 +198,7 @@ public class TaskList extends VBox {
 
     private void startCompletionWatcher() {
         javafx.animation.Timeline watcher = new javafx.animation.Timeline(
-            new javafx.animation.KeyFrame(javafx.util.Duration.seconds(1), e -> checkCompletion())
+                new javafx.animation.KeyFrame(javafx.util.Duration.seconds(1), e -> checkCompletion())
         );
         watcher.setCycleCount(10);
         watcher.play();
@@ -175,14 +212,10 @@ public class TaskList extends VBox {
     public int getListId() {
         return listId;
     }
-    
- // 
+
     public void onTaskCompleted() {
         if (starManager != null) {
             starManager.earnStar();
         }
     }
-
-    
-    
 }

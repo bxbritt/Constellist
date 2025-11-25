@@ -11,62 +11,62 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/Users/sammylarsen/Downloads/javafx-sdk-24.0.2/lib/javafx-swt.jar">
+	<classpathentry kind="lib" path="C:/Users/clona/OneDrive/Desktop/tools/openjfx-25_windows-x64_bin-sdk/javafx-sdk-25/lib/javafx.base.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/Users/sammylarsen/Downloads/javafx-sdk-24.0.2/lib/javafx.base.jar">
+	<classpathentry kind="lib" path="C:/Users/clona/OneDrive/Desktop/tools/openjfx-25_windows-x64_bin-sdk/javafx-sdk-25/lib/javafx.controls.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/Users/sammylarsen/Downloads/javafx-sdk-24.0.2/lib/javafx.controls.jar">
+	<classpathentry kind="lib" path="C:/Users/clona/OneDrive/Desktop/tools/openjfx-25_windows-x64_bin-sdk/javafx-sdk-25/lib/javafx.fxml.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/Users/sammylarsen/Downloads/javafx-sdk-24.0.2/lib/javafx.fxml.jar">
+	<classpathentry kind="lib" path="C:/Users/clona/OneDrive/Desktop/tools/openjfx-25_windows-x64_bin-sdk/javafx-sdk-25/lib/javafx.graphics.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/Users/sammylarsen/Downloads/javafx-sdk-24.0.2/lib/javafx.graphics.jar">
+	<classpathentry kind="lib" path="C:/Users/clona/OneDrive/Desktop/tools/openjfx-25_windows-x64_bin-sdk/javafx-sdk-25/lib/javafx.media.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/Users/sammylarsen/Downloads/javafx-sdk-24.0.2/lib/javafx.media.jar">
+	<classpathentry kind="lib" path="C:/Users/clona/OneDrive/Desktop/tools/openjfx-25_windows-x64_bin-sdk/javafx-sdk-25/lib/javafx.swing.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/Users/sammylarsen/Downloads/javafx-sdk-24.0.2/lib/javafx.swing.jar">
+	<classpathentry kind="lib" path="C:/Users/clona/OneDrive/Desktop/tools/openjfx-25_windows-x64_bin-sdk/javafx-sdk-25/lib/javafx.web.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/Users/sammylarsen/Downloads/javafx-sdk-24.0.2/lib/javafx.web.jar">
+	<classpathentry kind="lib" path="C:/Users/clona/OneDrive/Desktop/tools/openjfx-25_windows-x64_bin-sdk/javafx-sdk-25/lib/javafx-swt.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/Users/sammylarsen/Downloads/javafx-sdk-24.0.2/lib/jdk.jsobject.jar">
+	<classpathentry kind="lib" path="C:/Users/clona/OneDrive/Desktop/tools/openjfx-25_windows-x64_bin-sdk/javafx-sdk-25/lib/jdk.jsobject.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/Users/sammylarsen/Downloads/javafx-sdk-24.0.2/lib/jfx.incubator.input.jar">
+	<classpathentry kind="lib" path="C:/Users/clona/OneDrive/Desktop/tools/openjfx-25_windows-x64_bin-sdk/javafx-sdk-25/lib/jfx.incubator.input.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/Users/sammylarsen/Downloads/javafx-sdk-24.0.2/lib/jfx.incubator.richtext.jar">
+	<classpathentry kind="lib" path="C:/Users/clona/OneDrive/Desktop/tools/openjfx-25_windows-x64_bin-sdk/javafx-sdk-25/lib/jfx.incubator.richtext.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/Users/sammylarsen/Downloads/sqlite-jdbc-3.51.0.0.jar">
+	<classpathentry kind="lib" path="C:/Users/clona/OneDrive/Desktop/tools/sqlite-jdbc-3.50.3.0.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>

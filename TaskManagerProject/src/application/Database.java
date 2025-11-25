@@ -304,4 +304,28 @@ public class Database {
             e.printStackTrace();
         }
     }
+    
+    // addition from caitlyn
+    // this will fetch username from DB
+    public static String getUsernameById(int id) {
+    	String sql = "SELECT username FROM users WHERE id = ?";
+    	try (Connection conn = connect();
+    		PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    		
+    		pstmt.setInt(1, id);
+    		ResultSet rs = pstmt.executeQuery();
+    		
+    		if (rs.next()) return rs.getString("username");
+    	
+    	} catch(SQLException e) {
+    		System.out.println("Failed to fetch username: " + e.getMessage());
+    	}
+    	return null;
+    }
+    // end of addition
+    
+    
+    
+    
+    
 }

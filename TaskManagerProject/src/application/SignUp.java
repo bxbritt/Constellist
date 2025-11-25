@@ -111,6 +111,11 @@ public class SignUp extends Application {
                 //  Get the new user's ID and set it in LoggedInUser
                 int newUserId = Database.getUserId(username);
                 LoggedInUser.setId(newUserId);
+                
+                // code from caitlyn
+                // this will store username for new users
+                LoggedInUser.setUsername(username);
+                // end code from caitlyn
 
                 // Transition to TaskApp with the new user
                 TaskApp taskApp = new TaskApp();
