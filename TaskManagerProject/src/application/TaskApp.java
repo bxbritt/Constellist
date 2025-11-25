@@ -32,6 +32,7 @@ public class TaskApp extends Application {
 
         rootLayout = new BorderPane();
 
+        // background with animated stars
         StackPane layeredRoot = new StackPane();
         layeredRoot.setStyle(
                 "-fx-background-color: linear-gradient(to bottom, #071229, #0D234F, #280c4c);"
@@ -46,6 +47,7 @@ public class TaskApp extends Application {
         int userId = LoggedInUser.getId();
         boolean returningUser = !Database.loadProgressForUser(userId).isEmpty();
 
+        // welcome screen
         if (!LoggedInUser.hasSeenWelcome) {
             LoggedInUser.hasSeenWelcome = true;
 
@@ -54,6 +56,7 @@ public class TaskApp extends Application {
             return;
         }
 
+        // sidebar
         VBox sidebar = new VBox(20);
         sidebar.getStyleClass().add("sidebar");
         sidebar.getStyleClass().add("sidebar-border");
@@ -79,9 +82,9 @@ public class TaskApp extends Application {
         logoutButton.getStyleClass().add("sidebar-button");
 
         sidebar.getChildren().addAll(mainButton, galleryButton, progressButton, logoutButton);
-        sidebar.setStyle("-fx-background-color: transparent;");
         rootLayout.setLeft(sidebar);
 
+        // task list page
         Button createListButton = new Button("Create New List");
         createListButton.getStyleClass().add("bubble-button");
         createListButton.getStyleClass().add("glow-text");
@@ -100,41 +103,44 @@ public class TaskApp extends Application {
         mainContent.setFitToHeight(true);
         mainContent.setStyle("-fx-background: transparent;");
 
+        // gallery content
         galleryContent = new VBox(20);
         galleryContent.setStyle("-fx-padding: 40; -fx-alignment: center; -fx-background-color: transparent;");
         Text galleryText = new Text("Constellation Gallery Placeholder");
         galleryText.getStyleClass().add("glow-text");
         galleryContent.getChildren().add(galleryText);
 
+        // progress content
         progressContent = new VBox(20);
         progressContent.setStyle("-fx-padding: 40; -fx-alignment: center; -fx-background-color: transparent;");
         Text progressText = new Text("Constellation Progress Appears here");
         progressText.getStyleClass().add("glow-text");
         progressContent.getChildren().add(progressText);
 
+        // star reward manager
         starManager = new StarManager(() -> {
             setCenterContent(progressContent);
-
             progressContent.getChildren().clear();
-            Text constellation = new Text("Constellation Unlocked!");
-            constellation.getStyleClass().add("glow-text");
-            constellation.setStyle("-fx-font-size: 24;");
-            progressContent.getChildren().add(constellation);
+
+            Text constellationUnlocked = new Text("Constellation Unlocked!");
+            constellationUnlocked.getStyleClass().add("glow-text");
+            constellationUnlocked.setStyle("-fx-font-size: 24;");
+
+            progressContent.getChildren().add(constellationUnlocked);
         });
 
+        // login content
         loginContent = new VBox(20);
         loginContent.setStyle("-fx-alignment: center; -fx-padding: 40; -fx-background-color: transparent;");
         Text loginText = new Text("Login Screen Placeholder");
         loginText.getStyleClass().add("glow-text");
         loginContent.getChildren().add(loginText);
 
-        userId = LoggedInUser.getId();
+        // load saved lists
         List<SaveProgress> savedLists = Database.loadProgressForUser(userId);
-
         for (SaveProgress progress : savedLists) {
-            TaskList list = new TaskList(progress.getDescription(), progress.getId(), starManager);
 
-            // ⭐ No more getTitleField() — TaskList handles glowing titleLabel itself
+            TaskList list = new TaskList(progress.getDescription(), progress.getId(), starManager);
 
             List<String> items = Database.loadActiveTaskItemsForList(progress.getId());
             for (String item : items) {
@@ -144,6 +150,7 @@ public class TaskApp extends Application {
             listContainer.getChildren().add(list);
         }
 
+        // create new list button
         createListButton.setOnAction(e -> {
 
             if (rootLayout.getCenter() != mainContent) {
@@ -164,8 +171,6 @@ public class TaskApp extends Application {
 
                 TaskList newList = new TaskList(listName, progress.getId(), starManager);
 
-                // ⭐ No more getTitleField() — TaskList applies glow automatically
-
                 FadeTransition fade = new FadeTransition(Duration.millis(500), newList);
                 fade.setFromValue(0);
                 fade.setToValue(1);
@@ -183,6 +188,7 @@ public class TaskApp extends Application {
             }
         });
 
+        // side bar button actions
         mainButton.setOnAction(e -> {
             Sound_Effects.playPianoKey();
             setCenterContent(mainContent);
@@ -203,8 +209,10 @@ public class TaskApp extends Application {
             setCenterContent(loginContent);
         });
 
+        // default page
         rootLayout.setCenter(mainContent);
 
+        // music
         music.play("/music/menu_music.mp3", 0.25);
 
         Scene scene = new Scene(layeredRoot, 1000, 600);

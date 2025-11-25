@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .classpath
 # Eclipse/Java build outputs
 TaskManagerProject/bin/
@@ -12,3 +13,7 @@ Thumbs.db
 
 # Local runtime database (ignore live DB, commit schema/seed instead)
 TaskManagerProject/users.db
+=======
+TaskManagerProject/.classpath
+TaskManagerProject/.class
+>>>>>>> GalleryandProg

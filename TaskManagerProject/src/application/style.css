@@ -1,7 +1,7 @@
 /* global background and font */
 .content-root {
     -fx-padding: 20;
-    -fx-font-family: "Consolas";   /* code 'aesthetic' font */
+    -fx-font-family: "Consolas";
 }
 
 /* global pastel pink/white text color */
@@ -52,30 +52,28 @@
 }
 
 .sidebar-border {
-	-fx-border-color: rgba(255,255,255,0.15); /* soft white line */
-    -fx-border-width: 0 1 0 0; /* right-side vertical line */
+	-fx-border-color: rgba(255,255,255,0.15);
+    -fx-border-width: 0 1 0 0;
 }
 
-/* side bar buttons */
+/* side bar buttons (Caitlyn version) */
 .sidebar-button {
-    -fx-background-color: rgba(255, 182, 255, 0.22); /* soft transparent pink */
+    -fx-background-color: rgba(255, 182, 255, 0.22);
     -fx-text-fill: #ffeaff;
     -fx-font-weight: bold;
     -fx-background-radius: 14;
     -fx-padding: 10 18;
     -fx-cursor: hand;
 
-    /* subtle neon border */
     -fx-border-color: rgba(255, 160, 255, 0.45);
     -fx-border-width: 1.6;
     -fx-border-radius: 14;
 
-    /* gentle glow like your task cards */
     -fx-effect: dropshadow(gaussian, rgba(255, 120, 255, 0.35), 9, 0.25, 0, 1);
 }
 
 .sidebar-button:hover {
-    -fx-background-color: rgba(255, 182, 255, 0.35); /* slightly brighter pink */
+    -fx-background-color: rgba(255, 182, 255, 0.35);
     -fx-effect: dropshadow(gaussian, rgba(255, 160, 255, 0.55), 14, 0.35, 0, 1);
 }
 
@@ -93,7 +91,7 @@
 	-fx-background-color: transparent;
 }
 
-/* task card styling stays unchanged */
+/* task card styling */
 .task-box {
     -fx-background-color: rgba(15, 35, 80, 0.55);
     -fx-background-radius: 15;
@@ -112,15 +110,15 @@
 /* Title field while typing */
 .task-title-field {
     -fx-background-color: rgba(255,255,255,0.15);
-    -fx-text-fill: black;                    /* typed text is black */
-    -fx-prompt-text-fill: #fff6cc;           /* placeholder text */
+    -fx-text-fill: black;
+    -fx-prompt-text-fill: #fff6cc;
     -fx-font-size: 18px;
     -fx-font-weight: bold;
     -fx-background-radius: 10;
     -fx-padding: 6 10;
 }
 
-/* When NOT editable → use glowing gold text */
+/* Non-editable → glowing gold text */
 .task-title-field:disabled,
 .task-title-field:focused:disabled,
 .task-title-field:editable false {
@@ -130,7 +128,7 @@
     -fx-border-color: transparent;
 }
 
-/* Task text inside cards */
+/* Task text */
 .task-text {
     -fx-fill: #fff6cc;
     -fx-font-size: 14px;
@@ -141,7 +139,7 @@
     -fx-strikethrough: true;
 }
 
-/* neon bubble buttons */
+/* Neon bubble buttons */
 .bubble-button {
     -fx-background-color: radial-gradient(center 50% 50%, radius 100%, #083a78, #032b59);
     -fx-text-fill: #fff6cc;
@@ -162,7 +160,7 @@
     -fx-effect: dropshadow(gaussian, rgba(255,130,255,0.45), 14, 0.35, 0, 1);
 }
 
-/* Close button inside task cards */
+/* Close button in task cards */
 .close-button {
     -fx-background-color: transparent;
     -fx-text-fill: #FF9BBE;
@@ -179,4 +177,47 @@
     -fx-text-fill: #FFD4F6;
     -fx-font-size: 24px;
     -fx-font-weight: bold;
+}
+
+.taskDetails {
+	-fx-background-color: transparent;
+	-fx-background-radius: 12;
+}
+
+.constView {
+	-fx-background-color: #0b0114;
+	-fx-background-radius: 15;
+	-fx-border-radius: 12;
+	-fx-border-color: white;
+	-fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.3), 2, 0.5, 0, 1);
+}
+
+.tasksRemain {
+	-fx-background-color: #490485;
+	-fx-background-radius: 15;
+    -fx-border-color: white;
+	-fx-border-radius: 12;
+	-fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.3), 2, 0.5, 0, 1);
+}
+
+.tasksComplete {
+	-fx-background-color: #490485;
+	-fx-background-radius: 15;
+	-fx-border-color: white;
+	-fx-border-radius: 12;
+	-fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.3), 2, 0.5, 0, 1);
+}
+
+.itemsComplete {
+	-fx-background-color: black;
+	-fx-text-fill: white;
+}
+
+.progressBox {
+	-fx-background-color: black;
+    -fx-background-radius: 15;
+    -fx-border-color: #B388FF;
+    -fx-border-radius: 15;
+    -fx-border-width: 3;
+    -fx-effect: dropshadow(gaussian, rgba(179, 136, 255, 0.4), 10, 0.5, 0, 2);
 }

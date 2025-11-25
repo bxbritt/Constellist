@@ -5,9 +5,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Region;
@@ -26,11 +24,12 @@ public class TaskList extends VBox {
 
     // title components
     private TextField titleField;
-    private Label titleLabel; 
+    private Label titleLabel;
 
     public TaskList(String initialTitle, int listId, StarManager starManager) {
         this.listId = listId;
         this.starManager = starManager;
+
         this.setSpacing(10);
         this.getStyleClass().add("task-box");
 
@@ -39,27 +38,29 @@ public class TaskList extends VBox {
         titleField.getStyleClass().add("task-title-field");
         titleField.setPromptText("Enter a title...");
 
-        // title label and glow
+        // title label
         titleLabel = new Label(initialTitle);
         titleLabel.getStyleClass().add("glow-text");
         titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
-        titleLabel.setVisible(false); // hidden until title is confirmed
-        
-        // force label not to shrink
+        titleLabel.setVisible(false);
+
+        // Prevent label from shrinking when long
         titleLabel.setMinWidth(Region.USE_PREF_SIZE);
         titleLabel.setMaxWidth(Double.MAX_VALUE);
 
-        // buttons
+        // Add Task button
         Button addTaskButton = new Button("Add Task");
         addTaskButton.getStyleClass().add("bubble-button");
         addTaskButton.setVisible(false);
 
+        // View Progress button
         Button viewProgressButton = new Button("View Progress");
         viewProgressButton.getStyleClass().add("bubble-button");
         viewProgressButton.setVisible(false);
 
-        // title edit and label
+        // title field interactions
         titleField.setOnAction(e -> saveTitle(addTaskButton, viewProgressButton));
+
         titleField.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
                 titleField.setEditable(true);
@@ -68,7 +69,6 @@ public class TaskList extends VBox {
             }
         });
 
-        // label and edit
         titleLabel.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
                 titleField.setVisible(true);
@@ -79,7 +79,7 @@ public class TaskList extends VBox {
             }
         });
 
-        // close button
+        // close and delete buttons
         Button closeButton = new Button("X");
         closeButton.getStyleClass().add("close-button");
         closeButton.setOnAction(e -> {
@@ -89,7 +89,7 @@ public class TaskList extends VBox {
             }
         });
 
-        // title bar
+        // title bar layout
         HBox titleBar = new HBox(10);
         titleBar.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
@@ -98,12 +98,12 @@ public class TaskList extends VBox {
 
         titleBar.getChildren().addAll(titleField, titleLabel, spacer, closeButton);
 
-        // task input
+        // task input field
         TextField taskInputField = new TextField();
         taskInputField.setPromptText("Enter a task...");
         taskInputField.setVisible(false);
 
-        // add task button logic
+        // Add Task Button logic
         addTaskButton.setOnAction(e -> {
             if (taskContainer.getChildren().size() < TASK_LIMIT) {
                 addTaskButton.setVisible(false);
@@ -118,10 +118,11 @@ public class TaskList extends VBox {
             }
         });
 
-        // add task input logic
+        // Task Input logic
         taskInputField.setOnAction(e -> {
             String text = taskInputField.getText().trim();
             if (!text.isEmpty()) {
+
                 TaskItem task = new TaskItem(text, taskContainer, this);
                 taskContainer.getChildren().add(task);
 
@@ -134,25 +135,29 @@ public class TaskList extends VBox {
             }
         });
 
-        // view progress button
+        // View Progress Button logic
         viewProgressButton.setOnAction(e -> {
-            ProgressScene progressScene = new ProgressScene();
+            Sound_Effects.playPianoKey();
+            ProgressScene progressScene = new ProgressScene(listId);
+
             try {
-                progressScene.start((Stage) this.getScene().getWindow());
+                Stage stage = (Stage) this.getScene().getWindow();
+                progressScene.start(stage);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         });
 
+        // Add everything to the list card
         this.getChildren().addAll(titleBar, taskInputField, addTaskButton, viewProgressButton, taskContainer);
 
-        // if list already has a title → show label, hide field
+        // Existing lists become label mode immediately
         if (!initialTitle.trim().isEmpty()) {
             activateLabelMode(initialTitle, addTaskButton, viewProgressButton);
         }
     }
 
-    // save title and switch label
+    // Save title & switch UI mode
     private void saveTitle(Button addTask, Button viewProgress) {
         String title = titleField.getText().trim();
 
@@ -181,19 +186,12 @@ public class TaskList extends VBox {
         viewProgress.setVisible(true);
     }
 
-    // completion tracking
+    // Completion watcher (currently only controls starManager)
     public void checkCompletion() {
         boolean allDone = taskContainer.getChildren().stream()
                 .filter(node -> node instanceof TaskItem)
                 .map(node -> (TaskItem) node)
                 .allMatch(TaskItem::isCompleted);
-
-        if (allDone && taskContainer.getChildren().size() == 10) {
-            javafx.application.Platform.runLater(() -> {
-                Stage stage = (Stage) this.getScene().getWindow();
-                C1_Heart.show(stage);
-            });
-        }
     }
 
     private void startCompletionWatcher() {
@@ -213,9 +211,11 @@ public class TaskList extends VBox {
         return listId;
     }
 
+    // Trigger star reward for completed tasks
     public void onTaskCompleted() {
         if (starManager != null) {
             starManager.earnStar();
         }
     }
 }
+ 

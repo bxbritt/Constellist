@@ -13,43 +13,44 @@ import javafx.scene.effect.DropShadow; //we can use this to add a shadow or glow
 import javafx.scene.shape.Line; //lines to connect shapes
 
 
-public class C2_Capricorn extends Constellation {
-
-  
-
+public class C4_Lightning extends Constellation {
+	
+	@Override
     protected void createConstellation() {
-        // Create stars
-        Star star1 = new Star(85, 300, 6);
-        star1.setComplete(true);
-        
-        Star star2 = new Star(135, 320, 6);
-        star2.setComplete(true);
-        
-        Star star3 = new Star(240, 335, 6);
-        star3.setComplete(true);
-        
-        Star star4 = new Star(350, 360, 6);
-        star4.setComplete(true);
-        
-        Star star5 = new Star(700, 275, 6);
-        star5.setComplete(true);
-        
-        Star star6 = new Star(775, 260, 6);
-        star6.setComplete(true);
-        
-        Star star7 = new Star(735, 320, 6);
-        star7.setComplete(false);
-        
-        Star star8 = new Star(550, 700, 6);
-        star8.setComplete(false);
-        
-        Star star9 = new Star(500, 725, 6);
-        star9.setComplete(false);
-        
-        Star star10 = new Star(175, 525, 6);
-        star10.setComplete(false);
+		
+		
+		//MAKE CONSTELLATION HERE ********************//
+		Star star1 = new Star(350, 260, 6);
+		star1.setComplete(true);
+		
+		Star star2 = new Star(500, 40, 6);
+		star2.setComplete(true);
+		
+		Star star3 = new Star(495, 220, 6);
+		star3.setComplete(true);
+		
+		Star star4 = new Star(560, 220, 6);
+		star4.setComplete(true);
 
-        // All stars start incomplete - they'll be lit by ConstellationManager
+		Star star7 = new Star(450, 650, 6);
+		star7.setComplete(true);
+		
+		Star star8 = new Star(425, 420, 6);
+		star8.setComplete(true);
+		
+		Star star9 = new Star(375, 420, 6);
+		star9.setComplete(true);
+		
+		Star star10 = new Star(410, 260, 6);
+		star10.setComplete(true);
+		
+		Star star5 = new Star(525, 360, 6);
+		star5.setComplete(true);
+		
+		Star star6 = new Star(590, 360, 6);
+		star6.setComplete(true);
+		
+		 // All stars start incomplete - they'll be lit by ConstellationManager
         for (Star star : new Star[]{star1, star2, star3, star4, star5, 
                                      star6, star7, star8, star9, star10}) {
             star.setComplete(false);
@@ -84,28 +85,29 @@ public class C2_Capricorn extends Constellation {
     
     @Override
     public String getName() {
-        return "Capricorn";
+        return "Lightning";
     }
     
     @Override
     public int getConstellationNumber() {
-        return 2;
+        return 4;
     }
     
     @Override
     public Pane createPreview(double width, double height) {
         // Create stars for preview (all complete)
-        Star star1 = new Star(85, 300, 6); star1.setComplete(true);
-        Star star2 = new Star(135, 320, 6); star2.setComplete(true);
-        Star star3 = new Star(240, 335, 6); star3.setComplete(true);
-        Star star4 = new Star(350, 360, 6); star4.setComplete(true);
-        Star star5 = new Star(700, 275, 6); star5.setComplete(true);
-        Star star6 = new Star(775, 260, 6); star6.setComplete(true);
-        Star star7 = new Star(735, 320, 6); star7.setComplete(true);
-        Star star8 = new Star(550, 700, 6); star8.setComplete(true);
-        Star star9 = new Star(500, 725, 6); star9.setComplete(true);
-        Star star10 = new Star(175, 525, 6); star10.setComplete(true);
-       
+        Star star1 = new Star(350, 260, 6); star1.setComplete(true);
+        Star star2 = new Star(500, 40, 6); star2.setComplete(true);
+        Star star3 = new Star(495, 220, 6); star3.setComplete(true);
+        Star star4 = new Star(560, 220, 6); star4.setComplete(true);
+        Star star5 = new Star(525, 360, 6); star5.setComplete(true);
+        Star star6 = new Star(590, 360, 6); star6.setComplete(true);
+        Star star7 = new Star(450, 650, 6); star7.setComplete(true);
+        Star star8 = new Star(425, 420, 6); star8.setComplete(true);
+        Star star9 = new Star(375, 420, 6); star9.setComplete(true);
+        Star star10 = new Star(410, 260, 6); star10.setComplete(true);
+    
+		
         Star[] previewStars = {star1, star2, star3, star4, star5, 
                                star6, star7, star8, star9, star10};
         
@@ -121,16 +123,16 @@ public class C2_Capricorn extends Constellation {
     }
     public Pane createShow(double width, double height) {
         // Create stars for show (all complete)
-    	  Star star1 = new Star(85, 300, 6); star1.setComplete(true);
-          Star star2 = new Star(135, 320, 6); star2.setComplete(true);
-          Star star3 = new Star(240, 335, 6); star3.setComplete(true);
-          Star star4 = new Star(350, 360, 6); star4.setComplete(true);
-          Star star5 = new Star(700, 275, 6); star5.setComplete(true);
-          Star star6 = new Star(775, 260, 6); star6.setComplete(true);
-          Star star7 = new Star(735, 320, 6); star7.setComplete(true);
-          Star star8 = new Star(550, 700, 6); star8.setComplete(true);
-          Star star9 = new Star(500, 725, 6); star9.setComplete(true);
-          Star star10 = new Star(175, 525, 6); star10.setComplete(true);
+        Star star1 = new Star(350, 260, 6); star1.setComplete(true);
+        Star star2 = new Star(500, 40, 6); star2.setComplete(true);
+        Star star3 = new Star(495, 220, 6); star3.setComplete(true);
+        Star star4 = new Star(560, 220, 6); star4.setComplete(true);
+        Star star5 = new Star(525, 360, 6); star5.setComplete(true);
+        Star star6 = new Star(590, 360, 6); star6.setComplete(true);
+        Star star7 = new Star(450, 650, 6); star7.setComplete(true);
+        Star star8 = new Star(425, 420, 6); star8.setComplete(true);
+        Star star9 = new Star(375, 420, 6); star9.setComplete(true);
+        Star star10 = new Star(410, 260, 6); star10.setComplete(true);
           
         Star[] showStars = {star1, star2, star3, star4, star5,
                             star6, star7, star8, star9, star10};
@@ -143,8 +145,9 @@ public class C2_Capricorn extends Constellation {
             new StarLink(star9, star10), new StarLink(star1, star10)
         };
 
-      
+     
         return createScaledPreview(showStars, showLinks, width, height, 0.75);
     }
+	
 
-    }
+}

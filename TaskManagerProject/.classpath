@@ -1,51 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER">
+	<classpathentry kind="lib" path="C:/Users/kleo9/OneDrive/Desktop/Programming Class/javafx-sdk-17.0.2/lib/javafx-swt.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+	<classpathentry kind="lib" path="C:/Users/kleo9/OneDrive/Desktop/Programming Class/javafx-sdk-17.0.2/lib/javafx.web.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
+<<<<<<< HEAD
 	<classpathentry kind="lib" path="C:/Users/clona/OneDrive/Desktop/tools/openjfx-25_windows-x64_bin-sdk/javafx-sdk-25/lib/javafx.base.jar">
+=======
+	<classpathentry kind="lib" path="C:/Users/kleo9/OneDrive/Desktop/Programming Class/javafx-sdk-17.0.2/lib/javafx.swing.jar">
+>>>>>>> branch 'main' of git@github.com:NMSU-CS-CS371/team-project-constellation-team.git
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
+<<<<<<< HEAD
 	<classpathentry kind="lib" path="C:/Users/clona/OneDrive/Desktop/tools/openjfx-25_windows-x64_bin-sdk/javafx-sdk-25/lib/javafx.controls.jar">
+=======
+	<classpathentry kind="lib" path="C:/Users/kleo9/OneDrive/Desktop/Programming Class/javafx-sdk-17.0.2/lib/javafx.media.jar">
+>>>>>>> branch 'main' of git@github.com:NMSU-CS-CS371/team-project-constellation-team.git
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
+<<<<<<< HEAD
 	<classpathentry kind="lib" path="C:/Users/clona/OneDrive/Desktop/tools/openjfx-25_windows-x64_bin-sdk/javafx-sdk-25/lib/javafx.fxml.jar">
+=======
+	<classpathentry kind="lib" path="C:/Users/kleo9/OneDrive/Desktop/Programming Class/javafx-sdk-17.0.2/lib/javafx.graphics.jar">
+>>>>>>> branch 'main' of git@github.com:NMSU-CS-CS371/team-project-constellation-team.git
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
+<<<<<<< HEAD
 	<classpathentry kind="lib" path="C:/Users/clona/OneDrive/Desktop/tools/openjfx-25_windows-x64_bin-sdk/javafx-sdk-25/lib/javafx.graphics.jar">
+=======
+	<classpathentry kind="lib" path="C:/Users/kleo9/OneDrive/Desktop/Programming Class/javafx-sdk-17.0.2/lib/javafx.fxml.jar">
+>>>>>>> branch 'main' of git@github.com:NMSU-CS-CS371/team-project-constellation-team.git
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
+<<<<<<< HEAD
 	<classpathentry kind="lib" path="C:/Users/clona/OneDrive/Desktop/tools/openjfx-25_windows-x64_bin-sdk/javafx-sdk-25/lib/javafx.media.jar">
+=======
+	<classpathentry kind="lib" path="C:/Users/kleo9/OneDrive/Desktop/Programming Class/javafx-sdk-17.0.2/lib/javafx.controls.jar">
+>>>>>>> branch 'main' of git@github.com:NMSU-CS-CS371/team-project-constellation-team.git
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
+<<<<<<< HEAD
 	<classpathentry kind="lib" path="C:/Users/clona/OneDrive/Desktop/tools/openjfx-25_windows-x64_bin-sdk/javafx-sdk-25/lib/javafx.swing.jar">
+=======
+	<classpathentry kind="lib" path="C:/Users/kleo9/OneDrive/Desktop/Programming Class/javafx-sdk-17.0.2/lib/javafx.base.jar">
+>>>>>>> branch 'main' of git@github.com:NMSU-CS-CS371/team-project-constellation-team.git
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
+<<<<<<< HEAD
 	<classpathentry kind="lib" path="C:/Users/clona/OneDrive/Desktop/tools/openjfx-25_windows-x64_bin-sdk/javafx-sdk-25/lib/javafx.web.jar">
+=======
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk-24">
+>>>>>>> branch 'main' of git@github.com:NMSU-CS-CS371/team-project-constellation-team.git
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
+<<<<<<< HEAD
 	<classpathentry kind="lib" path="C:/Users/clona/OneDrive/Desktop/tools/openjfx-25_windows-x64_bin-sdk/javafx-sdk-25/lib/javafx-swt.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
@@ -67,6 +96,9 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/clona/OneDrive/Desktop/tools/sqlite-jdbc-3.50.3.0.jar">
+=======
+	<classpathentry kind="lib" path="C:/Users/kleo9/OneDrive/Desktop/Programming Class/sqlite-jdbc-3.50.3.0.jar">
+>>>>>>> branch 'main' of git@github.com:NMSU-CS-CS371/team-project-constellation-team.git
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
