@@ -221,3 +221,52 @@
     -fx-border-width: 3;
     -fx-effect: dropshadow(gaussian, rgba(179, 136, 255, 0.4), 10, 0.5, 0, 2);
 }
+
+.task-input {
+    -fx-background-color: transparent;   /* removes the white fill */
+    -fx-text-fill: white;                /* makes typed text visible */
+    -fx-prompt-text-fill: #bbbbbb;       /* softer placeholder text */
+    -fx-border-color: #ffffff55;         /* subtle border */
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.ItemsList {
+    -fx-background-color: transparent;   /* removes the white fill */
+    -fx-control-inner-background: transparent; /* inner cells transparent */
+    -fx-text-fill: white;                /* makes list text visible */
+    -fx-prompt-text-fill: #bbbbbb;       /* optional: softer placeholder text */
+    -fx-border-color: #ffffff55;         /* subtle border outline */
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.ItemsList .list-cell {
+    -fx-background-color: transparent;   /* each row transparent */
+    -fx-text-fill: white;                /* row text visible */
+}
+
+.progress-list {
+    -fx-background-color: transparent;          /* removes the white fill */
+    -fx-control-inner-background: transparent;  /* inner cells transparent */
+    -fx-text-fill: white;                       /* makes list text visible */
+    -fx-border-color: #ffffff55;                /* subtle border outline */
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.progress-list .list-cell {
+    -fx-background-color: transparent;   /* each row transparent */
+    -fx-text-fill: white;                /* row text visible */
+}
+
+.affirmation-bubble {
+    -fx-background-color: red;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 20px;
+    -fx-font-family: "Consolas";
+
+    /* soft glow */
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.7), 12, 0.6, 0, 0);
+}

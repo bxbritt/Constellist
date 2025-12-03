@@ -1,6 +1,7 @@
 package application;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -88,6 +89,13 @@ public class TaskApp extends Application {
         createListButton.getStyleClass().add("bubble-button");
         createListButton.getStyleClass().add("glow-text");
 
+        
+      
+        HBox menuBar = new HBox(15);
+        AffirmationBubble affirmationBubble = new AffirmationBubble();
+        menuBar.getChildren().addAll(createListButton,affirmationBubble);
+        menuBar.setStyle("-fx-alignment: center-left; -fx-padding: 10;");
+        
         FlowPane listContainer = new FlowPane();
         listContainer.setHgap(20);
         listContainer.setVgap(20);
@@ -195,17 +203,22 @@ public class TaskApp extends Application {
 
         galleryButton.setOnAction(e -> {
             Sound_Effects.playPianoKey();
-            setCenterContent(galleryContent);
-        });
+            ConstellationGallery galleryScene = new ConstellationGallery();
+            galleryScene.start(stage);});
 
         progressButton.setOnAction(e -> {
             Sound_Effects.playPianoKey();
-            setCenterContent(progressContent);
-        });
+            ProgressScene progressScene = new ProgressScene();
+            progressScene.start(stage);});
+       
 
         logoutButton.setOnAction(e -> {
-            Sound_Effects.playPianoKey();
-            setCenterContent(loginContent);
+        	 Sound_Effects.playPianoKey();
+             try {
+                 new Main().start(stage); // use the stage already passed into your start() method
+             } catch (Exception ex) {
+                 ex.printStackTrace();
+             }
         });
 
         // default page
@@ -220,6 +233,9 @@ public class TaskApp extends Application {
         stage.setScene(scene);
         stage.setTitle("Constellation Task Manager");
         stage.show();
+        stage.setFullScreen(true);
+
+
     }
 
     private void setCenterContent(javafx.scene.Node content) {

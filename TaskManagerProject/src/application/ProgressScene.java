@@ -130,10 +130,15 @@ public class ProgressScene extends Application {
        
         
 
+     
      ListView<String> remainingItemsList = new ListView<>();
-     ObservableList<String> itemsRemain = FXCollections.observableArrayList(
-         Database.loadActiveTaskItemsForList(this.listId)
-     );
+     ObservableList<String> itemsRemain = FXCollections.observableArrayList();
+     remainingItemsList.getStyleClass().add("progress-list");
+
+
+     for (String item: Database.loadActiveTaskItemsForList(this.listId)) {
+    	 itemsRemain.add("* " + item);
+     }
      remainingItemsList.setItems(itemsRemain);
 
      tasksRemain.getChildren().addAll(remainText, remainingItemsList);
@@ -152,10 +157,16 @@ public class ProgressScene extends Application {
      completeText.setFill(Color.ANTIQUEWHITE);
 
      ListView<String> completedItemsList = new ListView<>();
-     ObservableList<String> itemsComplete = FXCollections.observableArrayList(
-         Database.loadCompletedTaskItemsForList(this.listId)
-     );
+     completedItemsList.getStyleClass().add("progress-list");
+
+
+     ObservableList<String> itemsComplete = FXCollections.observableArrayList();
+     for (String item : Database.loadCompletedTaskItemsForList(this.listId)) {
+         itemsComplete.add("• " + item); // adds bullet
+     }
      completedItemsList.setItems(itemsComplete);
+
+
 
      tasksComplete.getChildren().addAll(completeText, completedItemsList);
      tasksComplete.getStyleClass().add("progressBox");
@@ -185,19 +196,37 @@ public class ProgressScene extends Application {
     		 .add(50)
     		 );
      constView.setLayoutY(200);
-
-
-     // --- Root container ---
+     constView.setStyle("-fx-background-color: transparent;");
+     constView.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
+     
+  // --- Root container ---
      Pane progressRoot = new Pane();
      progressRoot.getChildren().addAll(label, taskButton, galleryButton, taskDetails, constView);
 
+     // --- Layered background like TaskApp ---
+     StackPane layeredRoot = new StackPane();
+     layeredRoot.setStyle(
+         "-fx-background-color: linear-gradient(to bottom, #071229, #0D234F, #280c4c);"
+     );
+
+     // Add animated stars
+     StarOverlay stars = new StarOverlay(180);
+     stars.prefWidthProperty().bind(stage.widthProperty());
+     stars.prefHeightProperty().bind(stage.heightProperty());
+
+     // Put stars + your progressRoot together
+     layeredRoot.getChildren().addAll(stars, progressRoot);
+
      // --- Scene ---
-     Scene scene = new Scene(progressRoot, 1200, 700);
+     Scene scene = new Scene(layeredRoot, 1200, 700);
      scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
      stage.setScene(scene);
      stage.setTitle("Progress");
      stage.setMaximized(true);
      stage.show();
+     stage.setFullScreen(true);
+
+
     }
    
 

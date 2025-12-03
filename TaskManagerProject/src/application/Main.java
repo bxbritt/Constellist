@@ -146,6 +146,9 @@ public class Main extends Application {
 
         primaryStage.setScene(scene);
         primaryStage.show();
+        primaryStage.setFullScreen(true);
+
+
     }
 
     public static void main(String[] args) {

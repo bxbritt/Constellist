@@ -133,6 +133,9 @@ public class ConstellationGallery extends Application {
         stage.setScene(gallery);
         stage.setTitle("Constellation Gallery");
         stage.show();
+        stage.setFullScreen(true);
+
+
     }
 
 

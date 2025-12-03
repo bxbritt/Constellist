@@ -69,5 +69,8 @@ public class WelcomeScreen {
         stage.setScene(scene);
         stage.centerOnScreen();
         stage.show();
+        stage.setFullScreen(true);
+
+
     }
 }

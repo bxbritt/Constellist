@@ -100,6 +100,8 @@ public class TaskList extends VBox {
         TextField taskInputField = new TextField();
         taskInputField.setPromptText("Enter a task...");
         taskInputField.setVisible(false);
+        taskInputField.getStyleClass().add("task-input");
+
 
         // Add Task Button logic
         addTaskButton.setOnAction(e -> {
