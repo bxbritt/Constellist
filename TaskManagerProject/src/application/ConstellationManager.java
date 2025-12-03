@@ -47,7 +47,11 @@ public class ConstellationManager {
         constellations.add(new C3_Smile());
         constellations.add(new C4_Lightning());
         constellations.add(new C5_Dragonfly());
-        
+        constellations.add(new C6_Star());
+        constellations.add(new C7_Swan());
+        constellations.add(new C8_Dinosaur());
+        constellations.add(new C9_Dragon());
+        constellations.add(new C10_Jellyfish());
         // Add more constellations in order
         // constellations.add(new C2_Capricorn());
         // constellations.add(new C3());

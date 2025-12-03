@@ -23,8 +23,7 @@ public class TaskApp extends Application {
     private VBox progressContent;
     private VBox loginContent;
 
-    private StarManager starManager;
-
+ 
     private BorderPane rootLayout;
 
     @Override
@@ -118,16 +117,16 @@ public class TaskApp extends Application {
         progressContent.getChildren().add(progressText);
 
         // star reward manager
-        starManager = new StarManager(() -> {
-            setCenterContent(progressContent);
-            progressContent.getChildren().clear();
-
-            Text constellationUnlocked = new Text("Constellation Unlocked!");
-            constellationUnlocked.getStyleClass().add("glow-text");
-            constellationUnlocked.setStyle("-fx-font-size: 24;");
-
-            progressContent.getChildren().add(constellationUnlocked);
-        });
+//        starManager = new StarManager(() -> {
+//            setCenterContent(progressContent);
+//            progressContent.getChildren().clear();
+//
+//            Text constellationUnlocked = new Text("Constellation Unlocked!");
+//            constellationUnlocked.getStyleClass().add("glow-text");
+//            constellationUnlocked.setStyle("-fx-font-size: 24;");
+//
+//            progressContent.getChildren().add(constellationUnlocked);
+//        });
 
         // login content
         loginContent = new VBox(20);
@@ -140,7 +139,7 @@ public class TaskApp extends Application {
         List<SaveProgress> savedLists = Database.loadProgressForUser(userId);
         for (SaveProgress progress : savedLists) {
 
-            TaskList list = new TaskList(progress.getDescription(), progress.getId(), starManager);
+            TaskList list = new TaskList(progress.getDescription(), progress.getId());
 
             List<String> items = Database.loadActiveTaskItemsForList(progress.getId());
             for (String item : items) {
@@ -169,7 +168,7 @@ public class TaskApp extends Application {
                 SaveProgress progress = new SaveProgress(LoggedInUser.getId(), listName, false);
                 Database.saveProgress(progress);
 
-                TaskList newList = new TaskList(listName, progress.getId(), starManager);
+                TaskList newList = new TaskList(listName, progress.getId());
 
                 FadeTransition fade = new FadeTransition(Duration.millis(500), newList);
                 fade.setFromValue(0);

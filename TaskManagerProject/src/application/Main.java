@@ -24,7 +24,8 @@ public class Main extends Application {
         Database.createTaskItemsTable();
         Database.createConstellationProgressTable();
 
-        
+        music.play("/music/menu_music.mp3", 0.25);
+
         Label title = new Label("Welcome");
         title.setFont(Font.font("Verdana", 28));
         title.setTextFill(Color.DARKTURQUOISE);

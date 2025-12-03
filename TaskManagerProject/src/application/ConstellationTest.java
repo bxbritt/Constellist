@@ -9,7 +9,7 @@ public class ConstellationTest extends Application {
 
     @Override
     public void start(Stage stage) {
-        Constellation constellation = new C5_Dragonfly();
+        Constellation constellation = new C2_Capricorn();
 
         //  Use createShow instead of createPreview
         StackPane root = new StackPane(

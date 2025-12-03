@@ -94,6 +94,8 @@ public class TaskItem extends HBox {
         checkBox.setOnAction(e -> {
             completed = checkBox.isSelected();
             if (completed) {
+              	Sound_Effects.playChime();
+
                 taskText.getStyleClass().add("completed");
 
                 // Update DB
@@ -121,7 +123,7 @@ public class TaskItem extends HBox {
                         root.setTop(msg);
                         
                         // Full constellation show
-                        Pane showPane = current.createShow(500, 300); // ✅ centered constellation
+                        Pane showPane = current.createShow(500, 300); //  centered constellation
                         showPane.setPrefSize(500, 300);
                         root.setCenter(showPane);
                         // Back button

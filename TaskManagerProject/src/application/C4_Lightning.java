@@ -146,7 +146,13 @@ public class C4_Lightning extends Constellation {
         };
 
      
-        return createScaledPreview(showStars, showLinks, width, height, 0.75);
+        return createScaledPreview(showStars, showLinks, width, height, 0.50);
+    }
+    
+    @Override
+    public Pane createProgressView(double width, double height) {
+        // shrink more aggressively
+        return createScaledPreview(this.stars, this.links, width, height, 0.50);
     }
 	
 

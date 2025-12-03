@@ -13,10 +13,10 @@ import javafx.scene.effect.DropShadow; //we can use this to add a shadow or glow
 import javafx.scene.shape.Line; //lines to connect shapes
 
 
-public class C10_Jellyfish extends Application {
+public class C10_Jellyfish extends Constellation {
 	
 	@Override
-    public void start(Stage stage) {
+    protected void createConstellation() {
 		
 		
 		//MAKE CONSTELLATION HERE ********************//
@@ -50,38 +50,102 @@ public class C10_Jellyfish extends Application {
 		Star star10 = new Star(620, 570, 6);
 		star10.setComplete(true);
 		
-		StarLink[] links = { new StarLink(star1, star2), new StarLink(star2, star3), new StarLink(star3, star4), new StarLink(star1, star4), new StarLink(star3, star5),
-	            new StarLink(star5, star6), new StarLink(star3, star7), new StarLink(star7, star8), new StarLink(star3, star9), new StarLink(star9, star10)
-	               };
-		
-		//*********************************************//
-		Pane root = new Pane();
-		for (StarLink link : links) {
-            root.getChildren().addAll(link.getGlowLine(), link.getCoreLine());
-        }
-        root.getChildren().addAll(star1, star2, star3, star4, star5, star6, star7, star8, star9, star10);
-		
-		root.setStyle("-fx-background-color: black;");
-		for (StarLink link : links) link.draw();
+		  for (Star star : new Star[]{star1, star2, star3, star4, star5, 
+                  star6, star7, star8, star9, star10}) {
+star.setComplete(false);
+}
 
-        Scene scene = new Scene(root, 1000, 1000); //our canvas and we put our container with a star on it, the numbers are the window size
+stars = new Star[] { star1, star2, star3, star4, star5, 
+         star6, star7, star8, star9, star10 };
 
-        stage.setTitle("Constellation Demo");
-        stage.setScene(scene);
-        stage.show();   //so we can actually see lol
-		
-	}
-	
-	public static void show(Stage stage) {
-	    C10_Jellyfish jellyfish = new C10_Jellyfish();
-	    jellyfish.start(stage);
-	}
-	
-	
-	public static void main(String[] args) {
-        launch(args);
-    }
+// Create links between stars
+links = new StarLink[] {
+new StarLink(star1, star2), new StarLink(star2, star3), 
+new StarLink(star3, star4), new StarLink(star1, star4), 
+new StarLink(star3, star5), new StarLink(star5, star6),
+new StarLink(star3, star7), new StarLink(star7, star8), 
+new StarLink(star3, star9), new StarLink(star9, star10)
+};
 
-	
+// Add links to the pane (glow layer first, then core)
+for (StarLink link : links) {
+getChildren().addAll(link.getGlowLine(), link.getCoreLine());
+}
+
+// Add stars on top of links
+getChildren().addAll(stars);
+
+// Draw all links
+for (StarLink link : links) {
+link.draw();
+}
+
+}
+
+@Override
+public String getName() {
+return "Jellyfish";
+}
+
+@Override
+public int getConstellationNumber() {
+return 10;
+}
+
+@Override
+public Pane createPreview(double width, double height) {
+// Create stars for preview (all complete)
+Star star1 = new Star(500, 200, 6); star1.setComplete(true);
+Star star2 = new Star(575, 300, 6); star2.setComplete(true);
+Star star3 = new Star(500, 275, 6); star3.setComplete(true);
+Star star4 = new Star(425, 300, 6); star4.setComplete(true);
+Star star5 = new Star(400, 425, 6); star5.setComplete(true);
+Star star6 = new Star(360, 550, 6); star6.setComplete(true);
+Star star7 = new Star(520, 475, 6); star7.setComplete(true);
+Star star8 = new Star(540, 600, 6); star8.setComplete(true);
+Star star9 = new Star(600, 435, 6); star9.setComplete(true);
+Star star10 = new Star(620, 570, 6); star10.setComplete(true);
+
+Star[] previewStars = {star1, star2, star3, star4, star5, 
+            star6, star7, star8, star9, star10};
+
+StarLink[] previewLinks = {
+		new StarLink(star1, star2), new StarLink(star2, star3), 
+		new StarLink(star3, star4), new StarLink(star1, star4), 
+		new StarLink(star3, star5), new StarLink(star5, star6),
+		new StarLink(star3, star7), new StarLink(star7, star8), 
+		new StarLink(star3, star9), new StarLink(star9, star10)
+};
+
+return createScaledPreview(previewStars, previewLinks, width, height, 0.25);
+}
+
+public Pane createShow(double width, double height) {
+// Create stars for show (all complete)
+	Star star1 = new Star(500, 200, 6); star1.setComplete(true);
+	Star star2 = new Star(575, 300, 6); star2.setComplete(true);
+	Star star3 = new Star(500, 275, 6); star3.setComplete(true);
+	Star star4 = new Star(425, 300, 6); star4.setComplete(true);
+	Star star5 = new Star(400, 425, 6); star5.setComplete(true);
+	Star star6 = new Star(360, 550, 6); star6.setComplete(true);
+	Star star7 = new Star(520, 475, 6); star7.setComplete(true);
+	Star star8 = new Star(540, 600, 6); star8.setComplete(true);
+	Star star9 = new Star(600, 435, 6); star9.setComplete(true);
+	Star star10 = new Star(620, 570, 6); star10.setComplete(true);
+
+Star[] showStars = {star1, star2, star3, star4, star5,
+         star6, star7, star8, star9, star10};
+
+StarLink[] showLinks = {
+		new StarLink(star1, star2), new StarLink(star2, star3), 
+		new StarLink(star3, star4), new StarLink(star1, star4), 
+		new StarLink(star3, star5), new StarLink(star5, star6),
+		new StarLink(star3, star7), new StarLink(star7, star8), 
+		new StarLink(star3, star9), new StarLink(star9, star10)
+};
+
+
+return createScaledPreview(showStars, showLinks, width, height, 0.75);
+}
 
 }

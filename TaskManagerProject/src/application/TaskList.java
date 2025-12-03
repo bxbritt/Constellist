@@ -20,15 +20,13 @@ public class TaskList extends VBox {
     private final int TASK_LIMIT = 10;
     private int listId;
 
-    private StarManager starManager;
 
     // title components
     private TextField titleField;
     private Label titleLabel;
 
-    public TaskList(String initialTitle, int listId, StarManager starManager) {
+    public TaskList(String initialTitle, int listId) {
         this.listId = listId;
-        this.starManager = starManager;
 
         this.setSpacing(10);
         this.getStyleClass().add("task-box");
@@ -211,11 +209,6 @@ public class TaskList extends VBox {
         return listId;
     }
 
-    // Trigger star reward for completed tasks
-    public void onTaskCompleted() {
-        if (starManager != null) {
-            starManager.earnStar();
-        }
-    }
+  
 }
  

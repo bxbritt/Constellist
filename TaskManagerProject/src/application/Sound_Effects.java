@@ -7,7 +7,8 @@ import java.util.Objects;
 public class Sound_Effects {
 	
 	 public static final AudioClip piano_key = load("/sfx/piano_key.wav");
-	
+	 public static final AudioClip chime = load("/sfx/chime.wav");
+	 
 	private static AudioClip load(String path) {
 		URL url = Objects.requireNonNull(
 		        Sound_Effects.class.getResource(path),
@@ -28,6 +29,8 @@ public class Sound_Effects {
         piano_key.play();
     }
 	
-	
+	public static void playChime() {
+        chime.play();
+    }
 	
 }
