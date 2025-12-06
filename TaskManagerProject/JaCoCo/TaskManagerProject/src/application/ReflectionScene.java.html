@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>ReflectionScene.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">Main (2) (Dec 5, 2025 8:59:35 PM)</a> &gt; <a href="../../index.html" class="el_group">TaskManagerProject</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">application</a> &gt; <span class="el_source">ReflectionScene.java</span></div><h1>ReflectionScene.java</h1><pre class="source lang-java linenums">package application;
+
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
+//this will show the completed tasks with added motivational quotes 
+//TODO: Display completed tasks in a gentle summary
+//TODO: Add motivational quotes or poetic reflections
+//TODO: Optional show progress stats or time spent?
+//TODO: Add navigation back to TaskEntryScene or SettingsScene
+
+<span class="nc" id="L12">public class ReflectionScene {</span>
+    public static Scene createScene() {
+<span class="nc" id="L14">        BorderPane root = new BorderPane();</span>
+<span class="nc" id="L15">        root.setCenter(new Label(&quot;Task Entry Screen&quot;));</span>
+<span class="nc" id="L16">        return new Scene(root, 600, 400);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span>Main (2) (Dec 5, 2025 8:59:35 PM)</div></body></html>

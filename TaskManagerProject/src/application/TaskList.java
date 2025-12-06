@@ -64,13 +64,7 @@ public class TaskList extends VBox {
         titleField.setOnAction(e -> saveTitle(addTaskButton, viewProgressButton));
 
         // enable title editing on double click
-        titleField.setOnMouseClicked(e -> {
-            if (e.getClickCount() == 2) {
-                titleField.setEditable(true);
-                titleField.setDisable(false);
-                titleField.requestFocus();
-            }
-        });
+
 
         titleLabel.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {

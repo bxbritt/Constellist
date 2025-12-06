@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>AffirmationBubble.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">Main (2) (Dec 5, 2025 9:49:06 PM)</a> &gt; <a href="../../index.html" class="el_group">TaskManagerProject</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">application</a> &gt; <span class="el_source">AffirmationBubble.java</span></div><h1>AffirmationBubble.java</h1><pre class="source lang-java linenums">package application;
+
+import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
+import javafx.animation.FadeTransition;
+import javafx.util.Duration;
+import java.util.Random;
+
+public class AffirmationBubble extends StackPane {
+
+    // affirmation messages
+<span class="fc" id="L12">    private static final String[] AFFIRMATIONS = {</span>
+<span class="fc" id="L13">        &quot;you're doing great! :)&quot;,</span>
+<span class="fc" id="L14">        &quot;keep up the amazing work! &lt;3&quot;,</span>
+<span class="fc" id="L15">        &quot;one step at a time!&quot;,</span>
+<span class="fc" id="L16">        &quot;you've got this!&quot;,</span>
+<span class="fc" id="L17">        &quot;progress, not perfection! :)&quot;,</span>
+<span class="fc" id="L18">        &quot;believe in yourself! &lt;3&quot;,</span>
+<span class="fc" id="L19">        &quot;every task completed is a win!&quot;,</span>
+<span class="fc" id="L20">        &quot;you're making it happen!&quot;,</span>
+<span class="fc" id="L21">        &quot;stay focused and positive! :)&quot;,</span>
+<span class="fc" id="L22">        &quot;small steps lead to big results!&quot;,</span>
+<span class="fc" id="L23">        &quot;your effort matters! &lt;3&quot;,</span>
+<span class="fc" id="L24">        &quot;you're stronger than you think!&quot;,</span>
+<span class="fc" id="L25">        &quot;keep pushing forward! :)&quot;,</span>
+<span class="fc" id="L26">        &quot;today is your day!&quot;,</span>
+<span class="fc" id="L27">        &quot;you're capable of amazing things! &lt;3&quot;,</span>
+<span class="fc" id="L28">        &quot;trust the process :)&quot;,</span>
+<span class="fc" id="L29">        &quot;you're on the right path!&quot;,</span>
+<span class="fc" id="L30">        &quot;consistency is key! &lt;3&quot;,</span>
+<span class="fc" id="L31">        &quot;be proud of your progress!&quot;,</span>
+<span class="fc" id="L32">        &quot;you're doing better than you realize! :)&quot;,</span>
+<span class="fc" id="L33">        &quot;keep going, you're awesome! &lt;3&quot;,</span>
+<span class="fc" id="L34">        &quot;your hard work is paying off!&quot;,</span>
+<span class="fc" id="L35">        &quot;you can handle this! :)&quot;,</span>
+<span class="fc" id="L36">        &quot;take it one task at a time!&quot;,</span>
+<span class="fc" id="L37">        &quot;you're exactly where you need to be! &lt;3&quot;</span>
+<span class="fc" id="L38">    };</span>
+
+    private Label affirmationLabel;
+
+<span class="fc" id="L42">    public AffirmationBubble() {</span>
+
+        // choose random affirmation
+<span class="fc" id="L45">        Random random = new Random();</span>
+<span class="fc" id="L46">        String affirmation = AFFIRMATIONS[random.nextInt(AFFIRMATIONS.length)];</span>
+
+        // label styling to match global ui theme
+<span class="fc" id="L49">        affirmationLabel = new Label(affirmation);</span>
+<span class="fc" id="L50">        affirmationLabel.getStyleClass().add(&quot;glow-text&quot;);</span>
+<span class="fc" id="L51">        affirmationLabel.setStyle(</span>
+<span class="fc" id="L52">                &quot;-fx-background-color: rgba(255,255,255,0.10);&quot; +</span>
+                &quot;-fx-background-radius: 12;&quot; +
+                &quot;-fx-padding: 8 14;&quot; +
+                &quot;-fx-font-size: 18px;&quot; +
+                &quot;-fx-text-fill: #ffe8a3;&quot; +
+                &quot;-fx-effect: dropshadow(gaussian, rgba(255,255,255,0.35), 9, 0.35, 0, 0);&quot;
+        );
+
+        // bubble container style
+<span class="fc" id="L61">        this.getChildren().add(affirmationLabel);</span>
+<span class="fc" id="L62">        this.setStyle(&quot;-fx-padding: 10;&quot;);</span>
+<span class="fc" id="L63">        this.setMaxWidth(Double.MAX_VALUE);</span>
+<span class="fc" id="L64">        javafx.scene.layout.HBox.setHgrow(this, javafx.scene.layout.Priority.ALWAYS);</span>
+<span class="fc" id="L65">        this.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);</span>
+
+        // fade in animation for smooth appearance
+<span class="fc" id="L68">        FadeTransition fadeIn = new FadeTransition(Duration.millis(800), this);</span>
+<span class="fc" id="L69">        fadeIn.setFromValue(0);</span>
+<span class="fc" id="L70">        fadeIn.setToValue(1);</span>
+<span class="fc" id="L71">        fadeIn.play();</span>
+<span class="fc" id="L72">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span>Main (2) (Dec 5, 2025 9:49:06 PM)</div></body></html>

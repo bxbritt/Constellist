@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>ConstellationScene.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">Main (2) (Dec 5, 2025 8:59:35 PM)</a> &gt; <a href="../../index.html" class="el_group">TaskManagerProject</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">application</a> &gt; <span class="el_source">ConstellationScene.java</span></div><h1>ConstellationScene.java</h1><pre class="source lang-java linenums">package application;
+
+import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+import javafx.animation.PauseTransition;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
+import javafx.util.Duration;
+import javafx.geometry.Pos;
+
+<span class="nc" id="L13">public class ConstellationScene {</span>
+
+    // shows constellation animation on stage
+    public static void show(Stage stage) {
+
+        // build stars
+<span class="nc" id="L19">        Star star1 = new Star(300, 300, 6); star1.setComplete(true);</span>
+<span class="nc" id="L20">        Star star2 = new Star(400, 200, 6); star2.setComplete(true);</span>
+<span class="nc" id="L21">        Star star3 = new Star(500, 300, 6); star3.setComplete(true);</span>
+<span class="nc" id="L22">        Star star4 = new Star(400, 500, 6); star4.setComplete(true);</span>
+<span class="nc" id="L23">        Star star5 = new Star(400, 300, 6); star5.setComplete(true);</span>
+
+        // build links
+<span class="nc" id="L26">        StarLink[] links = {</span>
+<span class="nc" id="L27">            new StarLink(star1, star2), new StarLink(star2, star3),</span>
+<span class="nc" id="L28">            new StarLink(star3, star4), new StarLink(star4, star1),</span>
+<span class="nc" id="L29">            new StarLink(star5, star1), new StarLink(star5, star2),</span>
+<span class="nc" id="L30">            new StarLink(star5, star3), new StarLink(star5, star4)</span>
+        };
+
+<span class="nc bnc" id="L33" title="All 2 branches missed.">        for (StarLink link : links) link.draw();</span>
+
+        // pane for constellation
+<span class="nc" id="L36">        Pane root = new Pane();</span>
+<span class="nc" id="L37">        root.setStyle(&quot;-fx-background-color: transparent;&quot;); // fix: remove black background</span>
+
+<span class="nc bnc" id="L39" title="All 2 branches missed.">        for (StarLink link : links)</span>
+<span class="nc" id="L40">            root.getChildren().addAll(link.getGlowLine(), link.getCoreLine());</span>
+
+<span class="nc" id="L42">        root.getChildren().addAll(star1, star2, star3, star4, star5);</span>
+
+<span class="nc" id="L44">        Scene scene = new Scene(root, 1000, 600);</span>
+<span class="nc" id="L45">        scene.setFill(null); // fix: allow transparency behind animation</span>
+<span class="nc" id="L46">        stage.setScene(scene);</span>
+
+<span class="nc" id="L48">        PauseTransition delay = new PauseTransition(Duration.seconds(2));</span>
+
+<span class="nc" id="L50">        delay.setOnFinished(event -&gt; {</span>
+
+<span class="nc" id="L52">            VBox messageBox = new VBox(10);</span>
+<span class="nc" id="L53">            messageBox.setAlignment(Pos.CENTER);</span>
+<span class="nc" id="L54">            messageBox.setLayoutX(350);</span>
+<span class="nc" id="L55">            messageBox.setLayoutY(220);</span>
+
+<span class="nc" id="L57">            Label message = new Label(&quot;✨ Constellation Complete ✨&quot;);</span>
+<span class="nc" id="L58">            message.setStyle(&quot;-fx-text-fill: #ffe8a3; -fx-font-size: 28px; -fx-font-weight: bold;&quot;);</span>
+
+<span class="nc" id="L60">            Button returnButton = new Button(&quot;Return to Tasks&quot;);</span>
+<span class="nc" id="L61">            returnButton.getStyleClass().add(&quot;bubble-button&quot;);</span>
+
+<span class="nc" id="L63">            Button galleryButton = new Button(&quot;Go to Gallery&quot;);</span>
+<span class="nc" id="L64">            galleryButton.getStyleClass().add(&quot;bubble-button&quot;);</span>
+
+            // fix: use new navigation system
+<span class="nc" id="L67">            returnButton.setOnAction(e -&gt; {</span>
+<span class="nc" id="L68">                TaskApp taskApp = new TaskApp();</span>
+                try {
+<span class="nc" id="L70">                    taskApp.start(stage);</span>
+<span class="nc" id="L71">                } catch (Exception ex) {</span>
+<span class="nc" id="L72">                    ex.printStackTrace();</span>
+                }
+<span class="nc" id="L74">            });</span>
+
+            // fix: gallery loads inside taskapp layout, not a new stage
+<span class="nc" id="L77">            galleryButton.setOnAction(e -&gt; {</span>
+<span class="nc" id="L78">                ConstellationGallery gallery = new ConstellationGallery();</span>
+<span class="nc" id="L79">                TaskApp.setCenterContentStatic(gallery.getView());</span>
+<span class="nc" id="L80">            });</span>
+
+<span class="nc" id="L82">            messageBox.getChildren().addAll(message, returnButton, galleryButton);</span>
+<span class="nc" id="L83">            root.getChildren().add(messageBox);</span>
+<span class="nc" id="L84">        });</span>
+
+<span class="nc" id="L86">        delay.play();</span>
+<span class="nc" id="L87">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span>Main (2) (Dec 5, 2025 8:59:35 PM)</div></body></html>

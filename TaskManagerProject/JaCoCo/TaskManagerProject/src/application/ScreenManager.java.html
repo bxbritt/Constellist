@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>ScreenManager.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">Main (2) (Dec 5, 2025 9:49:06 PM)</a> &gt; <a href="../../index.html" class="el_group">TaskManagerProject</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">application</a> &gt; <span class="el_source">ScreenManager.java</span></div><h1>ScreenManager.java</h1><pre class="source lang-java linenums">
+package application;
+
+import javafx.animation.FadeTransition;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import javafx.util.Duration;
+
+<span class="nc" id="L9">public class ScreenManager {</span>
+
+    private static Stage currentStage;
+
+    // Save the current stage so other screens can access it
+    public static void setCurrentStage(Stage stage) {
+<span class="fc" id="L15">        currentStage = stage;</span>
+<span class="fc" id="L16">    }</span>
+
+
+
+    // Fade Transition Between Screens
+    public static void switchScreen(Stage stage, Scene newScene) {
+<span class="fc" id="L22">        setCurrentStage(stage);</span>
+
+<span class="fc" id="L24">        FadeTransition fadeOut = new FadeTransition(Duration.millis(250));</span>
+<span class="fc" id="L25">        fadeOut.setFromValue(1);</span>
+<span class="fc" id="L26">        fadeOut.setToValue(0);</span>
+
+<span class="fc" id="L28">        fadeOut.setOnFinished(e -&gt; {</span>
+<span class="fc" id="L29">            stage.setScene(newScene);</span>
+
+<span class="fc" id="L31">            FadeTransition fadeIn = new FadeTransition(Duration.millis(250), newScene.getRoot());</span>
+<span class="fc" id="L32">            fadeIn.setFromValue(0);</span>
+<span class="fc" id="L33">            fadeIn.setToValue(1);</span>
+<span class="fc" id="L34">            fadeIn.play();</span>
+<span class="fc" id="L35">        });</span>
+
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">        if (stage.getScene() != null)</span>
+<span class="fc" id="L38">            fadeOut.setNode(stage.getScene().getRoot());</span>
+
+<span class="fc" id="L40">        fadeOut.play();</span>
+<span class="fc" id="L41">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span>Main (2) (Dec 5, 2025 9:49:06 PM)</div></body></html>

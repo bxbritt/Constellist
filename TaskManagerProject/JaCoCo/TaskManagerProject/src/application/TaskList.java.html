@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>TaskList.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">Main (2) (Dec 5, 2025 9:49:06 PM)</a> &gt; <a href="../../index.html" class="el_group">TaskManagerProject</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">application</a> &gt; <span class="el_source">TaskList.java</span></div><h1>TaskList.java</h1><pre class="source lang-java linenums">package application;
+
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.Priority;
+import javafx.animation.FadeTransition;
+import javafx.animation.ScaleTransition;
+import javafx.util.Duration;
+
+public class TaskList extends VBox {
+
+    // task container
+<span class="fc" id="L19">    private VBox taskContainer = new VBox(10);</span>
+
+    // task limit
+<span class="fc" id="L22">    private final int TASK_LIMIT = 10;</span>
+
+    // list id
+    private int listId;
+
+    // title components
+    private TextField titleField;
+    private Label titleLabel;
+
+<span class="fc" id="L31">    public TaskList(String initialTitle, int listId) {</span>
+<span class="fc" id="L32">        this.listId = listId;</span>
+
+        // spacing and card style
+<span class="fc" id="L35">        this.setSpacing(12);</span>
+<span class="fc" id="L36">        this.getStyleClass().add(&quot;task-box&quot;);</span>
+
+        // title field
+<span class="pc bpc" id="L39" title="1 of 2 branches missed.">        titleField = new TextField(initialTitle.equals(&quot;Task List&quot;) ? &quot;&quot; : initialTitle);</span>
+<span class="fc" id="L40">        titleField.getStyleClass().add(&quot;task-title-field&quot;); // transparent title field</span>
+<span class="fc" id="L41">        titleField.setPromptText(&quot;Enter a title...&quot;);</span>
+
+        // title label
+<span class="fc" id="L44">        titleLabel = new Label(initialTitle);</span>
+<span class="fc" id="L45">        titleLabel.getStyleClass().add(&quot;glow-text&quot;);</span>
+<span class="fc" id="L46">        titleLabel.setStyle(&quot;-fx-font-size: 20px; -fx-font-weight: bold;&quot;);</span>
+<span class="fc" id="L47">        titleLabel.setVisible(false);</span>
+
+        // prevent label from shrinking
+<span class="fc" id="L50">        titleLabel.setMinWidth(Region.USE_PREF_SIZE);</span>
+<span class="fc" id="L51">        titleLabel.setMaxWidth(Double.MAX_VALUE);</span>
+
+        // add task button
+<span class="fc" id="L54">        Button addTaskButton = new Button(&quot;add task&quot;);</span>
+<span class="fc" id="L55">        addTaskButton.getStyleClass().add(&quot;bubble-button&quot;);</span>
+<span class="fc" id="L56">        addTaskButton.setVisible(false);</span>
+
+        // view progress button
+<span class="fc" id="L59">        Button viewProgressButton = new Button(&quot;view progress&quot;);</span>
+<span class="fc" id="L60">        viewProgressButton.getStyleClass().add(&quot;bubble-button&quot;);</span>
+<span class="fc" id="L61">        viewProgressButton.setVisible(false);</span>
+
+        // save title on enter
+<span class="fc" id="L64">        titleField.setOnAction(e -&gt; saveTitle(addTaskButton, viewProgressButton));</span>
+
+        // enable title editing on double click
+
+
+<span class="fc" id="L69">        titleLabel.setOnMouseClicked(e -&gt; {</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">            if (e.getClickCount() == 2) {</span>
+<span class="fc" id="L71">                titleField.setVisible(true);</span>
+<span class="fc" id="L72">                titleLabel.setVisible(false);</span>
+<span class="fc" id="L73">                titleField.setEditable(true);</span>
+<span class="fc" id="L74">                titleField.setDisable(false);</span>
+<span class="fc" id="L75">                titleField.requestFocus();</span>
+            }
+<span class="fc" id="L77">        });</span>
+
+        // close button
+<span class="fc" id="L80">        Button closeButton = new Button(&quot;x&quot;);</span>
+<span class="fc" id="L81">        closeButton.getStyleClass().add(&quot;close-button&quot;);</span>
+
+<span class="fc" id="L83">        closeButton.setOnAction(e -&gt; {</span>
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">            if (this.getParent() instanceof FlowPane container) {</span>
+<span class="fc" id="L85">                container.getChildren().remove(this);</span>
+<span class="fc" id="L86">                Database.deleteTaskList(listId);</span>
+            }
+<span class="fc" id="L88">        });</span>
+
+        // title bar layout
+<span class="fc" id="L91">        HBox titleBar = new HBox(10);</span>
+<span class="fc" id="L92">        titleBar.setAlignment(javafx.geometry.Pos.CENTER_LEFT);</span>
+
+<span class="fc" id="L94">        Region spacer = new Region();</span>
+<span class="fc" id="L95">        HBox.setHgrow(spacer, Priority.ALWAYS);</span>
+
+<span class="fc" id="L97">        titleBar.getChildren().addAll(titleField, titleLabel, spacer, closeButton);</span>
+
+        // task input field
+<span class="fc" id="L100">        TextField taskInputField = new TextField();</span>
+<span class="fc" id="L101">        taskInputField.setPromptText(&quot;Enter a task...&quot;);</span>
+<span class="fc" id="L102">        taskInputField.setVisible(false);</span>
+<span class="fc" id="L103">        taskInputField.getStyleClass().add(&quot;task-input&quot;); // transparent task field</span>
+
+        // add task logic
+<span class="fc" id="L106">        addTaskButton.setOnAction(e -&gt; {</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">            if (taskContainer.getChildren().size() &lt; TASK_LIMIT) {</span>
+<span class="fc" id="L108">                addTaskButton.setVisible(false);</span>
+<span class="fc" id="L109">                taskInputField.setVisible(true);</span>
+<span class="fc" id="L110">                taskInputField.requestFocus();</span>
+<span class="fc" id="L111">            } else {</span>
+<span class="fc" id="L112">                Alert a = new Alert(Alert.AlertType.WARNING);</span>
+<span class="fc" id="L113">                a.setTitle(&quot;Task Limit Reached!&quot;);</span>
+<span class="fc" id="L114">                a.setHeaderText(null);</span>
+<span class="fc" id="L115">                a.setContentText(&quot;This list can only hold 10 tasks.\nplease create a new list.&quot;);</span>
+<span class="fc" id="L116">                a.show();</span>
+            }
+<span class="fc" id="L118">        });</span>
+
+        // add task on enter
+<span class="fc" id="L121">        taskInputField.setOnAction(e -&gt; {</span>
+<span class="fc" id="L122">            String text = taskInputField.getText().trim();</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">            if (!text.isEmpty()) {</span>
+<span class="fc" id="L124">                TaskItem task = new TaskItem(text, taskContainer, this);</span>
+<span class="fc" id="L125">                taskContainer.getChildren().add(task);</span>
+
+<span class="fc" id="L127">                Database.saveTaskItem(listId, text);</span>
+<span class="fc" id="L128">                startCompletionWatcher();</span>
+
+<span class="fc" id="L130">                taskInputField.clear();</span>
+<span class="fc" id="L131">                taskInputField.setVisible(false);</span>
+<span class="fc" id="L132">                addTaskButton.setVisible(true);</span>
+            }
+<span class="fc" id="L134">        });</span>
+
+        // progress button logic
+<span class="fc" id="L137">        viewProgressButton.setOnAction(e -&gt; {</span>
+<span class="fc" id="L138">            Sound_Effects.playPianoKey();</span>
+<span class="fc" id="L139">            LoggedInUser.setLastViewedListId(listId);</span>
+<span class="fc" id="L140">            ProgressScene progressScene = new ProgressScene(listId);</span>
+<span class="fc" id="L141">            TaskApp.setCenterContentStatic(progressScene.getView());</span>
+<span class="fc" id="L142">        });</span>
+
+        // add nodes to card
+<span class="fc" id="L145">        this.getChildren().addAll(titleBar, taskInputField, addTaskButton, viewProgressButton, taskContainer);</span>
+
+        // switch to label mode for existing lists
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">        if (!initialTitle.trim().isEmpty()) {</span>
+<span class="fc" id="L149">            activateLabelMode(initialTitle, addTaskButton, viewProgressButton);</span>
+        }
+<span class="fc" id="L151">    }</span>
+
+    private void saveTitle(Button addTask, Button viewProgress) {
+<span class="fc" id="L154">        String title = titleField.getText().trim();</span>
+
+<span class="fc bfc" id="L156" title="All 2 branches covered.">        if (!title.isEmpty()) {</span>
+<span class="fc" id="L157">            activateLabelMode(title, addTask, viewProgress);</span>
+<span class="fc" id="L158">        } else {</span>
+<span class="fc" id="L159">            Alert a = new Alert(Alert.AlertType.WARNING);</span>
+<span class="fc" id="L160">            a.setTitle(&quot;Missing Title&quot;);</span>
+<span class="fc" id="L161">            a.setHeaderText(null);</span>
+<span class="fc" id="L162">            a.setContentText(&quot;please enter a title before adding tasks.&quot;);</span>
+<span class="fc" id="L163">            a.show();</span>
+        }
+<span class="fc" id="L165">    }</span>
+
+    private void activateLabelMode(String title, Button addTask, Button viewProgress) {
+<span class="fc" id="L168">        titleField.setEditable(false);</span>
+<span class="fc" id="L169">        titleField.setDisable(true);</span>
+<span class="fc" id="L170">        titleField.setVisible(false);</span>
+<span class="fc" id="L171">        titleField.setManaged(false);</span>
+
+<span class="fc" id="L173">        titleLabel.setText(title);</span>
+<span class="fc" id="L174">        titleLabel.setVisible(true);</span>
+<span class="fc" id="L175">        titleLabel.setManaged(true);</span>
+
+<span class="fc" id="L177">        addTask.setVisible(true);</span>
+<span class="fc" id="L178">        viewProgress.setVisible(true);</span>
+<span class="fc" id="L179">    }</span>
+
+    public void checkCompletion() {
+<span class="fc" id="L182">        boolean allDone = taskContainer.getChildren().stream()</span>
+<span class="fc" id="L183">                .filter(node -&gt; node instanceof TaskItem)</span>
+<span class="fc" id="L184">                .map(node -&gt; (TaskItem) node)</span>
+<span class="fc" id="L185">                .allMatch(TaskItem::isCompleted);</span>
+<span class="fc" id="L186">    }</span>
+
+    private void startCompletionWatcher() {
+<span class="fc" id="L189">        javafx.animation.Timeline watcher = new javafx.animation.Timeline(</span>
+<span class="fc" id="L190">                new javafx.animation.KeyFrame(javafx.util.Duration.seconds(1), e -&gt; checkCompletion())</span>
+        );
+<span class="fc" id="L192">        watcher.setCycleCount(10);</span>
+<span class="fc" id="L193">        watcher.play();</span>
+<span class="fc" id="L194">    }</span>
+
+    public void addItem(String content) {
+<span class="fc" id="L197">        TaskItem task = new TaskItem(content, taskContainer, this);</span>
+<span class="fc" id="L198">        taskContainer.getChildren().add(task);</span>
+<span class="fc" id="L199">    }</span>
+
+    public int getListId() {
+<span class="fc" id="L202">        return listId;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span>Main (2) (Dec 5, 2025 9:49:06 PM)</div></body></html>

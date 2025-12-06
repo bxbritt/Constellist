@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>Main.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">Main (2) (Dec 5, 2025 9:49:06 PM)</a> &gt; <a href="../../index.html" class="el_group">TaskManagerProject</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">application</a> &gt; <span class="el_source">Main.java</span></div><h1>Main.java</h1><pre class="source lang-java linenums">package application;
+
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.stage.Stage;
+
+<span class="fc" id="L11">public class Main extends Application {</span>
+
+    // persistent window size
+<span class="fc" id="L14">    private static double savedWidth = 1000;</span>
+<span class="fc" id="L15">    private static double savedHeight = 600;</span>
+
+    private void applyPersistentWindowSize(Stage stage) {
+<span class="fc" id="L18">        stage.setWidth(savedWidth);</span>
+<span class="fc" id="L19">        stage.setHeight(savedHeight);</span>
+
+<span class="pc" id="L21">        stage.widthProperty().addListener((obs, oldVal, newVal) -&gt; savedWidth = newVal.doubleValue());</span>
+<span class="pc" id="L22">        stage.heightProperty().addListener((obs, oldVal, newVal) -&gt; savedHeight = newVal.doubleValue());</span>
+<span class="fc" id="L23">    }</span>
+
+    @Override
+    public void start(Stage primaryStage) {
+
+<span class="fc" id="L28">        primaryStage.setTitle(&quot;Constellist&quot;);</span>
+
+<span class="fc" id="L30">        Database.createUsersTable();</span>
+<span class="fc" id="L31">        Database.createTasksTable();</span>
+<span class="fc" id="L32">        Database.createTaskItemsTable();</span>
+<span class="fc" id="L33">        Database.createConstellationProgressTable();</span>
+
+<span class="fc" id="L35">        music.play(&quot;/music/menu_music.mp3&quot;, 0.25);</span>
+
+        // global ui
+<span class="fc" id="L38">        String globalUI =</span>
+<span class="fc" id="L39">                &quot;-fx-font-family: 'Century Gothic';&quot; +</span>
+                &quot;-fx-text-fill: white;&quot;;
+
+        // title and subtitle message with login tagline
+<span class="fc" id="L43">        Label title = new Label(&quot;Welcome to Constellist&quot;);</span>
+<span class="fc" id="L44">        title.getStyleClass().add(&quot;glow-text&quot;);</span>
+<span class="fc" id="L45">        title.setStyle(</span>
+<span class="fc" id="L46">                &quot;-fx-font-size: 60px;&quot; +</span>
+                &quot;-fx-font-weight: bold;&quot;
+        );
+
+<span class="fc" id="L50">        Label subtitle = new Label(&quot;Complete tasks. Connect stars. Build your universe.&quot;);</span>
+<span class="fc" id="L51">        subtitle.getStyleClass().add(&quot;glow-text&quot;);</span>
+<span class="fc" id="L52">        subtitle.setStyle(&quot;-fx-font-size: 22px;&quot;);</span>
+
+<span class="fc" id="L54">        Label tagline = new Label(&quot;Log In to begin&quot;);</span>
+<span class="fc" id="L55">        tagline.getStyleClass().add(&quot;glow-text&quot;);</span>
+<span class="fc" id="L56">        tagline.setStyle(&quot;-fx-font-size: 20px;&quot;);</span>
+
+<span class="fc" id="L58">        VBox header = new VBox(10, title, subtitle, tagline);</span>
+<span class="fc" id="L59">        header.setAlignment(Pos.CENTER);</span>
+
+        // input fields
+<span class="fc" id="L62">        TextField emailField = new TextField();</span>
+<span class="fc" id="L63">        emailField.setPromptText(&quot;Email or Username&quot;);</span>
+<span class="fc" id="L64">        emailField.getStyleClass().add(&quot;custom-textfield&quot;);</span>
+
+<span class="fc" id="L66">        PasswordField passwordField = new PasswordField();</span>
+<span class="fc" id="L67">        passwordField.setPromptText(&quot;Password&quot;);</span>
+<span class="fc" id="L68">        passwordField.getStyleClass().add(&quot;custom-passwordfield&quot;);</span>
+
+<span class="fc" id="L70">        VBox inputBox = new VBox(15, emailField, passwordField);</span>
+<span class="fc" id="L71">        inputBox.setAlignment(Pos.CENTER);</span>
+
+        // buttons
+<span class="fc" id="L74">        Button loginButton = new Button(&quot;Log In&quot;);</span>
+<span class="fc" id="L75">        loginButton.getStyleClass().add(&quot;bubble-button&quot;);</span>
+
+<span class="fc" id="L77">        Button signupButton = new Button(&quot;Sign Up&quot;);</span>
+<span class="fc" id="L78">        signupButton.getStyleClass().add(&quot;bubble-button&quot;);</span>
+
+<span class="fc" id="L80">        HBox buttonBox = new HBox(30, loginButton, signupButton);</span>
+<span class="fc" id="L81">        buttonBox.setAlignment(Pos.CENTER);</span>
+
+        // forgot password
+<span class="fc" id="L84">        Hyperlink forgotPasswordLink = new Hyperlink(&quot;Forgot Password?&quot;);</span>
+<span class="fc" id="L85">        forgotPasswordLink.setStyle(&quot;-fx-text-fill: #ffe8a3; -fx-font-size: 16;&quot;);</span>
+
+        // main layout
+<span class="fc" id="L88">        VBox layout = new VBox(35, header, inputBox, buttonBox, forgotPasswordLink);</span>
+<span class="fc" id="L89">        layout.setAlignment(Pos.CENTER);</span>
+<span class="fc" id="L90">        layout.setPadding(new Insets(40));</span>
+<span class="fc" id="L91">        layout.setStyle(globalUI);</span>
+
+        // background
+<span class="fc" id="L94">        StackPane root = new StackPane();</span>
+
+<span class="fc" id="L96">        root.setStyle(</span>
+<span class="fc" id="L97">                &quot;-fx-background-color: linear-gradient(to bottom, #071229, #0D234F, #280c4c);&quot;</span>
+        );
+
+        // animated star overlay
+<span class="fc" id="L101">        StarOverlay stars = new StarOverlay(180);</span>
+<span class="fc" id="L102">        stars.prefWidthProperty().bind(primaryStage.widthProperty());</span>
+<span class="fc" id="L103">        stars.prefHeightProperty().bind(primaryStage.heightProperty());</span>
+
+<span class="fc" id="L105">        root.getChildren().addAll(stars, layout);</span>
+
+        // scene and window size logic
+<span class="fc" id="L108">        Scene scene = new Scene(root);</span>
+        
+        try {
+<span class="fc" id="L111">            scene.getStylesheets().add(getClass().getResource(&quot;style.css&quot;).toExternalForm());</span>
+<span class="pc" id="L112">        } catch (Exception ignored) {}</span>
+
+<span class="fc" id="L114">        applyPersistentWindowSize(primaryStage);</span>
+
+<span class="fc" id="L116">        primaryStage.setScene(scene);</span>
+<span class="fc" id="L117">        primaryStage.show();</span>
+
+        // button handlers
+<span class="fc" id="L120">        signupButton.setOnAction(e -&gt; {</span>
+            try {
+<span class="fc" id="L122">                new SignUp().start(primaryStage);</span>
+<span class="pc" id="L123">            } catch (Exception ex) {</span>
+<span class="nc" id="L124">                ex.printStackTrace();</span>
+            }
+<span class="fc" id="L126">        });</span>
+
+<span class="fc" id="L128">        loginButton.setOnAction(e -&gt; {</span>
+<span class="fc" id="L129">            String input = emailField.getText();</span>
+<span class="fc" id="L130">            String password = passwordField.getText();</span>
+
+<span class="fc bfc" id="L132" title="All 2 branches covered.">            if (Database.validateLogin(input, password)) {</span>
+<span class="fc" id="L133">                int userId = Database.getUserId(input);</span>
+<span class="fc" id="L134">                LoggedInUser.setId(userId);</span>
+
+<span class="fc" id="L136">                String username = Database.getUsernameById(userId);</span>
+<span class="fc" id="L137">                LoggedInUser.setUsername(username);</span>
+
+                try {
+<span class="fc" id="L140">                    new TaskApp().start(primaryStage);</span>
+<span class="pc" id="L141">                } catch (Exception ex) {</span>
+<span class="nc" id="L142">                    ex.printStackTrace();</span>
+                }
+            }
+<span class="fc" id="L145">        });</span>
+
+<span class="fc" id="L147">        forgotPasswordLink.setOnAction(e -&gt; {</span>
+            try {
+<span class="fc" id="L149">                new ForgotPassword().start(primaryStage);</span>
+<span class="pc" id="L150">            } catch (Exception ex) {</span>
+<span class="nc" id="L151">                ex.printStackTrace();</span>
+            }
+<span class="fc" id="L153">        });</span>
+<span class="fc" id="L154">    }</span>
+
+    public static void main(String[] args) {
+<span class="fc" id="L157">        launch(args);</span>
+<span class="fc" id="L158">    }</span>
+
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span>Main (2) (Dec 5, 2025 9:49:06 PM)</div></body></html>

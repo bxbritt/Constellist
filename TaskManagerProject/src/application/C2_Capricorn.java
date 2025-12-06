@@ -87,10 +87,7 @@ public class C2_Capricorn extends Constellation {
         return "Capricorn";
     }
     
-    @Override
-    public int getConstellationNumber() {
-        return 2;
-    }
+
     
     @Override
     public Pane createPreview(double width, double height) {
@@ -147,10 +144,5 @@ public class C2_Capricorn extends Constellation {
         return createScaledPreview(showStars, showLinks, width, height, 0.75);
     }
     
-    @Override
-    public Pane createProgressView(double width, double height) {
-        // shrink more aggressively
-        return createScaledPreview(this.stars, this.links, width, height, 0.50);
-    }
 
     }

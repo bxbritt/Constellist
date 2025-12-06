@@ -15,9 +15,7 @@ public class ScreenManager {
         currentStage = stage;
     }
 
-    public static Stage getCurrentStage() {
-        return currentStage;
-    }
+
 
     // Fade Transition Between Screens
     public static void switchScreen(Stage stage, Scene newScene) {

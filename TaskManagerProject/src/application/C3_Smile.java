@@ -89,11 +89,7 @@ public class C3_Smile extends Constellation {
         return "Smile";
     }
     
-    @Override
-    public int getConstellationNumber() {
-        return 3;
-    }
-    
+
     @Override
     public Pane createPreview(double width, double height) {
         // Create stars for preview (all complete)

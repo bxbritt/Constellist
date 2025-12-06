@@ -88,10 +88,7 @@ public class C6_Star extends Constellation {
         return "Star";
     }
     
-    @Override
-    public int getConstellationNumber() {
-        return 6;
-    }
+
     
     @Override
     public Pane createPreview(double width, double height) {
@@ -148,9 +145,5 @@ public class C6_Star extends Constellation {
 
         return createScaledPreview(showStars, showLinks, width, height, 0.75);
     }
-    @Override
-    public Pane createProgressView(double width, double height) {
-        // shrink more aggressively
-        return createScaledPreview(this.stars, this.links, width, height, 0.50);
-    }
+
 }

@@ -31,9 +31,7 @@ public abstract class Constellation extends Pane {
 	    public abstract String getName();
 	    
 	    
-	     // Get the constellation number (1-10 for display purposes)
-	     
-	    public abstract int getConstellationNumber();
+	    
 	    
 	    /**
 	      Light up the next star in sequence
@@ -100,12 +98,7 @@ public abstract class Constellation extends Pane {
 	        return starsLit;
 	    }
 	    
-	    /**
-	     * Get the stars array (for subclass use)
-	     */
-	    protected Star[] getStars() {
-	        return stars;
-	    }
+
 	    
 	    /**
 	     * Create a small preview version of this constellation for the gallery

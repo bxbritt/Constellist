@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>ConstellationGallery.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">Main (2) (Dec 5, 2025 9:49:06 PM)</a> &gt; <a href="../../index.html" class="el_group">TaskManagerProject</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">application</a> &gt; <span class="el_source">ConstellationGallery.java</span></div><h1>ConstellationGallery.java</h1><pre class="source lang-java linenums">package application;
+
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.*;
+import javafx.scene.text.Text;
+import javafx.scene.layout.Pane;
+import java.util.ArrayList;
+
+public class ConstellationGallery {
+
+    private ConstellationManager constellationManager;
+<span class="fc" id="L15">    private ArrayList&lt;VBox&gt; galleryCards = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L16">    private HBox constellationRow = new HBox(40);</span>
+
+<span class="fc" id="L18">    public ConstellationGallery() {</span>
+<span class="fc" id="L19">        constellationManager = ConstellationManager.getInstance();</span>
+<span class="fc" id="L20">    }</span>
+
+    public Node getView() {
+
+        // gallery title
+<span class="fc" id="L25">        Text title = new Text(&quot;Constellation Gallery&quot;);</span>
+<span class="fc" id="L26">        title.getStyleClass().add(&quot;glow-text&quot;);</span>
+<span class="fc" id="L27">        title.setStyle(&quot;-fx-font-size: 48px; -fx-font-weight: bold;&quot;);</span>
+
+        // shared task card style
+<span class="fc" id="L30">        String taskCardStyle =</span>
+<span class="fc" id="L31">                &quot;-fx-background-color: rgba(150, 80, 200, 0.06);&quot; +</span>
+                &quot;-fx-background-radius: 20;&quot; +
+                &quot;-fx-border-color: rgba(210, 140, 255, 0.4);&quot; +
+                &quot;-fx-border-radius: 20;&quot; +
+                &quot;-fx-border-width: 2.5;&quot; +
+                &quot;-fx-effect: dropshadow(gaussian, rgba(210, 140, 255, 0.35), 16, 0.35, 0, 0);&quot;;
+
+        // prepare 10 cards
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        for (int i = 0; i &lt; 10; i++) {</span>
+<span class="fc" id="L40">            VBox card = new VBox(10);</span>
+<span class="fc" id="L41">            galleryCards.add(card);</span>
+        }
+
+        // fill cards
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        for (int i = 0; i &lt; galleryCards.size(); i++) {</span>
+
+<span class="fc" id="L47">            VBox card = galleryCards.get(i);</span>
+<span class="fc" id="L48">            card.setAlignment(Pos.CENTER);</span>
+<span class="fc" id="L49">            card.setPrefSize(260, 330);</span>
+<span class="fc" id="L50">            card.setStyle(taskCardStyle);</span>
+
+<span class="fc" id="L52">            Constellation constellation = constellationManager.getConstellationByIndex(i);</span>
+
+<span class="fc" id="L54">            card.getChildren().clear();</span>
+
+<span class="pc bpc" id="L56" title="1 of 4 branches missed.">            if (constellation != null &amp;&amp; constellation.isComplete()) {</span>
+
+<span class="fc" id="L58">                Pane preview = constellation.createPreview(300, 300);</span>
+<span class="fc" id="L59">                preview.setStyle(&quot;-fx-background-color: transparent;&quot;);</span>
+<span class="fc" id="L60">                preview.setScaleX(1.5);</span>
+<span class="fc" id="L61">                preview.setScaleY(1.5);</span>
+
+<span class="fc" id="L63">                Text name = new Text(constellation.getName());</span>
+<span class="fc" id="L64">                name.getStyleClass().add(&quot;glow-text&quot;);</span>
+<span class="fc" id="L65">                name.setStyle(&quot;-fx-font-size: 18px;&quot;);</span>
+
+<span class="fc" id="L67">                Text progress = new Text(constellation.getStarsLit() + &quot;/10 stars&quot;);</span>
+<span class="fc" id="L68">                progress.setStyle(&quot;-fx-font-size: 14px; -fx-fill: #dcdcff;&quot;);</span>
+
+<span class="fc" id="L70">                card.getChildren().addAll(preview, name, progress);</span>
+
+<span class="fc" id="L72">            } else {</span>
+
+<span class="fc" id="L74">                Text locked = new Text(&quot;Locked\nConstellation &quot; + (i + 1));</span>
+<span class="fc" id="L75">                locked.getStyleClass().add(&quot;glow-text&quot;);</span>
+<span class="fc" id="L76">                locked.setStyle(&quot;-fx-font-size: 16px; -fx-opacity: 0.7;&quot;);</span>
+
+<span class="fc" id="L78">                card.getChildren().add(locked);</span>
+            }
+        }
+
+        // row of cards
+<span class="fc" id="L83">        constellationRow.setAlignment(Pos.CENTER);</span>
+<span class="fc" id="L84">        constellationRow.setPadding(new Insets(20));</span>
+<span class="fc" id="L85">        constellationRow.getChildren().addAll(galleryCards);</span>
+
+<span class="fc" id="L87">        ScrollPane scrollPane = new ScrollPane(constellationRow);</span>
+<span class="fc" id="L88">        scrollPane.setStyle(&quot;-fx-background-color: transparent;&quot;);</span>
+<span class="fc" id="L89">        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);</span>
+<span class="fc" id="L90">        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);</span>
+
+        // layout
+<span class="fc" id="L93">        VBox layout = new VBox(30, title, scrollPane);</span>
+<span class="fc" id="L94">        layout.setAlignment(Pos.TOP_CENTER);</span>
+<span class="fc" id="L95">        layout.setPadding(new Insets(30));</span>
+
+<span class="fc" id="L97">        return layout;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span>Main (2) (Dec 5, 2025 9:49:06 PM)</div></body></html>

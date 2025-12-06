@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>StarOverlay.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">Main (2) (Dec 5, 2025 9:49:06 PM)</a> &gt; <a href="../../index.html" class="el_group">TaskManagerProject</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">application</a> &gt; <span class="el_source">StarOverlay.java</span></div><h1>StarOverlay.java</h1><pre class="source lang-java linenums">package application;
+
+import javafx.animation.FadeTransition;
+import javafx.beans.value.ChangeListener;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.util.Duration;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+public class StarOverlay extends Pane {
+
+	private int starCount;
+<span class="fc" id="L17">	private final Random rand = new Random();</span>
+<span class="fc" id="L18">	private final List&lt;Circle&gt; stars = new ArrayList&lt;&gt;();</span>
+	
+<span class="fc" id="L20">	public StarOverlay(int starCount) {</span>
+<span class="fc" id="L21">		this.starCount = starCount;</span>
+		
+<span class="fc" id="L23">		setMouseTransparent(true);</span>
+<span class="fc" id="L24">		setStyle(&quot;-fx-background-color: transparent;&quot;);</span>
+		
+		// create initial stars
+<span class="fc" id="L27">		generateStars();</span>
+		
+		// re-generate stars whenever window size changes
+<span class="fc" id="L30">		ChangeListener&lt;Number&gt; resizeListener = (obs, oldVal, newVal) -&gt; regenerateStars();</span>
+<span class="fc" id="L31">		widthProperty().addListener(resizeListener);</span>
+<span class="fc" id="L32">		heightProperty().addListener(resizeListener);</span>
+<span class="fc" id="L33">	}</span>
+	
+	private void generateStars() {
+<span class="fc" id="L36">		stars.clear();</span>
+<span class="fc" id="L37">		getChildren().clear();</span>
+		
+<span class="fc bfc" id="L39" title="All 2 branches covered.">		for (int i = 0; i &lt; starCount; i++) {</span>
+<span class="fc" id="L40">			Circle star = new Circle(</span>
+<span class="fc" id="L41">					1 + rand.nextDouble() * 1.3,</span>
+<span class="fc" id="L42">					Color.rgb(255,  215,  110, 0.85)</span>
+			);
+			
+			// random placement with no stretching
+<span class="fc" id="L46">			star.setTranslateX(rand.nextDouble() * getWidth());</span>
+<span class="fc" id="L47">			star.setTranslateY(rand.nextDouble() * getHeight());</span>
+			
+<span class="fc" id="L49">			animateStar(star);</span>
+<span class="fc" id="L50">			stars.add(star);</span>
+		}
+		
+<span class="fc" id="L53">		getChildren().addAll(stars);</span>
+<span class="fc" id="L54">	}</span>
+	
+	private void regenerateStars() {
+<span class="pc bpc" id="L57" title="1 of 4 branches missed.">		if (getWidth() &gt; 0 &amp;&amp; getHeight() &gt; 0) {</span>
+<span class="fc" id="L58">			generateStars();</span>
+		}
+<span class="fc" id="L60">	}</span>
+	
+	private void animateStar(Circle star) {
+<span class="fc" id="L63">		FadeTransition fade = new FadeTransition(</span>
+<span class="fc" id="L64">			Duration.seconds(2 + rand.nextDouble() * 2),</span>
+<span class="fc" id="L65">			star</span>
+		);
+<span class="fc" id="L67">		fade.setFromValue(0.25);</span>
+<span class="fc" id="L68">		fade.setToValue(0.65);</span>
+<span class="fc" id="L69">		fade.setCycleCount(FadeTransition.INDEFINITE);</span>
+<span class="fc" id="L70">		fade.setAutoReverse(true);</span>
+<span class="fc" id="L71">		fade.play();</span>
+<span class="fc" id="L72">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span>Main (2) (Dec 5, 2025 9:49:06 PM)</div></body></html>

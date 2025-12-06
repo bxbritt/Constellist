@@ -61,11 +61,7 @@ public class C1_Heart extends Constellation {
         return "Heart";
     }
     
-    @Override
-    public int getConstellationNumber() {
-        return 1;
-    }
-    
+
     @Override
     public Pane createPreview(double width, double height) {
         // Create stars for preview (all complete)

@@ -87,10 +87,7 @@ public class C5_Dragonfly extends Constellation {
         return "Dragonfly";
     }
     
-    @Override
-    public int getConstellationNumber() {
-        return 5;
-    }
+
     
     @Override
     public Pane createPreview(double width, double height) {

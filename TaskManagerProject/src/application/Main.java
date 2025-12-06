@@ -157,9 +157,5 @@ public class Main extends Application {
         launch(args);
     }
 
-    private void showAlert(Alert.AlertType type, String message) {
-        Alert alert = new Alert(type);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
+    
 }

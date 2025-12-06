@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>Proper_Test.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">Main (2) (Dec 5, 2025 8:59:35 PM)</a> &gt; <a href="../../index.html" class="el_group">TaskManagerProject</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">application</a> &gt; <span class="el_source">Proper_Test.java</span></div><h1>Proper_Test.java</h1><pre class="source lang-java linenums">package application;
+import javafx.animation.ScaleTransition; //changes an objects size over time
+import javafx.animation.ParallelTransition; //allows for simultaneous animations
+import javafx.application.Application; //not really sure what this is yet
+import javafx.scene.Scene; //content area of a window
+import javafx.scene.layout.Pane; //holds and positions UI elements
+import javafx.scene.paint.Color; //used for coloring shapes
+import javafx.scene.shape.Circle; //(x, y, radius, fillColor)
+import javafx.stage.Stage; //the window, scenes are attached here
+import javafx.util.Duration; //length of time for animating
+import javafx.scene.effect.DropShadow; //we can use this to add a shadow or glowing effect behind a shape
+import javafx.scene.shape.Line; //lines to connect shapes
+
+
+<span class="nc" id="L15">public class Proper_Test extends Application {</span>
+	
+	@Override
+    public void start(Stage stage) {
+		
+		
+		//MAKE CONSTELLATION HERE ********************//
+<span class="nc" id="L22">		Star star1 = new Star(300, 300, 6);</span>
+<span class="nc" id="L23">		star1.setComplete(true);</span>
+		
+<span class="nc" id="L25">		Star star2 = new Star(400, 200, 6);</span>
+<span class="nc" id="L26">		star2.setComplete(true);</span>
+		
+<span class="nc" id="L28">		Star star3 = new Star(500, 300, 6);</span>
+<span class="nc" id="L29">		star3.setComplete(true);</span>
+		
+<span class="nc" id="L31">		Star star4 = new Star(400, 500, 6);</span>
+<span class="nc" id="L32">		star4.setComplete(true);</span>
+
+<span class="nc" id="L34">		Star star5 = new Star(400, 300, 6);</span>
+<span class="nc" id="L35">		star5.setComplete(true);</span>
+<span class="nc" id="L36">		StarLink link1 = new StarLink(star1, star2);</span>
+<span class="nc" id="L37">		StarLink link2 = new StarLink(star2, star3);</span>
+<span class="nc" id="L38">		StarLink link3 = new StarLink(star3, star4);</span>
+<span class="nc" id="L39">		StarLink link4 = new StarLink(star4, star1);</span>
+<span class="nc" id="L40">		StarLink link51 = new StarLink(star5, star1);</span>
+<span class="nc" id="L41">		StarLink link52 = new StarLink(star5, star2);</span>
+<span class="nc" id="L42">		StarLink link53 = new StarLink(star5, star3);</span>
+<span class="nc" id="L43">		StarLink link54 = new StarLink(star5, star4);</span>
+		
+		//*********************************************//
+		
+<span class="nc" id="L47">		Pane root = new Pane(link1.getGlowLine(), link1.getCoreLine(),link2.getGlowLine(), link2.getCoreLine(), link3.getGlowLine(), link3.getCoreLine(), link4.getGlowLine(), link4.getCoreLine(), </span>
+<span class="nc" id="L48">				link51.getGlowLine(), link51.getCoreLine(), link52.getGlowLine(), link52.getCoreLine(), link53.getGlowLine(), link53.getCoreLine(), link54.getGlowLine(), link54.getCoreLine(), star1, star2, star3, star4, star5);</span>
+<span class="nc" id="L49">		root.setStyle(&quot;-fx-background-color: black;&quot;);</span>
+<span class="nc" id="L50">		link1.draw();</span>
+<span class="nc" id="L51">		link2.draw();</span>
+<span class="nc" id="L52">		link3.draw();</span>
+<span class="nc" id="L53">		link4.draw();</span>
+<span class="nc" id="L54">		link51.draw();</span>
+<span class="nc" id="L55">		link52.draw();</span>
+<span class="nc" id="L56">		link53.draw();</span>
+<span class="nc" id="L57">		link54.draw();</span>
+
+<span class="nc" id="L59">        Scene scene = new Scene(root, 1000, 1000); //our canvas and we put our container with a star on it, the numbers are the window size</span>
+
+<span class="nc" id="L61">        stage.setTitle(&quot;Constellation Demo&quot;);</span>
+<span class="nc" id="L62">        stage.setScene(scene);</span>
+<span class="nc" id="L63">        stage.show();   //so we can actually see lol</span>
+		
+<span class="nc" id="L65">	}</span>
+	
+	
+	public static void main(String[] args) {
+<span class="nc" id="L69">        launch(args);</span>
+<span class="nc" id="L70">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span>Main (2) (Dec 5, 2025 8:59:35 PM)</div></body></html>

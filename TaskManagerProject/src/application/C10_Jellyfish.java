@@ -87,10 +87,7 @@ public String getName() {
 return "Jellyfish";
 }
 
-@Override
-public int getConstellationNumber() {
-return 10;
-}
+
 
 @Override
 public Pane createPreview(double width, double height) {

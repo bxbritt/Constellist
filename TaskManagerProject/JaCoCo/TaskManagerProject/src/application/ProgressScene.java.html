@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>ProgressScene.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">Main (2) (Dec 5, 2025 9:49:06 PM)</a> &gt; <a href="../../index.html" class="el_group">TaskManagerProject</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">application</a> &gt; <span class="el_source">ProgressScene.java</span></div><h1>ProgressScene.java</h1><pre class="source lang-java linenums">package application;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.layout.*;
+import javafx.scene.text.Text;
+
+public class ProgressScene {
+
+    private int listId;
+
+<span class="fc" id="L18">    public ProgressScene(int listId) {</span>
+<span class="fc" id="L19">        this.listId = listId;</span>
+<span class="fc" id="L20">    }</span>
+
+    public Node getView() {
+
+        // page title
+<span class="fc" id="L25">        Label title = new Label(&quot;Progress Overview&quot;);</span>
+<span class="fc" id="L26">        title.getStyleClass().add(&quot;glow-text&quot;);</span>
+<span class="fc" id="L27">        title.setStyle(&quot;-fx-font-size: 40px; -fx-font-weight: bold;&quot;);</span>
+
+<span class="fc" id="L29">        VBox header = new VBox(title);</span>
+<span class="fc" id="L30">        header.setAlignment(Pos.CENTER);</span>
+
+<span class="fc" id="L32">        String taskCardStyle =</span>
+<span class="fc" id="L33">                &quot;-fx-background-color: rgba(150, 80, 200, 0.06);&quot; +</span>
+                &quot;-fx-background-radius: 20;&quot; +
+                &quot;-fx-border-color: rgba(210, 140, 255, 0.4);&quot; +
+                &quot;-fx-border-radius: 20;&quot; +
+                &quot;-fx-border-width: 2.5;&quot; +
+                &quot;-fx-effect: dropshadow(gaussian, rgba(210, 140, 255, 0.35), 16, 0.35, 0, 0);&quot;;
+
+        // tasks remaining box
+<span class="fc" id="L41">        VBox remainingBox = new VBox(10);</span>
+<span class="fc" id="L42">        remainingBox.setPadding(new Insets(15));</span>
+<span class="fc" id="L43">        remainingBox.setAlignment(Pos.TOP_CENTER);</span>
+<span class="fc" id="L44">        remainingBox.setStyle(taskCardStyle);</span>
+<span class="fc" id="L45">        remainingBox.setPrefWidth(350);</span>
+
+<span class="fc" id="L47">        Text remainingTitle = new Text(&quot;Tasks Remaining:&quot;);</span>
+<span class="fc" id="L48">        remainingTitle.getStyleClass().add(&quot;glow-text&quot;);</span>
+<span class="fc" id="L49">        remainingTitle.setStyle(&quot;-fx-font-size: 19px;&quot;);</span>
+
+<span class="fc" id="L51">        ListView&lt;String&gt; remainingList = new ListView&lt;&gt;();</span>
+
+<span class="fc" id="L53">        remainingList.setStyle(</span>
+<span class="fc" id="L54">                &quot;-fx-background-color: transparent;&quot; +</span>
+                &quot;-fx-control-inner-background: transparent;&quot; +
+                &quot;-fx-padding: 4;&quot;
+        );
+
+<span class="fc" id="L59">        remainingList.setCellFactory(lv -&gt; new ListCell&lt;String&gt;() {</span>
+            @Override
+            protected void updateItem(String item, boolean empty) {
+<span class="fc" id="L62">                super.updateItem(item, empty);</span>
+<span class="pc bpc" id="L63" title="1 of 4 branches missed.">                if (empty || item == null) {</span>
+<span class="fc" id="L64">                    setText(null);</span>
+<span class="fc" id="L65">                } else {</span>
+<span class="fc" id="L66">                    setText(item);</span>
+                }
+
+<span class="fc" id="L69">                setStyle(</span>
+<span class="fc" id="L70">                        &quot;-fx-text-fill: #ffeecf;&quot; +</span>
+                        &quot;-fx-font-size: 14px;&quot; +
+                        &quot;-fx-background-color: transparent;&quot;
+                );
+<span class="fc" id="L74">            }</span>
+<span class="fc" id="L75">        });</span>
+
+<span class="fc" id="L77">        ObservableList&lt;String&gt; remainItems =</span>
+<span class="fc" id="L78">                FXCollections.observableArrayList(Database.loadActiveTaskItemsForList(listId));</span>
+<span class="fc" id="L79">        remainingList.setItems(remainItems);</span>
+
+<span class="fc" id="L81">        remainingBox.getChildren().addAll(remainingTitle, remainingList);</span>
+
+        // tasks completed
+<span class="fc" id="L84">        VBox completedBox = new VBox(10);</span>
+<span class="fc" id="L85">        completedBox.setPadding(new Insets(15));</span>
+<span class="fc" id="L86">        completedBox.setAlignment(Pos.TOP_CENTER);</span>
+<span class="fc" id="L87">        completedBox.setStyle(taskCardStyle);</span>
+<span class="fc" id="L88">        completedBox.setPrefWidth(350);</span>
+
+<span class="fc" id="L90">        Text completedTitle = new Text(&quot;Tasks Completed:&quot;);</span>
+<span class="fc" id="L91">        completedTitle.getStyleClass().add(&quot;glow-text&quot;);</span>
+<span class="fc" id="L92">        completedTitle.setStyle(&quot;-fx-font-size: 19px;&quot;);</span>
+
+<span class="fc" id="L94">        ListView&lt;String&gt; completedList = new ListView&lt;&gt;();</span>
+
+<span class="fc" id="L96">        completedList.setStyle(</span>
+<span class="fc" id="L97">                &quot;-fx-background-color: transparent;&quot; +</span>
+                &quot;-fx-control-inner-background: transparent;&quot; +
+                &quot;-fx-padding: 4;&quot;
+        );
+
+<span class="fc" id="L102">        completedList.setCellFactory(lv -&gt; new ListCell&lt;String&gt;() {</span>
+            @Override
+            protected void updateItem(String item, boolean empty) {
+<span class="fc" id="L105">                super.updateItem(item, empty);</span>
+<span class="pc bpc" id="L106" title="1 of 4 branches missed.">                if (empty || item == null) {</span>
+<span class="fc" id="L107">                    setText(null);</span>
+<span class="fc" id="L108">                } else {</span>
+<span class="fc" id="L109">                    setText(item);</span>
+                }
+<span class="fc" id="L111">                setStyle(</span>
+<span class="fc" id="L112">                        &quot;-fx-text-fill: #ffeecf;&quot; +</span>
+                        &quot;-fx-font-size: 14px;&quot; +
+                        &quot;-fx-background-color: transparent;&quot;
+                );
+<span class="fc" id="L116">            }</span>
+<span class="fc" id="L117">        });</span>
+
+<span class="fc" id="L119">        ObservableList&lt;String&gt; compItems =</span>
+<span class="fc" id="L120">                FXCollections.observableArrayList(Database.loadCompletedTaskItemsForList(listId));</span>
+<span class="fc" id="L121">        completedList.setItems(compItems);</span>
+
+<span class="fc" id="L123">        completedBox.getChildren().addAll(completedTitle, completedList);</span>
+
+        // left column
+<span class="fc" id="L126">        VBox leftColumn = new VBox(30, remainingBox, completedBox);</span>
+<span class="fc" id="L127">        leftColumn.setAlignment(Pos.TOP_LEFT);</span>
+<span class="fc" id="L128">        leftColumn.setPadding(new Insets(20));</span>
+<span class="fc" id="L129">        leftColumn.setPrefWidth(370);</span>
+
+        // constellation preview
+<span class="fc" id="L132">        ConstellationManager cm = ConstellationManager.getInstance();</span>
+<span class="fc" id="L133">        cm.loadAllConstellationsFromDatabase();</span>
+
+<span class="fc" id="L135">        Pane constView = cm.getCurrentConstellation().createProgressView(450, 450);</span>
+<span class="fc" id="L136">        constView.setStyle(&quot;-fx-background-color: transparent;&quot;);</span>
+
+<span class="fc" id="L138">        StackPane constWrapper = new StackPane(constView);</span>
+<span class="fc" id="L139">        constWrapper.setAlignment(Pos.CENTER);</span>
+<span class="fc" id="L140">        constWrapper.setPadding(new Insets(20));</span>
+
+        // main
+<span class="fc" id="L143">        HBox mainRow = new HBox(80, leftColumn, constWrapper);</span>
+<span class="fc" id="L144">        mainRow.setAlignment(Pos.TOP_CENTER);</span>
+<span class="fc" id="L145">        mainRow.setPadding(new Insets(10, 20, 40, 0));</span>
+
+        // final layout
+<span class="fc" id="L148">        VBox content = new VBox(20, header, mainRow);</span>
+<span class="fc" id="L149">        content.setAlignment(Pos.TOP_CENTER);</span>
+<span class="fc" id="L150">        content.setPadding(new Insets(30, 30, 30, 70));</span>
+
+<span class="fc" id="L152">        return content;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span>Main (2) (Dec 5, 2025 9:49:06 PM)</div></body></html>

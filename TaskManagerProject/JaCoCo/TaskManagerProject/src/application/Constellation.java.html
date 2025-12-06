@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>Constellation.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">Main (2) (Dec 5, 2025 9:49:06 PM)</a> &gt; <a href="../../index.html" class="el_group">TaskManagerProject</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">application</a> &gt; <span class="el_source">Constellation.java</span></div><h1>Constellation.java</h1><pre class="source lang-java linenums">package application;
+
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.Group;
+import javafx.geometry.Bounds;
+import javafx.scene.layout.Pane;
+
+/**
+  Abstract base class for all constellations.
+  Each constellation has 10 stars that light up as tasks are completed.
+ */
+
+public abstract class Constellation extends Pane {
+	    protected Star[] stars;
+	    protected StarLink[] links;
+<span class="fc" id="L17">	    protected int starsLit = 0; // How many stars are currently lit (0-10)</span>
+	    
+<span class="fc" id="L19">	    public Constellation() {</span>
+<span class="fc" id="L20">	        createConstellation();</span>
+<span class="fc" id="L21">	    }</span>
+	    
+	 
+	     //Each constellation subclass must implement this to create shape
+	     
+	    protected abstract void createConstellation();
+	    
+	    
+	    // Get the name of this constellation (&quot;Heart&quot;, &quot;Capricorn&quot;)
+	     
+	    public abstract String getName();
+	    
+	    
+	    
+	    
+	    /**
+	      Light up the next star in sequence
+	      @return true if a star was lit, false if all stars already lit
+	     */
+	    public boolean lightNextStar() {
+<span class="fc bfc" id="L41" title="All 2 branches covered.">	        if (starsLit &gt;= 10) {</span>
+<span class="fc" id="L42">	            return false; // meaning constellation is already complete</span>
+	        }
+	        
+<span class="fc" id="L45">	        stars[starsLit].setComplete(true);</span>
+<span class="fc" id="L46">	        starsLit++;</span>
+	        
+	        // redraw the links to show the glowing effect
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">	        if (links != null) {</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">	            for (StarLink link : links) {</span>
+<span class="fc" id="L51">	                link.draw();</span>
+	            }
+	        }
+	        
+<span class="fc" id="L55">	        return true;</span>
+	    }
+	    
+	    /**
+	     * Set how many stars should be lit (used when loading from database)
+	     */
+	    
+	    public void setStarsLit(int count) {
+<span class="pc bpc" id="L63" title="2 of 4 branches missed.">	        if (count &lt; 0 || count &gt; 10) {</span>
+<span class="nc" id="L64">	            throw new IllegalArgumentException(&quot;Stars lit must be between 0 and 10&quot;);</span>
+	        }
+	        
+	        // Reset all stars first
+<span class="fc bfc" id="L68" title="All 2 branches covered.">	        for (int i = 0; i &lt; stars.length; i++) {</span>
+<span class="fc" id="L69">	            stars[i].setComplete(false);</span>
+	        }
+	        
+	        // Light up the specified number
+<span class="fc bfc" id="L73" title="All 2 branches covered.">	        for (int i = 0; i &lt; count; i++) {</span>
+<span class="fc" id="L74">	            stars[i].setComplete(true);</span>
+	        }
+	        
+<span class="fc" id="L77">	        starsLit = count;</span>
+	        
+	        // Redraw links
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">	        if (links != null) {</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">	            for (StarLink link : links) {</span>
+<span class="fc" id="L82">	                link.draw();</span>
+	            }
+	        }
+<span class="fc" id="L85">	    }</span>
+	    
+	    /**
+	     * Check if this constellation is complete (all 10 stars lit)
+	     */
+	    public boolean isComplete() {
+<span class="fc bfc" id="L91" title="All 2 branches covered.">	        return starsLit &gt;= 10;</span>
+	    }
+	    
+	    /**
+	     * Get number of stars currently lit
+	     */
+	    public int getStarsLit() {
+<span class="fc" id="L98">	        return starsLit;</span>
+	    }
+	    
+
+	    
+	    /**
+	     * Create a small preview version of this constellation for the gallery
+	     * This should show the constellation fully completed
+	     */
+	    public abstract Pane createPreview(double width, double height);
+	    
+	    /**
+	     * Helper method for subclasses to create a scaled preview
+	     */
+	    protected Pane createScaledPreview(Star[] previewStars, StarLink[] previewLinks, 
+	                                       double width, double height, double scaleFactor) {
+<span class="fc" id="L114">	        Group constellationGroup = new Group();</span>
+	        
+	        // Add links first (so they appear behind stars)
+<span class="fc bfc" id="L117" title="All 2 branches covered.">	        for (StarLink link : previewLinks) {</span>
+<span class="fc" id="L118">	            constellationGroup.getChildren().addAll(link.getGlowLine(), link.getCoreLine());</span>
+<span class="fc" id="L119">	            link.draw();</span>
+	        }
+	        
+	        // Add stars on top
+<span class="fc" id="L123">	        constellationGroup.getChildren().addAll(previewStars);</span>
+	        
+	        // Scale the constellation
+<span class="fc" id="L126">	        constellationGroup.setScaleX(scaleFactor);</span>
+<span class="fc" id="L127">	        constellationGroup.setScaleY(scaleFactor);</span>
+	        
+	        // Wrap in a StackPane to center automatically
+<span class="fc" id="L130">	        StackPane wrapper = new StackPane(constellationGroup);</span>
+<span class="fc" id="L131">	        wrapper.setPrefSize(width, height);</span>
+<span class="fc" id="L132">	        wrapper.setMinSize(width, height);</span>
+<span class="fc" id="L133">	        wrapper.setMaxSize(width, height);</span>
+<span class="fc" id="L134">	        wrapper.setStyle(&quot;-fx-background-color: black;&quot;);</span>
+	        
+<span class="fc" id="L136">	        return wrapper;</span>
+	    }
+	    
+	    public void normalize() {
+	        // Force layout so bounds are valid
+<span class="nc" id="L141">	        this.applyCss();</span>
+<span class="nc" id="L142">	        this.layout();</span>
+
+<span class="nc" id="L144">	        Bounds bounds = this.getBoundsInLocal();</span>
+<span class="nc" id="L145">	        double minX = bounds.getMinX();</span>
+<span class="nc" id="L146">	        double minY = bounds.getMinY();</span>
+<span class="nc" id="L147">	        double width = bounds.getWidth();</span>
+<span class="nc" id="L148">	        double height = bounds.getHeight();</span>
+
+	        // Compute the center of the constellation
+<span class="nc" id="L151">	        double centerX = minX + width / 2;</span>
+<span class="nc" id="L152">	        double centerY = minY + height / 2;</span>
+
+	        // Shift constellation so its center is at (0,0)
+<span class="nc" id="L155">	        this.setTranslateX(-centerX);</span>
+<span class="nc" id="L156">	        this.setTranslateY(-centerY);</span>
+<span class="nc" id="L157">	    }</span>
+	    
+	    public Pane createShow(double width, double height) {
+	        // Force constellation to normalize its position
+<span class="nc" id="L161">	        this.normalize();</span>
+
+	        // Wrap the constellation in a StackPane so it stays centered
+<span class="nc" id="L164">	        StackPane wrapper = new StackPane(this);</span>
+<span class="nc" id="L165">	        wrapper.setPrefSize(width, height);</span>
+<span class="nc" id="L166">	        wrapper.setMinSize(width, height);</span>
+<span class="nc" id="L167">	        wrapper.setMaxSize(width, height);</span>
+<span class="nc" id="L168">	        wrapper.setStyle(&quot;-fx-background-color: black;&quot;);</span>
+
+	        // Scale constellation to fit the wrapper
+<span class="nc" id="L171">	        wrapper.layoutBoundsProperty().addListener((obs, oldVal, newVal) -&gt; {</span>
+<span class="nc" id="L172">	            double scaleX = newVal.getWidth() / this.getBoundsInParent().getWidth();</span>
+<span class="nc" id="L173">	            double scaleY = newVal.getHeight() / this.getBoundsInParent().getHeight();</span>
+<span class="nc" id="L174">	            double scale = Math.min(scaleX, scaleY);</span>
+<span class="nc" id="L175">	            this.setScaleX(scale);</span>
+<span class="nc" id="L176">	            this.setScaleY(scale);</span>
+<span class="nc" id="L177">	        });</span>
+
+<span class="nc" id="L179">	        return wrapper;</span>
+	    }
+
+	    public Pane createProgressView(double width, double height) {
+	        //  Use the constellation’s current stars/links state
+<span class="fc" id="L184">	        return createScaledPreview(this.stars, this.links, width, height, 0.85);</span>
+	    }
+	}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span>Main (2) (Dec 5, 2025 9:49:06 PM)</div></body></html>

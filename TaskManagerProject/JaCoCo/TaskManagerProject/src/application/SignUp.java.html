@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>SignUp.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">Main (2) (Dec 5, 2025 9:49:06 PM)</a> &gt; <a href="../../index.html" class="el_group">TaskManagerProject</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">application</a> &gt; <span class="el_source">SignUp.java</span></div><h1>SignUp.java</h1><pre class="source lang-java linenums">package application;
+
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.stage.Stage;
+
+import java.sql.Connection;
+
+<span class="fc" id="L13">public class SignUp extends Application {</span>
+
+    @Override
+    public void start(Stage primaryStage) {
+
+<span class="fc" id="L18">        primaryStage.setTitle(&quot;Sign Up&quot;);</span>
+<span class="fc" id="L19">        primaryStage.setWidth(1000);</span>
+<span class="fc" id="L20">        primaryStage.setHeight(600);</span>
+
+        // header
+<span class="fc" id="L23">        Label title = new Label(&quot;Create Your Account&quot;);</span>
+<span class="fc" id="L24">        title.getStyleClass().add(&quot;glow-text&quot;);</span>
+<span class="fc" id="L25">        title.setStyle(&quot;-fx-font-size: 55px; -fx-font-weight: bold;&quot;);</span>
+
+<span class="fc" id="L27">        Label tagline = new Label(&quot;Begin your constellation journey&quot;);</span>
+<span class="fc" id="L28">        tagline.getStyleClass().add(&quot;glow-text&quot;);</span>
+<span class="fc" id="L29">        tagline.setStyle(&quot;-fx-font-size: 22px;&quot;);</span>
+
+<span class="fc" id="L31">        VBox header = new VBox(8, title, tagline);</span>
+<span class="fc" id="L32">        header.setAlignment(Pos.CENTER);</span>
+
+        // input fields
+<span class="fc" id="L35">        TextField usernameField = new TextField();</span>
+<span class="fc" id="L36">        usernameField.setPromptText(&quot;Username&quot;);</span>
+<span class="fc" id="L37">        usernameField.getStyleClass().add(&quot;custom-textfield&quot;);</span>
+
+<span class="fc" id="L39">        TextField emailField = new TextField();</span>
+<span class="fc" id="L40">        emailField.setPromptText(&quot;Email&quot;);</span>
+<span class="fc" id="L41">        emailField.getStyleClass().add(&quot;custom-textfield&quot;);</span>
+
+<span class="fc" id="L43">        PasswordField passwordField = new PasswordField();</span>
+<span class="fc" id="L44">        passwordField.setPromptText(&quot;Password&quot;);</span>
+<span class="fc" id="L45">        passwordField.getStyleClass().add(&quot;custom-passwordfield&quot;);</span>
+
+<span class="fc" id="L47">        PasswordField confirmField = new PasswordField();</span>
+<span class="fc" id="L48">        confirmField.setPromptText(&quot;Confirm Password&quot;);</span>
+<span class="fc" id="L49">        confirmField.getStyleClass().add(&quot;custom-passwordfield&quot;);</span>
+
+<span class="fc" id="L51">        VBox inputBox = new VBox(12, usernameField, emailField, passwordField, confirmField);</span>
+<span class="fc" id="L52">        inputBox.setAlignment(Pos.CENTER);</span>
+
+        // buttons
+<span class="fc" id="L55">        Button createAccount = new Button(&quot;Create Account&quot;);</span>
+<span class="fc" id="L56">        createAccount.getStyleClass().add(&quot;bubble-button&quot;);</span>
+
+<span class="fc" id="L58">        Button backButton = new Button(&quot;Back to Login&quot;);</span>
+<span class="fc" id="L59">        backButton.getStyleClass().add(&quot;bubble-button&quot;);</span>
+
+<span class="fc" id="L61">        HBox buttonBox = new HBox(20, createAccount, backButton);</span>
+<span class="fc" id="L62">        buttonBox.setAlignment(Pos.CENTER);</span>
+
+        // main layout
+<span class="fc" id="L65">        VBox layout = new VBox(25, header, inputBox, buttonBox);</span>
+<span class="fc" id="L66">        layout.setPadding(new Insets(40));</span>
+<span class="fc" id="L67">        layout.setAlignment(Pos.CENTER);</span>
+
+<span class="fc" id="L69">        StackPane root = new StackPane();</span>
+
+<span class="fc" id="L71">        root.setStyle(</span>
+<span class="fc" id="L72">                &quot;-fx-background-color: linear-gradient(to bottom, #071229, #0D234F, #280c4c);&quot;</span>
+        );
+
+        // animated star overlay
+<span class="fc" id="L76">        StarOverlay stars = new StarOverlay(180);</span>
+<span class="fc" id="L77">        stars.prefWidthProperty().bind(primaryStage.widthProperty());</span>
+<span class="fc" id="L78">        stars.prefHeightProperty().bind(primaryStage.heightProperty());</span>
+
+<span class="fc" id="L80">        root.getChildren().addAll(stars, layout);</span>
+
+        // scene and style
+<span class="fc" id="L83">        Scene scene = new Scene(root, 1000, 650);</span>
+<span class="fc" id="L84">        scene.getStylesheets().add(getClass().getResource(&quot;style.css&quot;).toExternalForm());</span>
+
+<span class="fc" id="L86">        ScreenManager.switchScreen(primaryStage, scene);</span>
+
+<span class="fc" id="L88">        primaryStage.show();</span>
+
+        // button handlers
+
+<span class="fc" id="L92">        backButton.setOnAction(e -&gt; new Main().start(primaryStage));</span>
+
+<span class="fc" id="L94">        createAccount.setOnAction(e -&gt; {</span>
+
+<span class="fc" id="L96">            String username = usernameField.getText().trim();</span>
+<span class="fc" id="L97">            String email = emailField.getText().trim();</span>
+<span class="fc" id="L98">            String password = passwordField.getText();</span>
+<span class="fc" id="L99">            String confirm = confirmField.getText();</span>
+
+            // Validation
+<span class="pc bpc" id="L102" title="2 of 8 branches missed.">            if (username.isEmpty() || email.isEmpty() || password.isEmpty() || confirm.isEmpty()) {</span>
+<span class="fc" id="L103">                showAlert(Alert.AlertType.WARNING, &quot;Please fill in all fields.&quot;);</span>
+<span class="fc" id="L104">                return;</span>
+            }
+
+<span class="fc bfc" id="L107" title="All 2 branches covered.">            if (!password.equals(confirm)) {</span>
+<span class="fc" id="L108">                showAlert(Alert.AlertType.ERROR, &quot;Passwords do not match.&quot;);</span>
+<span class="fc" id="L109">                return;</span>
+            }
+
+<span class="fc" id="L112">            try (Connection conn = Database.connect()) {</span>
+
+<span class="fc" id="L114">                String sql = &quot;INSERT INTO users(username, email, password) VALUES (?, ?, ?)&quot;;</span>
+<span class="fc" id="L115">                var stmt = conn.prepareStatement(sql);</span>
+
+<span class="fc" id="L117">                stmt.setString(1, username);</span>
+<span class="fc" id="L118">                stmt.setString(2, email);</span>
+<span class="fc" id="L119">                stmt.setString(3, PasswordUtils.hashPassword(password));</span>
+
+<span class="fc" id="L121">                stmt.executeUpdate();</span>
+
+                // store the new user ID
+<span class="fc" id="L124">                LoggedInUser.setId(Database.getUserId(username));</span>
+<span class="fc" id="L125">                LoggedInUser.setUsername(username);</span>
+
+                // move to TaskApp
+<span class="fc" id="L128">                new TaskApp().start(primaryStage);</span>
+
+<span class="nc" id="L130">            } catch (Exception ex) {</span>
+<span class="nc" id="L131">                showAlert(Alert.AlertType.ERROR, &quot;Database Error: &quot; + ex.getMessage());</span>
+            }
+<span class="fc" id="L133">        });</span>
+<span class="fc" id="L134">    }</span>
+
+    private void showAlert(Alert.AlertType type, String message) {
+<span class="fc" id="L137">        Alert alert = new Alert(type);</span>
+<span class="fc" id="L138">        alert.setContentText(message);</span>
+<span class="fc" id="L139">        alert.showAndWait();</span>
+<span class="fc" id="L140">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span>Main (2) (Dec 5, 2025 9:49:06 PM)</div></body></html>

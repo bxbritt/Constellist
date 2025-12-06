@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>Database.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">Main (2) (Dec 5, 2025 9:49:06 PM)</a> &gt; <a href="../../index.html" class="el_group">TaskManagerProject</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">application</a> &gt; <span class="el_source">Database.java</span></div><h1>Database.java</h1><pre class="source lang-java linenums">package application;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+//import application.PasswordUtils;
+//import application.SaveProgress;
+
+<span class="nc" id="L10">public class Database {</span>
+
+
+    public static Connection connect() {
+        try {
+<span class="fc" id="L15">        	System.out.println(&quot;DB Path: &quot; + new java.io.File(&quot;users.db&quot;).getAbsolutePath());</span>
+<span class="fc" id="L16">            String url = &quot;jdbc:sqlite:users.db&quot;; // creates users.db if not exists</span>
+<span class="fc" id="L17">            Connection conn = DriverManager.getConnection(url);</span>
+<span class="fc" id="L18">            System.out.println(&quot;Connected to SQLite.&quot;);</span>
+<span class="fc" id="L19">            return conn;</span>
+<span class="nc" id="L20">        } catch (SQLException e) {</span>
+<span class="nc" id="L21">            System.out.println(&quot;Connection failed: &quot; + e.getMessage());</span>
+<span class="nc" id="L22">            return null;</span>
+        }
+    }
+
+    // users
+    public static void createUsersTable() {
+<span class="fc" id="L28">        String sql = &quot;CREATE TABLE IF NOT EXISTS users (&quot; +</span>
+                     &quot;id INTEGER PRIMARY KEY AUTOINCREMENT,&quot; +
+                     &quot;username TEXT NOT NULL,&quot; +
+                     &quot;email TEXT NOT NULL,&quot; +
+                     &quot;password TEXT NOT NULL&quot; +
+                     &quot;);&quot;;
+<span class="fc" id="L34">        try (Connection conn = connect();</span>
+<span class="fc" id="L35">             Statement stmt = conn.createStatement()) {</span>
+<span class="fc" id="L36">            stmt.execute(sql);</span>
+<span class="fc" id="L37">            System.out.println(&quot;Users table created or already exists.&quot;);</span>
+<span class="nc" id="L38">        } catch (SQLException e) {</span>
+<span class="nc" id="L39">            System.out.println(&quot;Table creation failed: &quot; + e.getMessage());</span>
+        }
+<span class="fc" id="L41">    }</span>
+
+ // Validate login (hashed passwords only)
+    public static boolean validateLogin(String usernameOrEmail, String password) {
+<span class="fc" id="L45">        String sql = &quot;SELECT password FROM users WHERE username = ? OR email = ?&quot;;</span>
+<span class="fc" id="L46">        try (Connection conn = connect();</span>
+<span class="fc" id="L47">             PreparedStatement pstmt = conn.prepareStatement(sql)) {</span>
+<span class="fc" id="L48">            pstmt.setString(1, usernameOrEmail);</span>
+<span class="fc" id="L49">            pstmt.setString(2, usernameOrEmail);</span>
+<span class="fc" id="L50">            ResultSet rs = pstmt.executeQuery();</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">            if (rs.next()) {</span>
+<span class="fc" id="L52">                String stored = rs.getString(&quot;password&quot;);</span>
+<span class="fc" id="L53">                String hashedInput = PasswordUtils.hashPassword(password);</span>
+
+<span class="fc" id="L55">                System.out.println(&quot;Login attempt for: &quot; + usernameOrEmail);</span>
+<span class="fc" id="L56">                System.out.println(&quot;Stored password from DB: &quot; + stored);</span>
+<span class="fc" id="L57">                System.out.println(&quot;Hashed input from login: &quot; + hashedInput);</span>
+
+<span class="fc" id="L59">                return stored.equals(hashedInput);</span>
+            }
+<span class="pc bpc" id="L61" title="1 of 2 branches missed.">        } catch (SQLException e) {</span>
+<span class="nc" id="L62">            System.out.println(&quot;Login validation failed: &quot; + e.getMessage());</span>
+        }
+<span class="fc" id="L64">        return false;</span>
+    }
+
+    // Get user ID
+    public static int getUserId(String usernameOrEmail) {
+<span class="fc" id="L69">        String sql = &quot;SELECT id FROM users WHERE username = ? OR email = ?&quot;;</span>
+<span class="fc" id="L70">        try (Connection conn = connect();</span>
+<span class="fc" id="L71">             PreparedStatement pstmt = conn.prepareStatement(sql)) {</span>
+<span class="fc" id="L72">            pstmt.setString(1, usernameOrEmail);</span>
+<span class="fc" id="L73">            pstmt.setString(2, usernameOrEmail);</span>
+<span class="fc" id="L74">            ResultSet rs = pstmt.executeQuery();</span>
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">            if (rs.next()) return rs.getInt(&quot;id&quot;);</span>
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">        } catch (SQLException e) {</span>
+<span class="nc" id="L77">            System.out.println(&quot;Failed to get user ID: &quot; + e.getMessage());</span>
+        }
+<span class="nc" id="L79">        return -1;</span>
+    }
+
+    // task lists
+    public static void createTasksTable() {
+<span class="fc" id="L84">        String sql = &quot;CREATE TABLE IF NOT EXISTS tasks (&quot; +</span>
+                     &quot;id INTEGER PRIMARY KEY AUTOINCREMENT,&quot; +
+                     &quot;user_id INTEGER NOT NULL,&quot; +
+                     &quot;description TEXT NOT NULL,&quot; +
+                     &quot;completed INTEGER NOT NULL DEFAULT 0,&quot; +
+                     &quot;FOREIGN KEY(user_id) REFERENCES users(id)&quot; +
+                     &quot;);&quot;;
+<span class="fc" id="L91">        try (Connection conn = connect();</span>
+<span class="fc" id="L92">             Statement stmt = conn.createStatement()) {</span>
+<span class="fc" id="L93">            stmt.execute(sql);</span>
+<span class="fc" id="L94">            System.out.println(&quot;Tasks table created or already exists.&quot;);</span>
+<span class="nc" id="L95">        } catch (SQLException e) {</span>
+<span class="nc" id="L96">            System.out.println(&quot;Failed to create tasks table: &quot; + e.getMessage());</span>
+        }
+<span class="fc" id="L98">    }</span>
+
+    // Save a new list
+    public static void saveProgress(SaveProgress progress) {
+<span class="fc" id="L102">        String sql = &quot;INSERT INTO tasks(user_id, description, completed) VALUES(?, ?, ?)&quot;;</span>
+<span class="fc" id="L103">        try (Connection conn = connect();</span>
+<span class="fc" id="L104">             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {</span>
+
+<span class="fc" id="L106">            pstmt.setInt(1, progress.getUserId());</span>
+<span class="fc" id="L107">            pstmt.setString(2, progress.getDescription());</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">            pstmt.setInt(3, progress.isCompleted() ? 1 : 0);</span>
+
+<span class="fc" id="L110">            int rows = pstmt.executeUpdate();</span>
+<span class="fc" id="L111">            System.out.println(&quot;Rows inserted into tasks: &quot; + rows);</span>
+
+<span class="fc" id="L113">            ResultSet rs = pstmt.getGeneratedKeys();</span>
+<span class="pc bpc" id="L114" title="1 of 2 branches missed.">            if (rs.next()) {</span>
+<span class="fc" id="L115">                progress.setId(rs.getInt(1));</span>
+<span class="fc" id="L116">                System.out.println(&quot;New list ID: &quot; + progress.getId());</span>
+            }
+<span class="nc" id="L118">        } catch (SQLException e) {</span>
+<span class="nc" id="L119">            e.printStackTrace();</span>
+        }
+<span class="fc" id="L121">    }</span>
+    
+    // Load lists for a user
+    public static List&lt;SaveProgress&gt; loadProgressForUser(int userId) {
+<span class="fc" id="L125">        List&lt;SaveProgress&gt; progressList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L126">        String sql = &quot;SELECT * FROM tasks WHERE user_id = ?&quot;;</span>
+<span class="fc" id="L127">        try (Connection conn = connect();</span>
+<span class="fc" id="L128">             PreparedStatement pstmt = conn.prepareStatement(sql)) {</span>
+<span class="fc" id="L129">            pstmt.setInt(1, userId);</span>
+<span class="fc" id="L130">            ResultSet rs = pstmt.executeQuery();</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">            while (rs.next()) {</span>
+<span class="fc" id="L132">                SaveProgress progress = new SaveProgress(</span>
+<span class="fc" id="L133">                    rs.getInt(&quot;id&quot;),</span>
+<span class="fc" id="L134">                    rs.getInt(&quot;user_id&quot;),</span>
+<span class="fc" id="L135">                    rs.getString(&quot;description&quot;),</span>
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">                    rs.getInt(&quot;completed&quot;) == 1</span>
+                );
+<span class="fc" id="L138">                progressList.add(progress);</span>
+            }
+<span class="nc" id="L140">        } catch (SQLException e) {</span>
+<span class="nc" id="L141">            System.out.println(&quot;Failed to load progress: &quot; + e.getMessage());</span>
+        }
+<span class="fc" id="L143">        return progressList;</span>
+    }
+
+    // Delete entire list + items
+    public static void deleteTaskList(int listId) {
+<span class="fc" id="L148">        String sql = &quot;DELETE FROM tasks WHERE id = ?&quot;;</span>
+<span class="fc" id="L149">        try (Connection conn = connect();</span>
+<span class="fc" id="L150">             PreparedStatement pstmt = conn.prepareStatement(sql)) {</span>
+<span class="fc" id="L151">            pstmt.setInt(1, listId);</span>
+<span class="fc" id="L152">            pstmt.executeUpdate();</span>
+<span class="nc" id="L153">        } catch (SQLException e) {</span>
+<span class="nc" id="L154">            System.out.println(&quot;Failed to delete list: &quot; + e.getMessage());</span>
+        }
+
+<span class="fc" id="L157">        String sqlItems = &quot;DELETE FROM task_items WHERE list_id = ?&quot;;</span>
+<span class="fc" id="L158">        try (Connection conn = connect();</span>
+<span class="fc" id="L159">             PreparedStatement pstmt = conn.prepareStatement(sqlItems)) {</span>
+<span class="fc" id="L160">            pstmt.setInt(1, listId);</span>
+<span class="fc" id="L161">            pstmt.executeUpdate();</span>
+<span class="nc" id="L162">        } catch (SQLException e) {</span>
+<span class="nc" id="L163">            System.out.println(&quot;Failed to delete task items: &quot; + e.getMessage());</span>
+        }
+<span class="fc" id="L165">    }</span>
+    
+ // Delete individual task item
+    public static void deleteTaskItem(int listId, String content) {
+<span class="fc" id="L169">        String sql = &quot;DELETE FROM task_items WHERE list_id = ? AND content = ?&quot;;</span>
+<span class="fc" id="L170">        try (Connection conn = connect();</span>
+<span class="fc" id="L171">             PreparedStatement pstmt = conn.prepareStatement(sql)) {</span>
+<span class="fc" id="L172">            pstmt.setInt(1, listId);</span>
+<span class="fc" id="L173">            pstmt.setString(2, content.trim());</span>
+<span class="fc" id="L174">            pstmt.executeUpdate();</span>
+<span class="nc" id="L175">        } catch (SQLException e) {</span>
+<span class="nc" id="L176">            System.out.println(&quot;Failed to delete task: &quot; + e.getMessage());</span>
+        }
+<span class="fc" id="L178">    }</span>
+    
+    // task items
+    public static void createTaskItemsTable() {
+<span class="fc" id="L182">        String sql = &quot;CREATE TABLE IF NOT EXISTS task_items (&quot; +</span>
+                     &quot;id INTEGER PRIMARY KEY AUTOINCREMENT,&quot; +
+                     &quot;list_id INTEGER NOT NULL,&quot; +
+                     &quot;content TEXT NOT NULL,&quot; +
+                     &quot;completed INTEGER NOT NULL DEFAULT 0,&quot; +
+                     &quot;FOREIGN KEY(list_id) REFERENCES tasks(id)&quot; +
+                     &quot;);&quot;;
+<span class="fc" id="L189">        try (Connection conn = connect();</span>
+<span class="fc" id="L190">             Statement stmt = conn.createStatement()) {</span>
+<span class="fc" id="L191">            stmt.execute(sql);</span>
+<span class="nc" id="L192">        } catch (SQLException e) {</span>
+<span class="nc" id="L193">            System.out.println(&quot;Failed to create task_items table: &quot; + e.getMessage());</span>
+        }
+<span class="fc" id="L195">    }</span>
+
+    // Schema fix
+    public static void ensureCompletedColumnExists() {
+<span class="nc" id="L199">        try (Connection conn = connect();</span>
+<span class="nc" id="L200">             Statement stmt = conn.createStatement()) {</span>
+
+<span class="nc" id="L202">            ResultSet rs = stmt.executeQuery(&quot;PRAGMA table_info(task_items);&quot;);</span>
+<span class="nc" id="L203">            boolean hasCompleted = false;</span>
+
+<span class="nc bnc" id="L205" title="All 2 branches missed.">            while (rs.next()) {</span>
+<span class="nc bnc" id="L206" title="All 2 branches missed.">                if (&quot;completed&quot;.equalsIgnoreCase(rs.getString(&quot;name&quot;))) {</span>
+<span class="nc" id="L207">                    hasCompleted = true;</span>
+<span class="nc" id="L208">                    break;</span>
+                }
+            }
+
+<span class="nc bnc" id="L212" title="All 2 branches missed.">            if (!hasCompleted) {</span>
+<span class="nc" id="L213">                stmt.execute(&quot;ALTER TABLE task_items ADD COLUMN completed INTEGER NOT NULL DEFAULT 0;&quot;);</span>
+            }
+
+<span class="nc" id="L216">        } catch (SQLException e) {</span>
+<span class="nc" id="L217">            System.out.println(&quot;Error ensuring completed column: &quot; + e.getMessage());</span>
+        }
+<span class="nc" id="L219">    }</span>
+    
+    public static void saveTaskItem(int listId, String content) {
+<span class="fc" id="L222">        String sql = &quot;INSERT INTO task_items (list_id, content, completed) VALUES (?, ?, 0)&quot;;</span>
+<span class="fc" id="L223">        try (Connection conn = connect();</span>
+<span class="fc" id="L224">             PreparedStatement pstmt = conn.prepareStatement(sql)) {</span>
+
+<span class="fc" id="L226">            pstmt.setInt(1, listId);</span>
+<span class="fc" id="L227">            pstmt.setString(2, content.trim());</span>
+<span class="fc" id="L228">            pstmt.executeUpdate();</span>
+<span class="nc" id="L229">        } catch (SQLException e) {</span>
+<span class="nc" id="L230">            e.printStackTrace();</span>
+        }
+<span class="fc" id="L232">    }</span>
+
+    public static void markTaskItemCompleted(int listId, String content) {
+<span class="fc" id="L235">        String sql = &quot;UPDATE task_items SET completed = 1 WHERE list_id = ? AND content = ?&quot;;</span>
+<span class="fc" id="L236">        try (Connection conn = connect();</span>
+<span class="fc" id="L237">             PreparedStatement pstmt = conn.prepareStatement(sql)) {</span>
+<span class="fc" id="L238">            pstmt.setInt(1, listId);</span>
+<span class="fc" id="L239">            pstmt.setString(2, content.trim());</span>
+<span class="fc" id="L240">            pstmt.executeUpdate();</span>
+<span class="nc" id="L241">        } catch (SQLException e) {</span>
+<span class="nc" id="L242">            System.out.println(&quot;Failed to mark task item completed: &quot; + e.getMessage());</span>
+        }
+<span class="fc" id="L244">    }</span>
+
+    public static List&lt;String&gt; loadActiveTaskItemsForList(int listId) {
+<span class="fc" id="L247">        List&lt;String&gt; items = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L248">        String sql = &quot;SELECT content FROM task_items WHERE list_id = ? AND completed = 0&quot;;</span>
+<span class="fc" id="L249">        try (Connection conn = connect();</span>
+<span class="fc" id="L250">             PreparedStatement pstmt = conn.prepareStatement(sql)) {</span>
+<span class="fc" id="L251">            pstmt.setInt(1, listId);</span>
+<span class="fc" id="L252">            ResultSet rs = pstmt.executeQuery();</span>
+<span class="fc bfc" id="L253" title="All 2 branches covered.">            while (rs.next()) items.add(rs.getString(&quot;content&quot;));</span>
+<span class="nc" id="L254">        } catch (SQLException e) {</span>
+<span class="nc" id="L255">            System.out.println(&quot;Failed to load active task items: &quot; + e.getMessage());</span>
+        }
+<span class="fc" id="L257">        return items;</span>
+    }
+
+    public static List&lt;String&gt; loadCompletedTaskItemsForList(int listId) {
+<span class="fc" id="L261">        List&lt;String&gt; items = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L262">        String sql = &quot;SELECT content FROM task_items WHERE list_id = ? AND completed = 1&quot;;</span>
+<span class="fc" id="L263">        try (Connection conn = connect();</span>
+<span class="fc" id="L264">             PreparedStatement pstmt = conn.prepareStatement(sql)) {</span>
+<span class="fc" id="L265">            pstmt.setInt(1, listId);</span>
+<span class="fc" id="L266">            ResultSet rs = pstmt.executeQuery();</span>
+<span class="fc bfc" id="L267" title="All 2 branches covered.">            while (rs.next()) items.add(rs.getString(&quot;content&quot;));</span>
+<span class="nc" id="L268">        } catch (SQLException e) {</span>
+<span class="nc" id="L269">            System.out.println(&quot;Failed to load completed task items: &quot; + e.getMessage());</span>
+        }
+<span class="fc" id="L271">        return items;</span>
+    }
+    
+    // Get the newest (most recently created) list ID for a user
+    public static int getLastListIdForUser(int userId) {
+<span class="nc" id="L276">        String sql = &quot;SELECT id FROM tasks WHERE user_id = ? ORDER BY id DESC LIMIT 1&quot;;</span>
+
+<span class="nc" id="L278">        try (Connection conn = connect();</span>
+<span class="nc" id="L279">             PreparedStatement pstmt = conn.prepareStatement(sql)) {</span>
+
+<span class="nc" id="L281">            pstmt.setInt(1, userId);</span>
+<span class="nc" id="L282">            ResultSet rs = pstmt.executeQuery();</span>
+
+<span class="nc bnc" id="L284" title="All 2 branches missed.">            if (rs.next()) {</span>
+<span class="nc" id="L285">                return rs.getInt(&quot;id&quot;);</span>
+            }
+
+<span class="nc bnc" id="L288" title="All 2 branches missed.">        } catch (SQLException e) {</span>
+<span class="nc" id="L289">            System.out.println(&quot;Failed to get last list ID: &quot; + e.getMessage());</span>
+        }
+
+<span class="nc" id="L292">        return -1;</span>
+    }
+
+
+    // password resets
+    public static void createPasswordResetsTable() {
+<span class="nc" id="L298">        String sql = &quot;CREATE TABLE IF NOT EXISTS password_resets (&quot; +</span>
+                     &quot;id INTEGER PRIMARY KEY AUTOINCREMENT,&quot; +
+                     &quot;user_id INTEGER NOT NULL,&quot; +
+                     &quot;token TEXT NOT NULL,&quot; +
+                     &quot;expires_at DATETIME NOT NULL,&quot; +
+                     &quot;FOREIGN KEY(user_id) REFERENCES users(id)&quot; +
+                     &quot;);&quot;;
+<span class="nc" id="L305">        try (Connection conn = connect();</span>
+<span class="nc" id="L306">             Statement stmt = conn.createStatement()) {</span>
+<span class="nc" id="L307">            stmt.execute(sql);</span>
+<span class="nc" id="L308">        } catch (SQLException e) {</span>
+<span class="nc" id="L309">            System.out.println(&quot;Password resets table creation failed: &quot; + e.getMessage());</span>
+        }
+<span class="nc" id="L311">    }</span>
+
+    public static void saveResetToken(String email, String token) {
+<span class="fc" id="L314">        String sqlUser = &quot;SELECT id FROM users WHERE email = ?&quot;;</span>
+<span class="fc" id="L315">        String sqlInsert = &quot;INSERT INTO password_resets(user_id, token, expires_at) VALUES(?, ?, ?)&quot;;</span>
+
+<span class="fc" id="L317">        try (Connection conn = connect();</span>
+<span class="fc" id="L318">             PreparedStatement findUser = conn.prepareStatement(sqlUser)) {</span>
+
+<span class="fc" id="L320">            findUser.setString(1, email);</span>
+<span class="fc" id="L321">            ResultSet rs = findUser.executeQuery();</span>
+
+<span class="fc bfc" id="L323" title="All 2 branches covered.">            if (rs.next()) {</span>
+<span class="fc" id="L324">                int userId = rs.getInt(&quot;id&quot;);</span>
+
+<span class="pc" id="L326">                try (PreparedStatement insert = conn.prepareStatement(sqlInsert)) {</span>
+<span class="nc" id="L327">                    insert.setInt(1, userId);</span>
+<span class="nc" id="L328">                    insert.setString(2, token);</span>
+<span class="nc" id="L329">                    insert.setString(3, java.time.LocalDateTime.now().plusHours(1).toString());</span>
+<span class="nc" id="L330">                    insert.executeUpdate();</span>
+                }
+            } else {
+<span class="fc" id="L333">                System.out.println(&quot;No user found with email: &quot; + email);</span>
+            }
+<span class="fc" id="L335">        } catch (Exception e) {</span>
+<span class="fc" id="L336">            e.printStackTrace();</span>
+        }
+<span class="fc" id="L338">    }</span>
+    
+    // addition from caitlyn
+    // this will fetch username from DB
+    public static String getUsernameById(int id) {
+<span class="fc" id="L343">    	String sql = &quot;SELECT username FROM users WHERE id = ?&quot;;</span>
+<span class="fc" id="L344">    	try (Connection conn = connect();</span>
+<span class="fc" id="L345">    		PreparedStatement pstmt = conn.prepareStatement(sql)) {</span>
+    		
+<span class="fc" id="L347">    		pstmt.setInt(1, id);</span>
+<span class="fc" id="L348">    		ResultSet rs = pstmt.executeQuery();</span>
+    		
+<span class="pc bpc" id="L350" title="1 of 2 branches missed.">    		if (rs.next()) return rs.getString(&quot;username&quot;);</span>
+    	
+<span class="pc bpc" id="L352" title="1 of 2 branches missed.">    	} catch(SQLException e) {</span>
+<span class="nc" id="L353">    		System.out.println(&quot;Failed to fetch username: &quot; + e.getMessage());</span>
+    	}
+<span class="nc" id="L355">    	return null;</span>
+    }
+    // end of addition
+    
+    // constellation progress
+    public static void createConstellationProgressTable() {
+        try {
+<span class="fc" id="L362">            String sql = &quot;CREATE TABLE IF NOT EXISTS constellation_progress (&quot; +</span>
+                         &quot;user_id INTEGER, &quot; +
+                         &quot;constellation_index INTEGER, &quot; +
+                         &quot;stars_lit INTEGER, &quot; +
+                         &quot;total_tasks_completed INTEGER, &quot; +
+                         &quot;PRIMARY KEY (user_id, constellation_index), &quot; +
+                         &quot;FOREIGN KEY (user_id) REFERENCES users(id))&quot;;
+
+<span class="fc" id="L370">            try (Connection conn = connect();</span>
+<span class="fc" id="L371">                 PreparedStatement pstmt = conn.prepareStatement(sql)) {</span>
+<span class="fc" id="L372">                pstmt.execute();</span>
+            }
+<span class="nc" id="L374">        } catch (SQLException e) {</span>
+<span class="nc" id="L375">            e.printStackTrace();</span>
+        }
+<span class="fc" id="L377">    }</span>
+    
+    public static void saveConstellationProgress(int userId, int constellationIndex, int starsLit, int totalTasksCompleted) {
+        try {
+<span class="fc" id="L381">            String updateSql =</span>
+<span class="fc" id="L382">                &quot;UPDATE constellation_progress SET stars_lit = ?, total_tasks_completed = ? &quot; +</span>
+                &quot;WHERE user_id = ? AND constellation_index = ?&quot;;
+
+<span class="fc" id="L385">            try (Connection conn = connect();</span>
+<span class="fc" id="L386">                 PreparedStatement pstmt = conn.prepareStatement(updateSql)) {</span>
+<span class="fc" id="L387">                pstmt.setInt(1, starsLit);</span>
+<span class="fc" id="L388">                pstmt.setInt(2, totalTasksCompleted);</span>
+<span class="fc" id="L389">                pstmt.setInt(3, userId);</span>
+<span class="fc" id="L390">                pstmt.setInt(4, constellationIndex);</span>
+
+<span class="fc" id="L392">                int rowsUpdated = pstmt.executeUpdate();</span>
+
+<span class="pc bpc" id="L394" title="1 of 2 branches missed.">                if (rowsUpdated == 0) {</span>
+<span class="nc" id="L395">                    String insertSql =</span>
+<span class="nc" id="L396">                        &quot;INSERT INTO constellation_progress (user_id, constellation_index, stars_lit, total_tasks_completed) &quot; +</span>
+                        &quot;VALUES (?, ?, ?, ?)&quot;;
+
+<span class="nc" id="L399">                    try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {</span>
+<span class="nc" id="L400">                        insertStmt.setInt(1, userId);</span>
+<span class="nc" id="L401">                        insertStmt.setInt(2, constellationIndex);</span>
+<span class="nc" id="L402">                        insertStmt.setInt(3, starsLit);</span>
+<span class="nc" id="L403">                        insertStmt.setInt(4, totalTasksCompleted);</span>
+<span class="nc" id="L404">                        insertStmt.executeUpdate();</span>
+                    }
+                }
+            }
+<span class="nc" id="L408">        } catch (SQLException e) {</span>
+<span class="nc" id="L409">            e.printStackTrace();</span>
+        }
+<span class="fc" id="L411">    }</span>
+    
+    
+    //counter for constellations progress 
+    
+    public static void incrementConstellationProgress(int userId, int constellationIndex) {
+<span class="fc" id="L417">        String sql = &quot;UPDATE constellation_progress &quot; +</span>
+                     &quot;SET stars_lit = stars_lit + 1, total_tasks_completed = total_tasks_completed + 1 &quot; +
+                     &quot;WHERE user_id = ? AND constellation_index = ?&quot;;
+<span class="fc" id="L420">        try (Connection conn = connect();</span>
+<span class="fc" id="L421">             PreparedStatement pstmt = conn.prepareStatement(sql)) {</span>
+<span class="fc" id="L422">            pstmt.setInt(1, userId);</span>
+<span class="fc" id="L423">            pstmt.setInt(2, constellationIndex);</span>
+<span class="fc" id="L424">            pstmt.executeUpdate();</span>
+<span class="nc" id="L425">        } catch (SQLException e) {</span>
+<span class="nc" id="L426">            System.out.println(&quot;Failed to increment constellation progress: &quot; + e.getMessage());</span>
+        }
+<span class="fc" id="L428">    }</span>
+    
+ // Get stars lit for a specific constellation
+    public static int getStarsLit(int userId, int constellationIndex) {
+<span class="fc" id="L432">        String sql = &quot;SELECT stars_lit FROM constellation_progress WHERE user_id = ? AND constellation_index = ?&quot;;</span>
+<span class="fc" id="L433">        try (Connection conn = connect();</span>
+<span class="fc" id="L434">             PreparedStatement pstmt = conn.prepareStatement(sql)) {</span>
+<span class="fc" id="L435">            pstmt.setInt(1, userId);</span>
+<span class="fc" id="L436">            pstmt.setInt(2, constellationIndex);</span>
+<span class="fc" id="L437">            ResultSet rs = pstmt.executeQuery();</span>
+<span class="pc bpc" id="L438" title="1 of 2 branches missed.">            if (rs.next()) return rs.getInt(&quot;stars_lit&quot;);</span>
+<span class="pc bpc" id="L439" title="1 of 2 branches missed.">        } catch (SQLException e) {</span>
+<span class="nc" id="L440">            System.out.println(&quot;Failed to read stars_lit: &quot; + e.getMessage());</span>
+        }
+<span class="nc" id="L442">        return 0;</span>
+    }
+
+ // Ensure a row exists for this constellation
+    public static void ensureConstellationProgressRow(int userId, int constellationIndex) {
+<span class="fc" id="L447">        String selectSql = &quot;SELECT 1 FROM constellation_progress WHERE user_id = ? AND constellation_index = ?&quot;;</span>
+<span class="fc" id="L448">        String insertSql = &quot;INSERT INTO constellation_progress (user_id, constellation_index, stars_lit, total_tasks_completed) VALUES (?, ?, 0, 0)&quot;;</span>
+<span class="fc" id="L449">        try (Connection conn = connect();</span>
+<span class="fc" id="L450">             PreparedStatement sel = conn.prepareStatement(selectSql)) {</span>
+<span class="fc" id="L451">            sel.setInt(1, userId);</span>
+<span class="fc" id="L452">            sel.setInt(2, constellationIndex);</span>
+<span class="fc" id="L453">            ResultSet rs = sel.executeQuery();</span>
+
+<span class="fc bfc" id="L455" title="All 2 branches covered.">            if (!rs.next()) {</span>
+<span class="fc" id="L456">                try (PreparedStatement ins = conn.prepareStatement(insertSql)) {</span>
+<span class="fc" id="L457">                    ins.setInt(1, userId);</span>
+<span class="fc" id="L458">                    ins.setInt(2, constellationIndex);</span>
+<span class="fc" id="L459">                    ins.executeUpdate();</span>
+                }
+            }
+<span class="nc" id="L462">        } catch (SQLException e) {</span>
+<span class="nc" id="L463">            System.out.println(&quot;Failed to ensure progress row: &quot; + e.getMessage());</span>
+        }
+<span class="fc" id="L465">    }</span>
+
+    // Get total tasks completed across all constellations
+    public static int getTotalTasksCompleted(int userId) {
+<span class="fc" id="L469">        String sql = &quot;SELECT COALESCE(SUM(total_tasks_completed),0) AS total FROM constellation_progress WHERE user_id = ?&quot;;</span>
+<span class="fc" id="L470">        try (Connection conn = connect();</span>
+<span class="fc" id="L471">             PreparedStatement pstmt = conn.prepareStatement(sql)) {</span>
+<span class="fc" id="L472">            pstmt.setInt(1, userId);</span>
+<span class="fc" id="L473">            ResultSet rs = pstmt.executeQuery();</span>
+<span class="pc bpc" id="L474" title="1 of 2 branches missed.">            if (rs.next()) return rs.getInt(&quot;total&quot;);</span>
+<span class="pc bpc" id="L475" title="1 of 2 branches missed.">        } catch (SQLException e) {</span>
+<span class="nc" id="L476">            System.out.println(&quot;Failed to read total_tasks_completed: &quot; + e.getMessage());</span>
+        }
+<span class="nc" id="L478">        return 0;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span>Main (2) (Dec 5, 2025 9:49:06 PM)</div></body></html>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>Star.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">Main (2) (Dec 5, 2025 9:49:06 PM)</a> &gt; <a href="../../index.html" class="el_group">TaskManagerProject</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">application</a> &gt; <span class="el_source">Star.java</span></div><h1>Star.java</h1><pre class="source lang-java linenums">package application;
+import javafx.animation.ScaleTransition;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.paint.Color; //used for coloring shapes
+import javafx.scene.shape.Circle; //(x, y, radius, fillColor)
+import javafx.util.Duration;
+
+
+public class Star extends Circle{  //extends the circle object from javafx
+    //private Circle shape;
+    private boolean complete;
+
+    public Star(double x, double y, double radius) {
+<span class="fc" id="L14">    	super(x, y, radius, Color.GREY); //stars will star dim n greyed out</span>
+<span class="fc" id="L15">        complete = false;</span>
+    
+<span class="fc" id="L17">        ScaleTransition pulse = new ScaleTransition(Duration.seconds(1), this); //creates a 1 second animation for star</span>
+<span class="fc" id="L18">    	pulse.setFromX(1); //scaling factor 1 means default size, no scaling</span>
+<span class="fc" id="L19">        pulse.setFromY(1);</span>
+<span class="fc" id="L20">        pulse.setToX(1.5); //150% of the original size, or 1.5x bigger</span>
+<span class="fc" id="L21">        pulse.setToY(1.5);</span>
+<span class="fc" id="L22">        pulse.setAutoReverse(true); //when the animation ends it loops back</span>
+<span class="fc" id="L23">        pulse.setCycleCount(ScaleTransition.INDEFINITE); //indefinitely loops</span>
+<span class="fc" id="L24">        pulse.play();</span>
+    
+    
+    
+    
+    
+<span class="fc" id="L30">    }</span>
+
+    public boolean isComplete() { //for whether a star has been completed ie task completed
+<span class="fc" id="L33">        return complete;</span>
+    }
+    
+    
+
+    public void setComplete(boolean value) {
+<span class="fc" id="L39">        complete = value;</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        if (value) {</span>
+<span class="fc" id="L41">            setFill(Color.WHITE); //lights up when complete</span>
+<span class="fc" id="L42">            DropShadow glow = new DropShadow(); //this will be used to add a glow behind the star</span>
+<span class="fc" id="L43">            glow.setRadius(20); //radius of the glow</span>
+<span class="fc" id="L44">            glow.setColor(Color.PURPLE); //color of the glow</span>
+<span class="fc" id="L45">            glow.setSpread(0.6); //intensity or opacity of the glow</span>
+<span class="fc" id="L46">            setEffect(glow); //applies the glow to the star</span>
+            
+<span class="fc" id="L48">        } else {</span>
+<span class="fc" id="L49">            setFill(Color.GREY); //stays dim if incomplete</span>
+        }
+<span class="fc" id="L51">    }</span>
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span>Main (2) (Dec 5, 2025 9:49:06 PM)</div></body></html>

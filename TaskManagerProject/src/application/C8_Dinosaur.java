@@ -88,10 +88,7 @@ public class C8_Dinosaur extends Constellation {
         return "Dinosaur";
     }
     
-    @Override
-    public int getConstellationNumber() {
-        return 8;
-    }
+
     
     @Override
     public Pane createPreview(double width, double height) {

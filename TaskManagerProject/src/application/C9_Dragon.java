@@ -86,10 +86,6 @@ public String getName() {
 return "Dragon";
 }
 
-@Override
-public int getConstellationNumber() {
-return 9;
-}
 
 @Override
 public Pane createPreview(double width, double height) {
@@ -147,9 +143,5 @@ StarLink[] showLinks = {
 return createScaledPreview(showStars, showLinks, width, height, 0.75);
 }
 
-@Override
-public Pane createProgressView(double width, double height) {
-    // shrink more aggressively
-    return createScaledPreview(this.stars, this.links, width, height, 0.50);
-}
+
 }

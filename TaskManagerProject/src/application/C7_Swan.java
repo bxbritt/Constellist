@@ -87,10 +87,6 @@ public String getName() {
 return "Swan";
 }
 
-@Override
-public int getConstellationNumber() {
-return 7;
-}
 
 @Override
 public Pane createPreview(double width, double height) {
@@ -148,9 +144,5 @@ new StarLink(star9, star10), new StarLink(star5, star10)
 return createScaledPreview(showStars, showLinks, width, height, 0.75);
 }
 
-@Override
-public Pane createProgressView(double width, double height) {
-    // shrink more aggressively
-    return createScaledPreview(this.stars, this.links, width, height, 0.50);
-}
+
 }

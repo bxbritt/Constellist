@@ -88,10 +88,7 @@ public class C4_Lightning extends Constellation {
         return "Lightning";
     }
     
-    @Override
-    public int getConstellationNumber() {
-        return 4;
-    }
+
     
     @Override
     public Pane createPreview(double width, double height) {
@@ -149,11 +146,7 @@ public class C4_Lightning extends Constellation {
         return createScaledPreview(showStars, showLinks, width, height, 0.50);
     }
     
-    @Override
-    public Pane createProgressView(double width, double height) {
-        // shrink more aggressively
-        return createScaledPreview(this.stars, this.links, width, height, 0.50);
-    }
+
 	
 
 }
