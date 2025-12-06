@@ -2,6 +2,8 @@ package application;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -11,32 +13,35 @@ import javafx.stage.Stage;
 import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
-import javafx.scene.text.Text;
 import javafx.scene.control.TextInputDialog;
-
 import java.util.List;
 import java.util.Optional;
 
 public class TaskApp extends Application {
 
-    private ScrollPane mainContent;
-    private VBox galleryContent;
-    private VBox progressContent;
-    private VBox loginContent;
+    // persistent window size
+    private static double savedWidth = 1000;
+    private static double savedHeight = 600;
 
- 
+    // static root reference
+    private static BorderPane rootLayoutStatic;
+
+    // main root
     private BorderPane rootLayout;
+
+    // main scrollpane (task page)
+    private ScrollPane mainScroll;
 
     @Override
     public void start(Stage stage) {
 
+        // root setup
         rootLayout = new BorderPane();
+        rootLayoutStatic = rootLayout;
 
-        // background with animated stars
+        // background layer
         StackPane layeredRoot = new StackPane();
-        layeredRoot.setStyle(
-                "-fx-background-color: linear-gradient(to bottom, #071229, #0D234F, #280c4c);"
-        );
+        layeredRoot.setStyle("-fx-background-color: linear-gradient(to bottom, #071229, #0d234f, #280c4c);");
 
         StarOverlay stars = new StarOverlay(180);
         stars.prefWidthProperty().bind(stage.widthProperty());
@@ -44,34 +49,26 @@ public class TaskApp extends Application {
 
         layeredRoot.getChildren().addAll(stars, rootLayout);
 
+        // load user
         int userId = LoggedInUser.getId();
         boolean returningUser = !Database.loadProgressForUser(userId).isEmpty();
 
         // welcome screen
         if (!LoggedInUser.hasSeenWelcome) {
             LoggedInUser.hasSeenWelcome = true;
-
-            WelcomeScreen ws = new WelcomeScreen();
-            ws.show(stage, returningUser);
+            new WelcomeScreen().show(stage, returningUser);
             return;
         }
 
         // sidebar
         VBox sidebar = new VBox(20);
-        sidebar.getStyleClass().add("sidebar");
-        sidebar.getStyleClass().add("sidebar-border");
+        sidebar.getStyleClass().addAll("sidebar", "sidebar-border");
 
-        String welcomeText = returningUser
-                ? "Welcome Back, " + LoggedInUser.getUsername()
-                : "Welcome, " + LoggedInUser.getUsername();
+        Label welcomeLabel = new Label("Hello, " + LoggedInUser.getUsername());
+        welcomeLabel.getStyleClass().addAll("welcome-label", "glow-text");
+        sidebar.getChildren().add(welcomeLabel);
 
-        Label welcomeLabel = new Label(welcomeText);
-        welcomeLabel.getStyleClass().add("welcome-label");
-        welcomeLabel.getStyleClass().add("glow-text");
-
-        sidebar.getChildren().add(0, welcomeLabel);
-
-        Button mainButton = new Button("Tasks");
+        Button mainButton = new Button(" My Tasks");
         Button galleryButton = new Button("Gallery");
         Button progressButton = new Button("Progress");
         Button logoutButton = new Button("Logout");
@@ -84,171 +81,120 @@ public class TaskApp extends Application {
         sidebar.getChildren().addAll(mainButton, galleryButton, progressButton, logoutButton);
         rootLayout.setLeft(sidebar);
 
-        // task list page
+        // top controls
         Button createListButton = new Button("Create New List");
-        createListButton.getStyleClass().add("bubble-button");
-        createListButton.getStyleClass().add("glow-text");
+        createListButton.getStyleClass().addAll("bubble-button", "glow-text");
 
-        
-      
-        HBox menuBar = new HBox(15);
         AffirmationBubble affirmationBubble = new AffirmationBubble();
-        menuBar.getChildren().addAll(createListButton,affirmationBubble);
-        menuBar.setStyle("-fx-alignment: center-left; -fx-padding: 10;");
-        
+
+        // task list container
         FlowPane listContainer = new FlowPane();
         listContainer.setHgap(20);
         listContainer.setVgap(20);
         listContainer.setPrefWrapLength(900);
         listContainer.getStyleClass().add("list-container");
 
-        VBox contentLayout = new VBox(20, createListButton, listContainer);
+        // main content layout
+        VBox contentLayout = new VBox(20, createListButton, affirmationBubble, listContainer);
         contentLayout.getStyleClass().add("content-root");
 
-        mainContent = new ScrollPane(contentLayout);
-        mainContent.setFitToWidth(true);
-        mainContent.setFitToHeight(true);
-        mainContent.setStyle("-fx-background: transparent;");
-
-        // gallery content
-        galleryContent = new VBox(20);
-        galleryContent.setStyle("-fx-padding: 40; -fx-alignment: center; -fx-background-color: transparent;");
-        Text galleryText = new Text("Constellation Gallery Placeholder");
-        galleryText.getStyleClass().add("glow-text");
-        galleryContent.getChildren().add(galleryText);
-
-        // progress content
-        progressContent = new VBox(20);
-        progressContent.setStyle("-fx-padding: 40; -fx-alignment: center; -fx-background-color: transparent;");
-        Text progressText = new Text("Constellation Progress Appears here");
-        progressText.getStyleClass().add("glow-text");
-        progressContent.getChildren().add(progressText);
-
-        // star reward manager
-//        starManager = new StarManager(() -> {
-//            setCenterContent(progressContent);
-//            progressContent.getChildren().clear();
-//
-//            Text constellationUnlocked = new Text("Constellation Unlocked!");
-//            constellationUnlocked.getStyleClass().add("glow-text");
-//            constellationUnlocked.setStyle("-fx-font-size: 24;");
-//
-//            progressContent.getChildren().add(constellationUnlocked);
-//        });
-
-        // login content
-        loginContent = new VBox(20);
-        loginContent.setStyle("-fx-alignment: center; -fx-padding: 40; -fx-background-color: transparent;");
-        Text loginText = new Text("Login Screen Placeholder");
-        loginText.getStyleClass().add("glow-text");
-        loginContent.getChildren().add(loginText);
+        mainScroll = new ScrollPane(contentLayout);
+        mainScroll.setFitToWidth(true);
+        mainScroll.setStyle("-fx-background-color: transparent;");
+        mainScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        mainScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
 
         // load saved lists
         List<SaveProgress> savedLists = Database.loadProgressForUser(userId);
-        for (SaveProgress progress : savedLists) {
-
-            TaskList list = new TaskList(progress.getDescription(), progress.getId());
-
-            List<String> items = Database.loadActiveTaskItemsForList(progress.getId());
-            for (String item : items) {
+        for (SaveProgress p : savedLists) {
+            TaskList list = new TaskList(p.getDescription(), p.getId());
+            for (String item : Database.loadActiveTaskItemsForList(p.getId())) {
                 list.addItem(item);
             }
-
             listContainer.getChildren().add(list);
         }
 
-        // create new list button
+        // create new list
         createListButton.setOnAction(e -> {
-
-            if (rootLayout.getCenter() != mainContent) {
-                System.out.println("⚠ Cannot create lists outside the Tasks page.");
-                return;
-            }
-
             TextInputDialog dialog = new TextInputDialog("New List");
             dialog.setHeaderText("Enter a name for your list:");
             Optional<String> result = dialog.showAndWait();
 
             if (result.isPresent()) {
-                String listName = result.get().trim();
-                if (listName.isEmpty()) listName = "Untitled List";
+                String name = result.get().trim();
+                if (name.isEmpty()) name = "Untitled List";
 
-                SaveProgress progress = new SaveProgress(LoggedInUser.getId(), listName, false);
-                Database.saveProgress(progress);
+                SaveProgress sp = new SaveProgress(userId, name, false);
+                Database.saveProgress(sp);
 
-                TaskList newList = new TaskList(listName, progress.getId());
+                TaskList newList = new TaskList(name, sp.getId());
 
-                FadeTransition fade = new FadeTransition(Duration.millis(500), newList);
-                fade.setFromValue(0);
-                fade.setToValue(1);
+                FadeTransition ft = new FadeTransition(Duration.millis(500), newList);
+                ft.setFromValue(0);
+                ft.setToValue(1);
 
-                ScaleTransition scale = new ScaleTransition(Duration.millis(500), newList);
-                scale.setFromX(0.8);
-                scale.setFromY(0.8);
-                scale.setToX(1);
-                scale.setToY(1);
+                ScaleTransition st = new ScaleTransition(Duration.millis(500), newList);
+                st.setFromX(0.8);
+                st.setFromY(0.8);
+                st.setToX(1);
+                st.setToY(1);
 
-                fade.play();
-                scale.play();
+                ft.play();
+                st.play();
 
                 listContainer.getChildren().add(newList);
             }
         });
 
-        // side bar button actions
-        mainButton.setOnAction(e -> {
-            Sound_Effects.playPianoKey();
-            setCenterContent(mainContent);
-        });
+        // sidebar nav
+        mainButton.setOnAction(e -> setCenterContent(mainScroll));
 
         galleryButton.setOnAction(e -> {
-            Sound_Effects.playPianoKey();
-            ConstellationGallery galleryScene = new ConstellationGallery();
-            galleryScene.start(stage);});
-
-        progressButton.setOnAction(e -> {
-            Sound_Effects.playPianoKey();
-            ProgressScene progressScene = new ProgressScene();
-            progressScene.start(stage);});
-       
-
-        logoutButton.setOnAction(e -> {
-        	 Sound_Effects.playPianoKey();
-             try {
-                 new Main().start(stage); // use the stage already passed into your start() method
-             } catch (Exception ex) {
-                 ex.printStackTrace();
-             }
+            ConstellationGallery gallery = new ConstellationGallery();
+            setCenterContent(gallery.getView());
         });
 
-        // default page
-        rootLayout.setCenter(mainContent);
+        progressButton.setOnAction(e -> {
+            int listId = LoggedInUser.getLastViewedListId();
+            if (listId == -1) {
+                List<SaveProgress> lists = Database.loadProgressForUser(userId);
+                if (!lists.isEmpty()) listId = lists.get(0).getId();
+            }
+            ProgressScene ps = new ProgressScene(listId);
+            setCenterContent(ps.getView());
+        });
+
+        logoutButton.setOnAction(e -> {
+            try { new Main().start(stage); }
+            catch (Exception ex) { ex.printStackTrace(); }
+        });
+
+        // default view = tasks page
+        rootLayout.setCenter(mainScroll);
 
         // music
         music.play("/music/menu_music.mp3", 0.25);
 
+        // scene setup
         Scene scene = new Scene(layeredRoot, 1000, 600);
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        applyPersistentWindowSize(stage);
 
         stage.setScene(scene);
-        stage.setTitle("Constellation Task Manager");
+        stage.setTitle("Constellist");
         stage.show();
-        stage.setFullScreen(true);
-
-
     }
 
-    private void setCenterContent(javafx.scene.Node content) {
+    private void setCenterContent(Node content) {
 
-        if (rootLayout.getCenter() == content) return;
+        Node old = rootLayout.getCenter();
 
-        FadeTransition fadeOut = new FadeTransition(Duration.millis(250), rootLayout.getCenter());
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(250), old);
         fadeOut.setFromValue(1);
         fadeOut.setToValue(0);
 
-        fadeOut.setOnFinished(e -> {
+        fadeOut.setOnFinished(ev -> {
             rootLayout.setCenter(content);
-
             FadeTransition fadeIn = new FadeTransition(Duration.millis(250), content);
             fadeIn.setFromValue(0);
             fadeIn.setToValue(1);
@@ -258,7 +204,21 @@ public class TaskApp extends Application {
         fadeOut.play();
     }
 
-    public static void main(String[] args) {
-        launch();
+    // static version used by other screens
+    public static void setCenterContentStatic(Node content) {
+        if (rootLayoutStatic != null) {
+            rootLayoutStatic.setCenter(content);
+        }
     }
+
+    // persistent window size
+    private void applyPersistentWindowSize(Stage stage) {
+        stage.setWidth(savedWidth);
+        stage.setHeight(savedHeight);
+
+        stage.widthProperty().addListener((o, ov, nv) -> savedWidth = nv.doubleValue());
+        stage.heightProperty().addListener((o, ov, nv) -> savedHeight = nv.doubleValue());
+    }
+
+    public static void main(String[] args) { launch(); }
 }

@@ -191,4 +191,3 @@ public abstract class Constellation extends Pane {
 	        return createScaledPreview(this.stars, this.links, width, height, 0.85);
 	    }
 	}
-

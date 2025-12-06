@@ -11,184 +11,126 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import javafx.util.Duration;
 
 public class TaskItem extends HBox {
 
     private CheckBox checkBox;
-    private Text taskText;
+    private Label taskText;               // changed from Text to Label so css can style color
     private Button deleteButton;
     private boolean completed = false;
 
     public TaskItem(String description, VBox parentList, TaskList parentContainer) {
-     
-    	checkBox = new CheckBox();
-        taskText = new Text(description);
-        deleteButton = new Button("Delete");
 
-        this.setSpacing(10);
-        this.getStyleClass().add("task-box");
-        taskText.getStyleClass().add("task-text");
+        // checkbox
+        checkBox = new CheckBox();
+        checkBox.getStyleClass().add("task-checkbox");
+
+        // task text label
+        taskText = new Label(description);
+        taskText.getStyleClass().add("task-item-label");    // glowing white-gold text
+
+        // delete button
+        deleteButton = new Button("delete");
         deleteButton.getStyleClass().add("bubble-button");
+
+        // layout settings
+        this.setSpacing(12);
+        this.setAlignment(Pos.CENTER_LEFT);
+        this.getStyleClass().add("task-item-row");
 
         this.getChildren().addAll(checkBox, taskText, deleteButton);
 
-//        checkBox.setOnAction(e -> {
-//            completed = checkBox.isSelected();
-//            if (completed) {
-//                taskText.getStyleClass().add("completed");
-//
-//                // Update DB
-//                Database.markTaskItemCompleted(parentContainer.getListId(), taskText.getText().trim());
-//
-//                // Increment constellation progress
-//                ConstellationManager cm = ConstellationManager.getInstance();
-//                cm.completeTask();
-//
-//                // Check completion
-//                Constellation current = cm.getCurrentConstellation();
-//                if (current.isComplete()) {
-//                    Platform.runLater(() -> {
-//                        Stage popup = new Stage();
-//                        popup.initModality(Modality.APPLICATION_MODAL);
-//                        popup.setTitle("Constellation Completed!");
-//
-//                        VBox root = new VBox(20);
-//                        root.setAlignment(Pos.CENTER);
-//                        root.setStyle("-fx-background-color: black;");
-//
-//                        Label msg = new Label("✨ " + current.getName() + " Completed! ✨");
-//                        msg.setStyle("-fx-font-size: 28px; -fx-text-fill: gold;");
-//
-//                        Button back = new Button("Back to Tasks");
-//                        back.setOnAction(ev -> popup.close());
-//
-//                        root.getChildren().addAll(msg, back);
-//
-//                        Scene scene = new Scene(root, 600, 400);
-//                        popup.setScene(scene);
-//                        popup.showAndWait();
-//
-//                        // Advance after popup closes
-//                        cm.advanceToNextConstellation();
-//                    });
-//                }
-//
-//                // Fade out and remove
-//                FadeTransition fade = new FadeTransition(Duration.millis(500), this);
-//                fade.setFromValue(1);
-//                fade.setToValue(0);
-//                fade.setOnFinished(event -> parentList.getChildren().remove(this));
-//                fade.play();
-//
-//                parentContainer.checkCompletion();
-//
-//            } else {
-//                taskText.getStyleClass().remove("completed");
-//            }
-//        });
+        // checkbox completion logic
         checkBox.setOnAction(e -> {
             completed = checkBox.isSelected();
-            if (completed) {
-              	Sound_Effects.playChime();
 
+            if (completed) {
+                // play sound
+                Sound_Effects.playChime();
+
+                // mark completed visually
                 taskText.getStyleClass().add("completed");
 
-                // Update DB
+                // update db
                 Database.markTaskItemCompleted(parentContainer.getListId(), taskText.getText().trim());
 
-                // Increment constellation progress
+                // increment constellation progress
                 ConstellationManager cm = ConstellationManager.getInstance();
                 cm.completeTask();
 
-                // Check completion
                 Constellation current = cm.getCurrentConstellation();
+
                 if (current.isComplete()) {
-                    Platform.runLater(() -> {
-                        Stage popup = new Stage();
-                        popup.initModality(Modality.APPLICATION_MODAL);
-                        popup.setTitle("Constellation Completed!");
-
-                        BorderPane root = new BorderPane();
-                        root.setStyle("-fx-background-color: black;");
-
-                        // Celebration message
-                        Label msg = new Label("✨ " + current.getName() + " Completed! ✨");
-                        msg.setStyle("-fx-font-size: 28px; -fx-text-fill: white;");
-                        BorderPane.setAlignment(msg, Pos.TOP_CENTER);
-                        root.setTop(msg);
-                        
-                        // Full constellation show
-                        Pane showPane = current.createShow(500, 300); //  centered constellation
-                        showPane.setPrefSize(500, 300);
-                        root.setCenter(showPane);
-                        // Back button
-                        Button back = new Button("Back to Tasks");
-                        back.setOnAction(ev -> popup.close());
-                        BorderPane.setAlignment(back, Pos.BOTTOM_RIGHT);
-                        root.setBottom(back);
-
-                        Scene scene = new Scene(root, 600, 500);
-                        popup.setScene(scene);
-                        popup.showAndWait();
-
-                        // Advance after popup closes
-                        cm.advanceToNextConstellation();
-                    });
+                    Platform.runLater(() -> showConstellationPopup(current, parentList, parentContainer));
                 }
-                // Fade out and remove
-              FadeTransition fade = new FadeTransition(Duration.millis(500), this);
-              fade.setFromValue(1);
-              fade.setToValue(0);
-              fade.setOnFinished(event -> parentList.getChildren().remove(this));
-              fade.play();
 
-              parentContainer.checkCompletion();
+                // fade out and remove
+                FadeTransition fade = new FadeTransition(Duration.millis(500), this);
+                fade.setFromValue(1);
+                fade.setToValue(0);
+                fade.setOnFinished(event -> parentList.getChildren().remove(this));
+                fade.play();
 
-          } else {
-              taskText.getStyleClass().remove("completed");
-          }
-            
+                parentContainer.checkCompletion();
+
+            } else {
+                taskText.getStyleClass().remove("completed");
+            }
         });
-        
+
+        // delete button logic
         deleteButton.setOnAction(e -> {
-            //parentList.getChildren().remove(this);
             Database.deleteTaskItem(parentContainer.getListId(), taskText.getText().trim());
             parentList.getChildren().remove(this);
             parentContainer.checkCompletion();
         });
     }
 
+    // return completion state
     public boolean isCompleted() {
         return completed;
     }
-    
-    //helper for popup
-    
-    private void showCompletionPopup(String constellationName) {
+
+    // popup when constellation is finished
+    private void showConstellationPopup(Constellation constellation, VBox parentList, TaskList parentContainer) {
+
         Stage popup = new Stage();
+        popup.initModality(Modality.APPLICATION_MODAL);
         popup.setTitle("Constellation Completed!");
 
-        VBox root = new VBox(20);
-        root.setAlignment(Pos.CENTER);
-        root.setStyle("-fx-background-color: black;");
+        BorderPane root = new BorderPane();
+        root.setStyle("-fx-background-color: linear-gradient(to bottom, #071229, #0d234f, #280c4c);");
 
-        Label msg = new Label("✨ " + constellationName + " Completed! ✨");
-        msg.setStyle("-fx-font-size: 28px; -fx-text-fill: gold;");
+        Label msg = new Label("✨ " + constellation.getName() + " Completed! ✨");
+        msg.getStyleClass().add("glow-text");
+        msg.setStyle("-fx-font-size: 30px; -fx-font-weight: bold;");
+        BorderPane.setAlignment(msg, Pos.TOP_CENTER);
+        root.setTop(msg);
 
-        Button back = new Button("Back to Tasks");
-        back.setOnAction(e -> popup.close());
+        StackPane centerPane = new StackPane();
+        StarOverlay stars = new StarOverlay(120);
+        Pane showPane = constellation.createShow(450, 300);
+        showPane.setStyle("-fx-background-color: transparent;");
 
-        root.getChildren().addAll(msg, back);
+        centerPane.getChildren().addAll(stars, showPane);
+        root.setCenter(centerPane);
 
-        Scene scene = new Scene(root, 600, 400);
+        Button close = new Button("back to tasks");
+        close.getStyleClass().add("bubble-button");
+        close.setOnAction(ev -> popup.close());
+        BorderPane.setAlignment(close, Pos.BOTTOM_CENTER);
+        root.setBottom(close);
+
+        Scene scene = new Scene(root, 650, 520);
+        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+
         popup.setScene(scene);
-
-        popup.initModality(Modality.APPLICATION_MODAL);
         popup.showAndWait();
+
+        ConstellationManager.getInstance().advanceToNextConstellation();
     }
 }

@@ -1,24 +1,32 @@
 package application;
 
-
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class Main extends Application {
 
+    // persistent window size
+    private static double savedWidth = 1000;
+    private static double savedHeight = 600;
+
+    private void applyPersistentWindowSize(Stage stage) {
+        stage.setWidth(savedWidth);
+        stage.setHeight(savedHeight);
+
+        stage.widthProperty().addListener((obs, oldVal, newVal) -> savedWidth = newVal.doubleValue());
+        stage.heightProperty().addListener((obs, oldVal, newVal) -> savedHeight = newVal.doubleValue());
+    }
+
     @Override
     public void start(Stage primaryStage) {
-    		
-        primaryStage.setTitle("Start Screen");
-     
+
+        primaryStage.setTitle("Constellist");
+
         Database.createUsersTable();
         Database.createTasksTable();
         Database.createTaskItemsTable();
@@ -26,39 +34,92 @@ public class Main extends Application {
 
         music.play("/music/menu_music.mp3", 0.25);
 
-        Label title = new Label("Welcome");
-        title.setFont(Font.font("Verdana", 28));
-        title.setTextFill(Color.DARKTURQUOISE);
+        // global ui
+        String globalUI =
+                "-fx-font-family: 'Century Gothic';" +
+                "-fx-text-fill: white;";
 
-        Label tagline = new Label("Log in to begin");
-        tagline.setFont(Font.font("Verdana", 14));
-        tagline.setTextFill(Color.DARKTURQUOISE);
+        // title and subtitle message with login tagline
+        Label title = new Label("Welcome to Constellist");
+        title.getStyleClass().add("glow-text");
+        title.setStyle(
+                "-fx-font-size: 60px;" +
+                "-fx-font-weight: bold;"
+        );
 
-        VBox header = new VBox(5, title, tagline);
+        Label subtitle = new Label("Complete tasks. Connect stars. Build your universe.");
+        subtitle.getStyleClass().add("glow-text");
+        subtitle.setStyle("-fx-font-size: 22px;");
+
+        Label tagline = new Label("Log In to begin");
+        tagline.getStyleClass().add("glow-text");
+        tagline.setStyle("-fx-font-size: 20px;");
+
+        VBox header = new VBox(10, title, subtitle, tagline);
         header.setAlignment(Pos.CENTER);
 
+        // input fields
         TextField emailField = new TextField();
         emailField.setPromptText("Email or Username");
+        emailField.getStyleClass().add("custom-textfield");
 
         PasswordField passwordField = new PasswordField();
         passwordField.setPromptText("Password");
+        passwordField.getStyleClass().add("custom-passwordfield");
 
-        VBox inputBox = new VBox(10, emailField, passwordField);
+        VBox inputBox = new VBox(15, emailField, passwordField);
         inputBox.setAlignment(Pos.CENTER);
 
+        // buttons
         Button loginButton = new Button("Log In");
+        loginButton.getStyleClass().add("bubble-button");
+
         Button signupButton = new Button("Sign Up");
+        signupButton.getStyleClass().add("bubble-button");
 
-        loginButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-border-color: white;");
-        signupButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-border-color: white;");
-
-        HBox buttonBox = new HBox(20, loginButton, signupButton);
+        HBox buttonBox = new HBox(30, loginButton, signupButton);
         buttonBox.setAlignment(Pos.CENTER);
 
+        // forgot password
+        Hyperlink forgotPasswordLink = new Hyperlink("Forgot Password?");
+        forgotPasswordLink.setStyle("-fx-text-fill: #ffe8a3; -fx-font-size: 16;");
+
+        // main layout
+        VBox layout = new VBox(35, header, inputBox, buttonBox, forgotPasswordLink);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(40));
+        layout.setStyle(globalUI);
+
+        // background
+        StackPane root = new StackPane();
+
+        root.setStyle(
+                "-fx-background-color: linear-gradient(to bottom, #071229, #0D234F, #280c4c);"
+        );
+
+        // animated star overlay
+        StarOverlay stars = new StarOverlay(180);
+        stars.prefWidthProperty().bind(primaryStage.widthProperty());
+        stars.prefHeightProperty().bind(primaryStage.heightProperty());
+
+        root.getChildren().addAll(stars, layout);
+
+        // scene and window size logic
+        Scene scene = new Scene(root);
+        
+        try {
+            scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        } catch (Exception ignored) {}
+
+        applyPersistentWindowSize(primaryStage);
+
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
+        // button handlers
         signupButton.setOnAction(e -> {
-            SignUp signupScreen = new SignUp();
             try {
-                signupScreen.start(primaryStage);
+                new SignUp().start(primaryStage);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -68,92 +129,32 @@ public class Main extends Application {
             String input = emailField.getText();
             String password = passwordField.getText();
 
-            /* caitlyn commented this out to load username */
-            /*
             if (Database.validateLogin(input, password)) {
-                int userId = Database.getUserId(input);         //  Get the user's ID from the database
-                LoggedInUser.setId(userId);                     //  Store it globally for later use
+                int userId = Database.getUserId(input);
+                LoggedInUser.setId(userId);
 
-                
-                TaskApp taskApp = new TaskApp();                // Launch TaskApp as before
+                String username = Database.getUsernameById(userId);
+                LoggedInUser.setUsername(username);
+
                 try {
-                    taskApp.start(primaryStage);
+                    new TaskApp().start(primaryStage);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-                
-              
-            } else {
-                showAlert(Alert.AlertType.ERROR, "Invalid credentials. Please try again.");
             }
-            */
-            // beginning of caitlyns code
-            if (Database.validateLogin(input, password)) {
-            	int userId = Database.getUserId(input);
-            	LoggedInUser.setId(userId);
-            	
-            	/* new part of this code */
-            	String username = Database.getUsernameById(userId);
-            	LoggedInUser.setUsername(username);
-            	/* end */
-            	
-            	TaskApp taskApp = new TaskApp();
-            	try {
-            		taskApp.start(primaryStage);
-            	} catch (Exception ex) {
-            		ex.printStackTrace();
-            	}
-            }
-            // end of code from caitlyn
         });
-        
-        Hyperlink forgotPasswordLink = new Hyperlink("Forgot Password?");
-        forgotPasswordLink.setTextFill(Color.DARKTURQUOISE);
-        forgotPasswordLink.setFont(Font.font("Verdana", 12));
 
         forgotPasswordLink.setOnAction(e -> {
-            ForgotPassword forgotScreen = new ForgotPassword();
             try {
-                forgotScreen.start(primaryStage);
+                new ForgotPassword().start(primaryStage);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         });
-       
-    
-        
-        VBox layout = new VBox(20, header, inputBox, buttonBox, forgotPasswordLink);
-        layout.setAlignment(Pos.CENTER);
-        layout.setPadding(new Insets(40));
-        layout.setPrefSize(400, 400);
-
-        Image bgImage = new Image(Main.class.getResource("starsbackground.jpg").toExternalForm());
-        BackgroundImage backgroundImage = new BackgroundImage(
-            bgImage,
-            BackgroundRepeat.NO_REPEAT,
-            BackgroundRepeat.NO_REPEAT,
-            BackgroundPosition.DEFAULT,
-            new BackgroundSize(100, 100, true, true, false, true)
-        );
-        layout.setBackground(new Background(backgroundImage));
-
-        Scene scene = new Scene(layout, 400, 400);
-        scene.widthProperty().addListener((obs, oldVal, newVal) -> layout.setPrefWidth(newVal.doubleValue()));
-        scene.heightProperty().addListener((obs, oldVal, newVal) -> layout.setPrefHeight(newVal.doubleValue()));
-        
-    
-
-
-        primaryStage.setScene(scene);
-        primaryStage.show();
-        primaryStage.setFullScreen(true);
-
-
     }
 
     public static void main(String[] args) {
         launch(args);
-
     }
 
     private void showAlert(Alert.AlertType type, String message) {

@@ -5,10 +5,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.sql.Connection;
@@ -17,159 +14,128 @@ public class SignUp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Sign Up");
-        
-        Database.createUsersTable(); // Ensures the table exists before inserting
 
-        // Title 
-        Label title = new Label("Create Account");
-        title.setFont(Font.font("Verdana", 28));
-        title.setTextFill(Color.LIGHTSKYBLUE);
+        primaryStage.setTitle("Sign Up");
+        primaryStage.setWidth(1000);
+        primaryStage.setHeight(600);
+
+        // header
+        Label title = new Label("Create Your Account");
+        title.getStyleClass().add("glow-text");
+        title.setStyle("-fx-font-size: 55px; -fx-font-weight: bold;");
 
         Label tagline = new Label("Begin your constellation journey");
-        tagline.setFont(Font.font("Verdana", 14));
-        tagline.setTextFill(Color.LIGHTGRAY);
+        tagline.getStyleClass().add("glow-text");
+        tagline.setStyle("-fx-font-size: 22px;");
 
-        VBox header = new VBox(5, title, tagline);
+        VBox header = new VBox(8, title, tagline);
         header.setAlignment(Pos.CENTER);
 
-        // Input fields
-        TextField nameField = new TextField();
-        nameField.setPromptText("Username");
+        // input fields
+        TextField usernameField = new TextField();
+        usernameField.setPromptText("Username");
+        usernameField.getStyleClass().add("custom-textfield");
 
         TextField emailField = new TextField();
         emailField.setPromptText("Email");
+        emailField.getStyleClass().add("custom-textfield");
 
         PasswordField passwordField = new PasswordField();
         passwordField.setPromptText("Password");
+        passwordField.getStyleClass().add("custom-passwordfield");
 
-        PasswordField confirmPasswordField = new PasswordField();
-        confirmPasswordField.setPromptText("Confirm Password");
+        PasswordField confirmField = new PasswordField();
+        confirmField.setPromptText("Confirm Password");
+        confirmField.getStyleClass().add("custom-passwordfield");
 
-        VBox inputBox = new VBox(10, nameField, emailField, passwordField, confirmPasswordField);
+        VBox inputBox = new VBox(12, usernameField, emailField, passwordField, confirmField);
         inputBox.setAlignment(Pos.CENTER);
 
-        // Buttons
-        Button createAccountButton = new Button("Create Account");
+        // buttons
+        Button createAccount = new Button("Create Account");
+        createAccount.getStyleClass().add("bubble-button");
+
         Button backButton = new Button("Back to Login");
+        backButton.getStyleClass().add("bubble-button");
 
-        HBox buttonBox = new HBox(20, createAccountButton, backButton);
+        HBox buttonBox = new HBox(20, createAccount, backButton);
         buttonBox.setAlignment(Pos.CENTER);
-        
-        //button to go back to main 
-        backButton.setOnAction(e -> {
-            Main mainScreen = new Main();
-            try {
-                mainScreen.start(primaryStage);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        });
-        
-        //button that will take user to TaskApp after signing up 
-        
-        createAccountButton.setOnAction(e -> {
-            TaskApp taskApp = new TaskApp();
-            try {
-                taskApp.start(primaryStage); // Reuse the same window
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        });
-        
-        createAccountButton.setOnAction(e -> {
-            String username = nameField.getText();
-            String email = emailField.getText();
-            String password = passwordField.getText();
-            String confirmPassword = confirmPasswordField.getText();
 
-            if (username.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+        // main layout
+        VBox layout = new VBox(25, header, inputBox, buttonBox);
+        layout.setPadding(new Insets(40));
+        layout.setAlignment(Pos.CENTER);
+
+        StackPane root = new StackPane();
+
+        root.setStyle(
+                "-fx-background-color: linear-gradient(to bottom, #071229, #0D234F, #280c4c);"
+        );
+
+        // animated star overlay
+        StarOverlay stars = new StarOverlay(180);
+        stars.prefWidthProperty().bind(primaryStage.widthProperty());
+        stars.prefHeightProperty().bind(primaryStage.heightProperty());
+
+        root.getChildren().addAll(stars, layout);
+
+        // scene and style
+        Scene scene = new Scene(root, 1000, 650);
+        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+
+        ScreenManager.switchScreen(primaryStage, scene);
+
+        primaryStage.show();
+
+        // button handlers
+
+        backButton.setOnAction(e -> new Main().start(primaryStage));
+
+        createAccount.setOnAction(e -> {
+
+            String username = usernameField.getText().trim();
+            String email = emailField.getText().trim();
+            String password = passwordField.getText();
+            String confirm = confirmField.getText();
+
+            // Validation
+            if (username.isEmpty() || email.isEmpty() || password.isEmpty() || confirm.isEmpty()) {
                 showAlert(Alert.AlertType.WARNING, "Please fill in all fields.");
                 return;
             }
 
-            if (!password.equals(confirmPassword)) {
+            if (!password.equals(confirm)) {
                 showAlert(Alert.AlertType.ERROR, "Passwords do not match.");
                 return;
             }
 
-            String sql = "INSERT INTO users(username, email, password) VALUES(?, ?, ?)";
+            try (Connection conn = Database.connect()) {
 
-            try (Connection conn = Database.connect();
-                 java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                String sql = "INSERT INTO users(username, email, password) VALUES (?, ?, ?)";
+                var stmt = conn.prepareStatement(sql);
 
-                pstmt.setString(1, username);
-                pstmt.setString(2, email);
-                String hashedPassword = PasswordUtils.hashPassword(password);
-                pstmt.setString(3, hashedPassword);
-                pstmt.executeUpdate();
-                
-             // Debug print
-                System.out.println("Inserted username: " + username);
-                System.out.println("Inserted email: " + email);
-                System.out.println("Inserted hashed password: " + hashedPassword);
+                stmt.setString(1, username);
+                stmt.setString(2, email);
+                stmt.setString(3, PasswordUtils.hashPassword(password));
 
+                stmt.executeUpdate();
 
-
-                showAlert(Alert.AlertType.INFORMATION, "Account created successfully!");
-
-                //  Get the new user's ID and set it in LoggedInUser
-                int newUserId = Database.getUserId(username);
-                LoggedInUser.setId(newUserId);
-                
-                // code from caitlyn
-                // this will store username for new users
+                // store the new user ID
+                LoggedInUser.setId(Database.getUserId(username));
                 LoggedInUser.setUsername(username);
-                // end code from caitlyn
 
-                // Transition to TaskApp with the new user
-                TaskApp taskApp = new TaskApp();
-                taskApp.start(primaryStage);
+                // move to TaskApp
+                new TaskApp().start(primaryStage);
 
             } catch (Exception ex) {
-                showAlert(Alert.AlertType.ERROR, "Database error: " + ex.getMessage());
+                showAlert(Alert.AlertType.ERROR, "Database Error: " + ex.getMessage());
             }
         });
-
-        VBox layout = new VBox(20, header, inputBox, buttonBox);
-        layout.setAlignment(Pos.CENTER);
-        layout.setPadding(new Insets(40));
-        layout.setPrefSize(400, 400);
-
-        // Background image
-        Image bgImage = new Image(SignUp.class.getResource("starsbackground.jpg").toExternalForm());
-        BackgroundImage backgroundImage = new BackgroundImage(
-            bgImage,
-            BackgroundRepeat.NO_REPEAT,
-            BackgroundRepeat.NO_REPEAT,
-            BackgroundPosition.DEFAULT,
-            new BackgroundSize(100, 100, true, true, false, true)
-        );
-        layout.setBackground(new Background(backgroundImage));
-
-        Scene scene = new Scene(layout, 400, 400);
-
-        
-        scene.widthProperty().addListener((obs, oldVal, newVal) -> layout.setPrefWidth(newVal.doubleValue()));
-        scene.heightProperty().addListener((obs, oldVal, newVal) -> layout.setPrefHeight(newVal.doubleValue()));
-
-        primaryStage.setScene(scene);
-        primaryStage.show();
     }
 
-    public static void main(String[] args) {
-        launch(args);
+    private void showAlert(Alert.AlertType type, String message) {
+        Alert alert = new Alert(type);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
-
-	public static Scene getSignUp(Stage primaryStage) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	//used to make alerts if user got wrong password or other messages 
-	private void showAlert(Alert.AlertType type, String message) {
-	    Alert alert = new Alert(type);
-	    alert.setContentText(message);
-	    alert.showAndWait();
-	}
 }

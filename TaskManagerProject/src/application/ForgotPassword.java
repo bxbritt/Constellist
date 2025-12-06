@@ -5,83 +5,110 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class ForgotPassword extends Application {
+
+    // window size persistance
+    private static double savedWidth = 1000;
+    private static double savedHeight = 600;
+
+    private void applyPersistentWindowSize(Stage stage) {
+        stage.setWidth(savedWidth);
+        stage.setHeight(savedHeight);
+
+        stage.widthProperty().addListener((obs, oldVal, newVal) -> savedWidth = newVal.doubleValue());
+        stage.heightProperty().addListener((obs, oldVal, newVal) -> savedHeight = newVal.doubleValue());
+    }
+
     @Override
     public void start(Stage primaryStage) {
+
         primaryStage.setTitle("Forgot Password");
 
-        // Title label
-        Label title = new Label("Please enter your email");
-        title.setFont(Font.font("Verdana", 16));
-        title.setTextFill(Color.DARKTURQUOISE);
+        // global ui
+        String globalUI =
+                "-fx-font-family: 'Century Gothic';" +
+                "-fx-text-fill: white;";
 
-        // Email field
+        // header
+        Label title = new Label("Reset Your Password");
+        title.getStyleClass().add("glow-text");
+        title.setStyle("-fx-font-size: 55px; -fx-font-weight: bold;");
+
+        Label subtitle = new Label("Enter your email to receive a reset link");
+        subtitle.getStyleClass().add("glow-text");
+        subtitle.setStyle("-fx-font-size: 22px;");
+
+        VBox header = new VBox(8, title, subtitle);
+        header.setAlignment(Pos.CENTER);
+
+        // input field
         TextField emailField = new TextField();
-        emailField.setPromptText("Enter your email");
+        emailField.setPromptText("Email");
+        emailField.getStyleClass().add("custom-textfield");
 
-        // Send button
-        Button sendButton = new Button("Send Reset Link");
-        sendButton.setOnAction(e -> {
+        // buttons
+        Button send = new Button("Send Reset Link");
+        send.getStyleClass().add("bubble-button");
+
+        Button back = new Button("Back to Login");
+        back.getStyleClass().add("bubble-button");
+
+        VBox buttonBox = new VBox(15, send, back);
+        buttonBox.setAlignment(Pos.CENTER);
+
+        // main column
+        VBox layout = new VBox(30, header, emailField, buttonBox);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(40));
+        layout.setStyle(globalUI);
+
+        // background
+        StackPane root = new StackPane();
+
+        root.setStyle(
+                "-fx-background-color: linear-gradient(to bottom, #071229, #0D234F, #280c4c);"
+        );
+
+        StarOverlay stars = new StarOverlay(180);
+        stars.prefWidthProperty().bind(primaryStage.widthProperty());
+        stars.prefHeightProperty().bind(primaryStage.heightProperty());
+
+        root.getChildren().addAll(stars, layout);
+
+        // scene and size logic
+        Scene scene = new Scene(root, 1000, 650);
+        try {
+            scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        } catch (Exception ignored) {}
+
+        applyPersistentWindowSize(primaryStage);
+
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
+        // button handlers
+
+        send.setOnAction(e -> {
             String email = emailField.getText().trim();
+
             if (email.isEmpty()) {
-                showAlert(Alert.AlertType.WARNING, "Please enter your email.");
+                show("Please enter your email.", Alert.AlertType.WARNING);
                 return;
             }
 
-            String token = TokenUtils.generateResetToken();
-            Database.saveResetToken(email, token);
-            EmailUtils.sendResetEmail(email, token);
-
-            showAlert(Alert.AlertType.INFORMATION, "Reset link sent to your email.");
-        });
-        
-        Button backButton = new Button("Back to Main");
-        backButton.setOnAction(e -> {
-            try {
-                // Re‑launch your main screen
-                new Main().start(primaryStage);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+            Database.saveResetToken(email, TokenUtils.generateResetToken());
+            show("A reset link has been sent to your email.", Alert.AlertType.INFORMATION);
         });
 
-        // Layout with title included
-        VBox layout = new VBox(15, title, emailField, sendButton, backButton);
-        layout.setAlignment(Pos.CENTER);
-        layout.setPadding(new Insets(20));
-        layout.setPrefSize(300, 200);
-
-        // Background color (you can swap for an image if you want)
-        layout.setBackground(new Background(
-            new BackgroundFill(Color.DARKSLATEBLUE, new CornerRadii(10), Insets.EMPTY)
-        ));
-        
-        Image bgImage = new Image(ForgotPassword.class.getResource("starsbackground.jpg").toExternalForm());
-
-        BackgroundImage backgroundImage = new BackgroundImage(
-            bgImage,
-            BackgroundRepeat.NO_REPEAT,   // repeat horizontally
-            BackgroundRepeat.NO_REPEAT,   // repeat vertically
-            BackgroundPosition.CENTER,    // position
-            new BackgroundSize(100, 100, true, true, false, true) // scale
-        );
-
-        layout.setBackground(new Background(backgroundImage));
-
-        Scene scene = new Scene(layout);
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        back.setOnAction(e -> new Main().start(primaryStage));
     }
 
-    private void showAlert(Alert.AlertType type, String message) {
+    private void show(String message, Alert.AlertType type) {
         Alert alert = new Alert(type);
         alert.setContentText(message);
-        alert.showAndWait();
+        alert.show();
     }
 }

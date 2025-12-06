@@ -11,7 +11,7 @@ public class ConstellationTest extends Application {
     public void start(Stage stage) {
         Constellation constellation = new C2_Capricorn();
 
-        //  Use createShow instead of createPreview
+        // use createShow instead of createPreview
         StackPane root = new StackPane(
             constellation.createShow(600, 600) // fills the window nicely
         );

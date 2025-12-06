@@ -4,8 +4,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import application.PasswordUtils;
-import application.SaveProgress;
+//import application.PasswordUtils;
+//import application.SaveProgress;
 
 public class Database {
 
@@ -270,6 +270,28 @@ public class Database {
         }
         return items;
     }
+    
+    // Get the newest (most recently created) list ID for a user
+    public static int getLastListIdForUser(int userId) {
+        String sql = "SELECT id FROM tasks WHERE user_id = ? ORDER BY id DESC LIMIT 1";
+
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("id");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Failed to get last list ID: " + e.getMessage());
+        }
+
+        return -1;
+    }
+
 
     // password resets
     public static void createPasswordResetsTable() {

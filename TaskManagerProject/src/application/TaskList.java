@@ -5,7 +5,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Region;
@@ -16,10 +15,14 @@ import javafx.util.Duration;
 
 public class TaskList extends VBox {
 
+    // task container
     private VBox taskContainer = new VBox(10);
-    private final int TASK_LIMIT = 10;
-    private int listId;
 
+    // task limit
+    private final int TASK_LIMIT = 10;
+
+    // list id
+    private int listId;
 
     // title components
     private TextField titleField;
@@ -28,12 +31,13 @@ public class TaskList extends VBox {
     public TaskList(String initialTitle, int listId) {
         this.listId = listId;
 
-        this.setSpacing(10);
+        // spacing and card style
+        this.setSpacing(12);
         this.getStyleClass().add("task-box");
 
         // title field
         titleField = new TextField(initialTitle.equals("Task List") ? "" : initialTitle);
-        titleField.getStyleClass().add("task-title-field");
+        titleField.getStyleClass().add("task-title-field"); // transparent title field
         titleField.setPromptText("Enter a title...");
 
         // title label
@@ -42,23 +46,24 @@ public class TaskList extends VBox {
         titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
         titleLabel.setVisible(false);
 
-        // Prevent label from shrinking when long
+        // prevent label from shrinking
         titleLabel.setMinWidth(Region.USE_PREF_SIZE);
         titleLabel.setMaxWidth(Double.MAX_VALUE);
 
-        // Add Task button
-        Button addTaskButton = new Button("Add Task");
+        // add task button
+        Button addTaskButton = new Button("add task");
         addTaskButton.getStyleClass().add("bubble-button");
         addTaskButton.setVisible(false);
 
-        // View Progress button
-        Button viewProgressButton = new Button("View Progress");
+        // view progress button
+        Button viewProgressButton = new Button("view progress");
         viewProgressButton.getStyleClass().add("bubble-button");
         viewProgressButton.setVisible(false);
 
-        // title field interactions
+        // save title on enter
         titleField.setOnAction(e -> saveTitle(addTaskButton, viewProgressButton));
 
+        // enable title editing on double click
         titleField.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
                 titleField.setEditable(true);
@@ -77,9 +82,10 @@ public class TaskList extends VBox {
             }
         });
 
-        // close and delete buttons
-        Button closeButton = new Button("X");
+        // close button
+        Button closeButton = new Button("x");
         closeButton.getStyleClass().add("close-button");
+
         closeButton.setOnAction(e -> {
             if (this.getParent() instanceof FlowPane container) {
                 container.getChildren().remove(this);
@@ -100,29 +106,27 @@ public class TaskList extends VBox {
         TextField taskInputField = new TextField();
         taskInputField.setPromptText("Enter a task...");
         taskInputField.setVisible(false);
-        taskInputField.getStyleClass().add("task-input");
+        taskInputField.getStyleClass().add("task-input"); // transparent task field
 
-
-        // Add Task Button logic
+        // add task logic
         addTaskButton.setOnAction(e -> {
             if (taskContainer.getChildren().size() < TASK_LIMIT) {
                 addTaskButton.setVisible(false);
                 taskInputField.setVisible(true);
                 taskInputField.requestFocus();
             } else {
-                Alert limitAlert = new Alert(Alert.AlertType.WARNING);
-                limitAlert.setTitle("Task Limit Reached");
-                limitAlert.setHeaderText(null);
-                limitAlert.setContentText("This list can only hold 10 tasks.\nPlease create a new list.");
-                limitAlert.show();
+                Alert a = new Alert(Alert.AlertType.WARNING);
+                a.setTitle("Task Limit Reached!");
+                a.setHeaderText(null);
+                a.setContentText("This list can only hold 10 tasks.\nplease create a new list.");
+                a.show();
             }
         });
 
-        // Task Input logic
+        // add task on enter
         taskInputField.setOnAction(e -> {
             String text = taskInputField.getText().trim();
             if (!text.isEmpty()) {
-
                 TaskItem task = new TaskItem(text, taskContainer, this);
                 taskContainer.getChildren().add(task);
 
@@ -135,40 +139,34 @@ public class TaskList extends VBox {
             }
         });
 
-        // View Progress Button logic
+        // progress button logic
         viewProgressButton.setOnAction(e -> {
             Sound_Effects.playPianoKey();
+            LoggedInUser.setLastViewedListId(listId);
             ProgressScene progressScene = new ProgressScene(listId);
-
-            try {
-                Stage stage = (Stage) this.getScene().getWindow();
-                progressScene.start(stage);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+            TaskApp.setCenterContentStatic(progressScene.getView());
         });
 
-        // Add everything to the list card
+        // add nodes to card
         this.getChildren().addAll(titleBar, taskInputField, addTaskButton, viewProgressButton, taskContainer);
 
-        // Existing lists become label mode immediately
+        // switch to label mode for existing lists
         if (!initialTitle.trim().isEmpty()) {
             activateLabelMode(initialTitle, addTaskButton, viewProgressButton);
         }
     }
 
-    // Save title & switch UI mode
     private void saveTitle(Button addTask, Button viewProgress) {
         String title = titleField.getText().trim();
 
         if (!title.isEmpty()) {
             activateLabelMode(title, addTask, viewProgress);
         } else {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Missing Title");
-            alert.setHeaderText(null);
-            alert.setContentText("Please enter a title before adding tasks.");
-            alert.show();
+            Alert a = new Alert(Alert.AlertType.WARNING);
+            a.setTitle("Missing Title");
+            a.setHeaderText(null);
+            a.setContentText("please enter a title before adding tasks.");
+            a.show();
         }
     }
 
@@ -186,7 +184,6 @@ public class TaskList extends VBox {
         viewProgress.setVisible(true);
     }
 
-    // Completion watcher (currently only controls starManager)
     public void checkCompletion() {
         boolean allDone = taskContainer.getChildren().stream()
                 .filter(node -> node instanceof TaskItem)
@@ -210,7 +207,4 @@ public class TaskList extends VBox {
     public int getListId() {
         return listId;
     }
-
-  
 }
- 

@@ -10,67 +10,75 @@ import javafx.stage.Stage;
 
 public class WelcomeScreen {
 
+    // persistent window size
+    private static double savedWidth = 1000;
+    private static double savedHeight = 600;
+
+    // apply persistent size
+    private void applyPersistentWindowSize(Stage stage) {
+        stage.setWidth(savedWidth);
+        stage.setHeight(savedHeight);
+        stage.widthProperty().addListener((obs, oldVal, newVal) -> savedWidth = newVal.doubleValue());
+        stage.heightProperty().addListener((obs, oldVal, newVal) -> savedHeight = newVal.doubleValue());
+    }
+
     public void show(Stage stage, boolean returningUser) {
 
         // message logic
         String message = returningUser
-                ? "Welcome back, " + LoggedInUser.getUsername() + "!"
-                : "Welcome, " + LoggedInUser.getUsername() + "!";
+                ? "Welcome Back, " + LoggedInUser.getUsername() + "!"
+                : "Welcome to Constellist, " + LoggedInUser.getUsername() + "!";
 
         // title
         Label title = new Label(message);
         title.getStyleClass().add("glow-text");
-        title.setStyle(
-                "-fx-font-size: 42px;" +
-                "-fx-font-weight: bold;"
-        );
+        title.setStyle("-fx-font-size: 48px; -fx-font-weight: bold;");
 
         // subtitle
-        Label subtitle = new Label(
-                returningUser ? "Jump back in?" : "Ready to manage your daily tasks?"
-        );
+        Label subtitle = new Label(returningUser
+                ? "Jump back in?"
+                : "Ready to manage your daily tasks?");
         subtitle.getStyleClass().add("glow-text");
-        subtitle.setStyle("-fx-font-size: 20px;");
+        subtitle.setStyle("-fx-font-size: 22px;");
 
-        // button
-        Button startButton = new Button(returningUser ? "Continue" : "Let's Get Started");
+        // continue button
+        Button startButton = new Button(returningUser ? "continue" : "get started");
         startButton.getStyleClass().add("bubble-button");
-        startButton.setStyle("-fx-font-size: 18px;"); // font only — style.css controls everything else
+        startButton.setStyle("-fx-font-size: 18px;");
 
-        // main content layout
+        // layout container
         VBox layout = new VBox(30, title, subtitle, startButton);
         layout.setAlignment(Pos.CENTER);
 
-        // gradient background matches app
+        // background gradient
         StackPane root = new StackPane();
-        root.setStyle(
-                "-fx-background-color: linear-gradient(to bottom, #071229, #0D234F, #280c4c);"
-        );
+        root.setStyle("-fx-background-color: linear-gradient(to bottom, #071229, #0d234f, #280c4c);");
 
-        // star overlay
+        // animated stars
         StarOverlay stars = new StarOverlay(150);
         stars.prefWidthProperty().bind(stage.widthProperty());
         stars.prefHeightProperty().bind(stage.heightProperty());
 
-        // layered stars behind content
         root.getChildren().addAll(stars, layout);
 
+        // scene setup
         Scene scene = new Scene(root, 1000, 600);
-        
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 
-        // action
+        applyPersistentWindowSize(stage);
+
+        // button action
         startButton.setOnAction(e -> {
             TaskApp app = new TaskApp();
-            try { app.start(stage); }
-            catch (Exception ex) { ex.printStackTrace(); }
+            try {
+                app.start(stage);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         });
 
         stage.setScene(scene);
         stage.centerOnScreen();
         stage.show();
-        stage.setFullScreen(true);
-
-
     }
 }

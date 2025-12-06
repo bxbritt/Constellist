@@ -3,7 +3,6 @@ package application;
 import javafx.animation.FadeTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.layout.Pane;
-import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
