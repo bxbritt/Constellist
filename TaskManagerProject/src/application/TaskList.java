@@ -84,6 +84,9 @@ public class TaskList extends VBox {
             if (this.getParent() instanceof FlowPane container) {
                 container.getChildren().remove(this);
                 Database.deleteTaskList(listId);
+                if (LoggedInUser.getLastViewedListId() == listId) {
+                    LoggedInUser.setLastViewedListId(-1);
+                }
             }
         });
 
@@ -110,6 +113,7 @@ public class TaskList extends VBox {
                 taskInputField.requestFocus();
             } else {
                 Alert a = new Alert(Alert.AlertType.WARNING);
+                a.initOwner(ScreenManager.getStage());
                 a.setTitle("Task Limit Reached!");
                 a.setHeaderText(null);
                 a.setContentText("This list can only hold 10 tasks.\nplease create a new list.");
@@ -157,6 +161,7 @@ public class TaskList extends VBox {
             activateLabelMode(title, addTask, viewProgress);
         } else {
             Alert a = new Alert(Alert.AlertType.WARNING);
+            a.initOwner(ScreenManager.getStage());
             a.setTitle("Missing Title");
             a.setHeaderText(null);
             a.setContentText("please enter a title before adding tasks.");

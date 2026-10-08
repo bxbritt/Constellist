@@ -85,7 +85,8 @@ public class ConstellationGallery {
         constellationRow.getChildren().addAll(galleryCards);
 
         ScrollPane scrollPane = new ScrollPane(constellationRow);
-        scrollPane.setStyle("-fx-background-color: transparent;");
+        scrollPane.getStyleClass().add("styled-scrollpane");
+        scrollPane.setFitToHeight(true);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
@@ -94,6 +95,12 @@ public class ConstellationGallery {
         layout.setAlignment(Pos.TOP_CENTER);
         layout.setPadding(new Insets(30));
 
-        return layout;
+        // vertical scroll so the cards aren't cut off in small windows
+        ScrollPane outer = new ScrollPane(layout);
+        outer.setFitToWidth(true);
+        outer.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        outer.getStyleClass().add("styled-scrollpane");
+
+        return outer;
     }
 }

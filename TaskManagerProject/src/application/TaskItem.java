@@ -60,11 +60,9 @@ public class TaskItem extends HBox {
 
                 // increment constellation progress
                 ConstellationManager cm = ConstellationManager.getInstance();
-                cm.completeTask();
-
                 Constellation current = cm.getCurrentConstellation();
 
-                if (current.isComplete()) {
+                if (cm.completeTask()) {
                     Platform.runLater(() -> showConstellationPopup(current, parentList, parentContainer));
                 }
 
@@ -99,6 +97,7 @@ public class TaskItem extends HBox {
     private void showConstellationPopup(Constellation constellation, VBox parentList, TaskList parentContainer) {
 
         Stage popup = new Stage();
+        popup.initOwner(ScreenManager.getStage()); // keeps it in front when fullscreen
         popup.initModality(Modality.APPLICATION_MODAL);
         popup.setTitle("Constellation Completed!");
 

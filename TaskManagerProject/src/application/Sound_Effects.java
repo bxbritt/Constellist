@@ -16,20 +16,28 @@ public class Sound_Effects {
 		    );
 		
 		
-		AudioClip clip = new AudioClip(url.toExternalForm());
-		//this is super low to help it not drown out the song
-        clip.setVolume(0.08);
-        return clip;
+		// sound effects are optional: return null instead of crashing if audio can't load
+		try {
+			AudioClip clip = new AudioClip(url.toExternalForm());
+			//this is super low to help it not drown out the song
+	        clip.setVolume(0.08);
+	        return clip;
+		} catch (Exception e) {
+			System.out.println("Sound effect disabled (" + path + "): " + e.getMessage());
+			return null;
+		}
     }
 	
 	//adds randomness to piano pitch
 	public static void playPianoKey() {
+		if (piano_key == null) return;
         double pitch = 0.95 + (Math.random() * 0.05);
         piano_key.setRate(pitch);
         piano_key.play();
     }
 	
 	public static void playChime() {
+		if (chime == null) return;
         chime.play();
     }
 	

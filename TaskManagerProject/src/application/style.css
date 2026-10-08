@@ -224,7 +224,11 @@
 
 /* apply custom style only to gallery scrollpane */
 .styled-scrollpane .scroll-bar {
-    -fx-skin: "com.sun.javafx.scene.control.skin.ScrollBarSkin";
+    -fx-background-color: transparent;
+}
+
+.styled-scrollpane .scroll-bar:vertical {
+    -fx-pref-width: 16px;
 }
 
 .styled-scrollpane .scroll-bar:horizontal {
@@ -255,4 +259,8 @@
 .styled-scrollpane .increment-arrow,
 .styled-scrollpane .decrement-arrow {
     -fx-background-color: rgba(255,255,255,0.5);
+}
+
+.styled-scrollpane .corner {
+    -fx-background-color: transparent;
 }

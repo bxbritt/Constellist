@@ -3,7 +3,6 @@ package application;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
@@ -16,8 +15,6 @@ public class SignUp extends Application {
     public void start(Stage primaryStage) {
 
         primaryStage.setTitle("Sign Up");
-        primaryStage.setWidth(1000);
-        primaryStage.setHeight(600);
 
         // header
         Label title = new Label("Create Your Account");
@@ -74,18 +71,10 @@ public class SignUp extends Application {
 
         // animated star overlay
         StarOverlay stars = new StarOverlay(180);
-        stars.prefWidthProperty().bind(primaryStage.widthProperty());
-        stars.prefHeightProperty().bind(primaryStage.heightProperty());
 
         root.getChildren().addAll(stars, layout);
 
-        // scene and style
-        Scene scene = new Scene(root, 1000, 650);
-        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
-
-        ScreenManager.switchScreen(primaryStage, scene);
-
-        primaryStage.show();
+        ScreenManager.show(primaryStage, root);
 
         // button handlers
 
@@ -106,6 +95,12 @@ public class SignUp extends Application {
 
             if (!password.equals(confirm)) {
                 showAlert(Alert.AlertType.ERROR, "Passwords do not match.");
+                return;
+            }
+
+            // login looks users up by username OR email, so both must be unique
+            if (Database.getUserId(username) != -1 || Database.getUserId(email) != -1) {
+                showAlert(Alert.AlertType.ERROR, "That username or email is already registered.");
                 return;
             }
 
@@ -135,6 +130,7 @@ public class SignUp extends Application {
 
     private void showAlert(Alert.AlertType type, String message) {
         Alert alert = new Alert(type);
+        alert.initOwner(ScreenManager.getStage());
         alert.setContentText(message);
         alert.showAndWait();
     }

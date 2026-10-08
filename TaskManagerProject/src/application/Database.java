@@ -12,14 +12,11 @@ public class Database {
 
     public static Connection connect() {
         try {
-        	System.out.println("DB Path: " + new java.io.File("users.db").getAbsolutePath());
             String url = "jdbc:sqlite:users.db"; // creates users.db if not exists
-            Connection conn = DriverManager.getConnection(url);
-            System.out.println("Connected to SQLite.");
-            return conn;
+            return DriverManager.getConnection(url);
         } catch (SQLException e) {
-            System.out.println("Connection failed: " + e.getMessage());
-            return null;
+            // every caller dereferences the connection, so fail loudly instead of returning null
+            throw new IllegalStateException("Could not open users.db (is sqlite-jdbc on the classpath?)", e);
         }
     }
 
@@ -50,13 +47,7 @@ public class Database {
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
                 String stored = rs.getString("password");
-                String hashedInput = PasswordUtils.hashPassword(password);
-
-                System.out.println("Login attempt for: " + usernameOrEmail);
-                System.out.println("Stored password from DB: " + stored);
-                System.out.println("Hashed input from login: " + hashedInput);
-
-                return stored.equals(hashedInput);
+                return stored.equals(PasswordUtils.hashPassword(password));
             }
         } catch (SQLException e) {
             System.out.println("Login validation failed: " + e.getMessage());

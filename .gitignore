@@ -1,19 +1,22 @@
-<<<<<<< HEAD
-.classpath
-# Eclipse/Java build outputs
+# Build outputs
 TaskManagerProject/bin/
+TaskManagerProject/target/
+*.class
 
-# Eclipse project files
-TaskManagerProject/.project
-TaskManagerProject/.settings/
+# Eclipse files (regenerated from pom.xml when imported as a Maven project)
+.classpath
+.settings/
 
-# OS/editor noise
+# IDE / editor noise
+.vscode/
+.idea/
+*.iml
+.github/modernize/
+
+# OS noise
 .DS_Store
 Thumbs.db
 
-# Local runtime database (ignore live DB, commit schema/seed instead)
+# Local runtime databases (created automatically on first run)
 TaskManagerProject/users.db
-=======
-TaskManagerProject/.classpath
-TaskManagerProject/.class
->>>>>>> GalleryandProg
+*.db

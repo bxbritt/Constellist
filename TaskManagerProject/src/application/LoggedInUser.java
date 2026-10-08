@@ -14,7 +14,6 @@ public class LoggedInUser {
 
     public static void setId(int id) {
         userId = id;
-        System.out.println("loading progress for user id: " + LoggedInUser.getId());
     }
 
     public static int getId() {
@@ -41,5 +40,13 @@ public class LoggedInUser {
     // retrieve last viewed list id
     public static int getLastViewedListId() {
         return lastViewedListId;
+    }
+
+    // clear session state so the next user starts fresh
+    public static void logout() {
+        userId = 0;
+        username = null;
+        lastViewedListId = -1;
+        hasSeenWelcome = false;
     }
 }

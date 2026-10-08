@@ -3,24 +3,11 @@ package application;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 public class ForgotPassword extends Application {
-
-    // window size persistance
-    private static double savedWidth = 1000;
-    private static double savedHeight = 600;
-
-    private void applyPersistentWindowSize(Stage stage) {
-        stage.setWidth(savedWidth);
-        stage.setHeight(savedHeight);
-
-        stage.widthProperty().addListener((obs, oldVal, newVal) -> savedWidth = newVal.doubleValue());
-        stage.heightProperty().addListener((obs, oldVal, newVal) -> savedHeight = newVal.doubleValue());
-    }
 
     @Override
     public void start(Stage primaryStage) {
@@ -73,21 +60,10 @@ public class ForgotPassword extends Application {
         );
 
         StarOverlay stars = new StarOverlay(180);
-        stars.prefWidthProperty().bind(primaryStage.widthProperty());
-        stars.prefHeightProperty().bind(primaryStage.heightProperty());
 
         root.getChildren().addAll(stars, layout);
 
-        // scene and size logic
-        Scene scene = new Scene(root, 1000, 650);
-        try {
-            scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
-        } catch (Exception ignored) {}
-
-        applyPersistentWindowSize(primaryStage);
-
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        ScreenManager.show(primaryStage, root);
 
         // button handlers
 
@@ -99,7 +75,9 @@ public class ForgotPassword extends Application {
                 return;
             }
 
-            Database.saveResetToken(email, TokenUtils.generateResetToken());
+            String token = TokenUtils.generateResetToken();
+            Database.saveResetToken(email, token);
+            EmailUtils.sendResetEmail(email, token);
             show("A reset link has been sent to your email.", Alert.AlertType.INFORMATION);
         });
 
@@ -108,6 +86,7 @@ public class ForgotPassword extends Application {
 
     private void show(String message, Alert.AlertType type) {
         Alert alert = new Alert(type);
+        alert.initOwner(ScreenManager.getStage());
         alert.setContentText(message);
         alert.show();
     }

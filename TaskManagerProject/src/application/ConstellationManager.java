@@ -85,27 +85,19 @@ public class ConstellationManager {
 
     
     
-    public void saveProgressToDatabase() {
-        int userId = LoggedInUser.getId();
-        for (int i = 0; i < constellations.size(); i++) {
-            Constellation c = constellations.get(i);
-            Database.saveConstellationProgress(userId, i, c.getStarsLit(), totalTasksCompleted);
-        }
-    }
-
-    
     public void loadAllConstellationsFromDatabase() {
     	initializeConstellations();
         int userId = LoggedInUser.getId();
         for (int i = 0; i < constellations.size(); i++) {
             Database.ensureConstellationProgressRow(userId, i);
-            int starsLit = Database.getStarsLit(userId, i);
+            // clamp in case older databases stored more than 10
+            int starsLit = Math.min(10, Database.getStarsLit(userId, i));
             constellations.get(i).setStarsLit(starsLit);
         }
         totalTasksCompleted = Database.getTotalTasksCompleted(userId);
 
-        // Set current constellation to first incomplete
-        currentConstellationIndex = 0;
+        // Set current constellation to first incomplete (or the last one if all are done)
+        currentConstellationIndex = constellations.size() - 1;
         for (int i = 0; i < constellations.size(); i++) {
             if (!constellations.get(i).isComplete()) {
                 currentConstellationIndex = i;
@@ -114,16 +106,23 @@ public class ConstellationManager {
         }
         currentConstellation = constellations.get(currentConstellationIndex);
     }
-    
-    public void completeTask() {
-        // Light next star in current constellation
+
+    /**
+     * Light the next star for a completed task and persist it.
+     * @return true if this task just finished the current constellation
+     */
+    public boolean completeTask() {
         boolean starLit = currentConstellation.lightNextStar();
         totalTasksCompleted++;
 
-        // Update DB
-        Database.incrementConstellationProgress(LoggedInUser.getId(), currentConstellationIndex);
+        // only the current constellation's row changes
+        if (starLit) {
+            int userId = LoggedInUser.getId();
+            Database.ensureConstellationProgressRow(userId, currentConstellationIndex);
+            Database.incrementConstellationProgress(userId, currentConstellationIndex);
+        }
 
-        saveProgressToDatabase();
+        return starLit && currentConstellation.isComplete();
     }
 
     

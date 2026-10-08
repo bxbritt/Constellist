@@ -3,24 +3,11 @@ package application;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-
-    // persistent window size
-    private static double savedWidth = 1000;
-    private static double savedHeight = 600;
-
-    private void applyPersistentWindowSize(Stage stage) {
-        stage.setWidth(savedWidth);
-        stage.setHeight(savedHeight);
-
-        stage.widthProperty().addListener((obs, oldVal, newVal) -> savedWidth = newVal.doubleValue());
-        stage.heightProperty().addListener((obs, oldVal, newVal) -> savedHeight = newVal.doubleValue());
-    }
 
     @Override
     public void start(Stage primaryStage) {
@@ -31,6 +18,7 @@ public class Main extends Application {
         Database.createTasksTable();
         Database.createTaskItemsTable();
         Database.createConstellationProgressTable();
+        Database.createPasswordResetsTable();
 
         music.play("/music/menu_music.mp3", 0.25);
 
@@ -99,22 +87,10 @@ public class Main extends Application {
 
         // animated star overlay
         StarOverlay stars = new StarOverlay(180);
-        stars.prefWidthProperty().bind(primaryStage.widthProperty());
-        stars.prefHeightProperty().bind(primaryStage.heightProperty());
 
         root.getChildren().addAll(stars, layout);
 
-        // scene and window size logic
-        Scene scene = new Scene(root);
-        
-        try {
-            scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
-        } catch (Exception ignored) {}
-
-        applyPersistentWindowSize(primaryStage);
-
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        ScreenManager.show(primaryStage, root);
 
         // button handlers
         signupButton.setOnAction(e -> {
@@ -141,8 +117,17 @@ public class Main extends Application {
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.initOwner(primaryStage);
+                alert.setHeaderText(null);
+                alert.setContentText("Incorrect username/email or password.");
+                alert.showAndWait();
             }
         });
+
+        // pressing enter in the password field logs in
+        passwordField.setOnAction(e -> loginButton.fire());
 
         forgotPasswordLink.setOnAction(e -> {
             try {

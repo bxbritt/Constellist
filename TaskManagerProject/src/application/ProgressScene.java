@@ -8,6 +8,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 
@@ -76,6 +77,8 @@ public class ProgressScene {
 
         ObservableList<String> remainItems =
                 FXCollections.observableArrayList(Database.loadActiveTaskItemsForList(listId));
+        remainingList.setPrefHeight(240);
+        remainingList.setPrefHeight(240);
         remainingList.setItems(remainItems);
 
         remainingBox.getChildren().addAll(remainingTitle, remainingList);
@@ -118,6 +121,8 @@ public class ProgressScene {
 
         ObservableList<String> compItems =
                 FXCollections.observableArrayList(Database.loadCompletedTaskItemsForList(listId));
+        completedList.setPrefHeight(240);
+        completedList.setPrefHeight(240);
         completedList.setItems(compItems);
 
         completedBox.getChildren().addAll(completedTitle, completedList);
@@ -139,16 +144,22 @@ public class ProgressScene {
         constWrapper.setAlignment(Pos.CENTER);
         constWrapper.setPadding(new Insets(20));
 
-        // main
-        HBox mainRow = new HBox(80, leftColumn, constWrapper);
+        // main (wraps the constellation below the lists when the window is narrow)
+        FlowPane mainRow = new FlowPane(60, 20, leftColumn, constWrapper);
         mainRow.setAlignment(Pos.TOP_CENTER);
         mainRow.setPadding(new Insets(10, 20, 40, 0));
 
         // final layout
         VBox content = new VBox(20, header, mainRow);
         content.setAlignment(Pos.TOP_CENTER);
-        content.setPadding(new Insets(30, 30, 30, 70));
+        content.setPadding(new Insets(30));
 
-        return content;
+        // scroll instead of overflowing, which pushed the sidebar off-screen in small windows
+        ScrollPane scroll = new ScrollPane(content);
+        scroll.setFitToWidth(true);
+        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scroll.getStyleClass().add("styled-scrollpane");
+
+        return scroll;
     }
 }

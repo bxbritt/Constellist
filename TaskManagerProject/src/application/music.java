@@ -12,11 +12,17 @@ public class music {
             player.stop();
         }
 
-        Media media = new Media(music.class.getResource(filePath).toExternalForm());
-        player = new MediaPlayer(media);
-        player.setVolume(volume);  // between 0 and 1
-        player.setCycleCount(MediaPlayer.INDEFINITE); // makes the music loop
-        player.play();
+        // audio is optional: missing codecs/devices shouldn't stop the app from running
+        try {
+            Media media = new Media(music.class.getResource(filePath).toExternalForm());
+            player = new MediaPlayer(media);
+            player.setVolume(volume);  // between 0 and 1
+            player.setCycleCount(MediaPlayer.INDEFINITE); // makes the music loop
+            player.play();
+        } catch (Exception e) {
+            player = null;
+            System.out.println("Music disabled: " + e.getMessage());
+        }
     }
 
     public static void stop() {

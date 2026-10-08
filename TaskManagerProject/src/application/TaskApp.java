@@ -4,7 +4,6 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -18,10 +17,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class TaskApp extends Application {
-
-    // persistent window size
-    private static double savedWidth = 1000;
-    private static double savedHeight = 600;
 
     // static root reference
     private static BorderPane rootLayoutStatic;
@@ -44,8 +39,6 @@ public class TaskApp extends Application {
         layeredRoot.setStyle("-fx-background-color: linear-gradient(to bottom, #071229, #0d234f, #280c4c);");
 
         StarOverlay stars = new StarOverlay(180);
-        stars.prefWidthProperty().bind(stage.widthProperty());
-        stars.prefHeightProperty().bind(stage.heightProperty());
 
         layeredRoot.getChildren().addAll(stars, rootLayout);
 
@@ -53,9 +46,11 @@ public class TaskApp extends Application {
         int userId = LoggedInUser.getId();
         boolean returningUser = !Database.loadProgressForUser(userId).isEmpty();
 
-        // welcome screen
+        // welcome screen (first time through after login)
         if (!LoggedInUser.hasSeenWelcome) {
             LoggedInUser.hasSeenWelcome = true;
+            // load this user's stars so tasks, gallery and progress all start from saved state
+            ConstellationManager.getInstance().loadAllConstellationsFromDatabase();
             new WelcomeScreen().show(stage, returningUser);
             return;
         }
@@ -117,6 +112,7 @@ public class TaskApp extends Application {
         // create new list
         createListButton.setOnAction(e -> {
             TextInputDialog dialog = new TextInputDialog("New List");
+            dialog.initOwner(stage);
             dialog.setHeaderText("Enter a name for your list:");
             Optional<String> result = dialog.showAndWait();
 
@@ -165,6 +161,7 @@ public class TaskApp extends Application {
         });
 
         logoutButton.setOnAction(e -> {
+            LoggedInUser.logout();
             try { new Main().start(stage); }
             catch (Exception ex) { ex.printStackTrace(); }
         });
@@ -175,14 +172,8 @@ public class TaskApp extends Application {
         // music
         music.play("/music/menu_music.mp3", 0.25);
 
-        // scene setup
-        Scene scene = new Scene(layeredRoot, 1000, 600);
-        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
-        applyPersistentWindowSize(stage);
-
-        stage.setScene(scene);
         stage.setTitle("Constellist");
-        stage.show();
+        ScreenManager.show(stage, layeredRoot);
     }
 
     private void setCenterContent(Node content) {
@@ -209,15 +200,6 @@ public class TaskApp extends Application {
         if (rootLayoutStatic != null) {
             rootLayoutStatic.setCenter(content);
         }
-    }
-
-    // persistent window size
-    private void applyPersistentWindowSize(Stage stage) {
-        stage.setWidth(savedWidth);
-        stage.setHeight(savedHeight);
-
-        stage.widthProperty().addListener((o, ov, nv) -> savedWidth = nv.doubleValue());
-        stage.heightProperty().addListener((o, ov, nv) -> savedHeight = nv.doubleValue());
     }
 
     public static void main(String[] args) { launch(); }

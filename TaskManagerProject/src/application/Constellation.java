@@ -181,6 +181,15 @@ public abstract class Constellation extends Pane {
 
 	    public Pane createProgressView(double width, double height) {
 	        //  Use the constellation’s current stars/links state
-	        return createScaledPreview(this.stars, this.links, width, height, 0.85);
+	        Pane view = createScaledPreview(this.stars, this.links, width, height, 1);
+
+	        // scale the shape to fit the box (raw star coordinates are ~400-600px across)
+	        Group group = (Group) view.getChildren().get(0);
+	        Bounds b = group.getLayoutBounds();
+	        double fit = 0.85 * Math.min(width / b.getWidth(), height / b.getHeight());
+	        group.setScaleX(fit);
+	        group.setScaleY(fit);
+	        view.setClip(new javafx.scene.shape.Rectangle(width, height));
+	        return view;
 	    }
 	}
