@@ -8,10 +8,10 @@ Built by the Constellation Team for NMSU CS 371.
 
 ## Team
 
-- Brittany
-- Caitlyn
-- Kleo
-- Samantha
+- Brittany Benedict
+- Caitlyn Lonasee
+- Kleo Caro
+- Samantha Larsen
 
 ## Features
 
