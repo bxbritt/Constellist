@@ -8,10 +8,10 @@ Built by the Constellation Team for NMSU CS 371.
 
 ## Team
 
+- Brittany ([bxbritt](https://github.com/bxbritt))
 - Caitlyn
 - Kleo
 - Samantha
-- [bxbritt](https://github.com/bxbritt)
 
 ## Features
 
