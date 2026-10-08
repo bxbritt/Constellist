@@ -6,6 +6,13 @@ Constellist is a JavaFX to-do app where each completed task lights a star. Light
 
 Built by the Constellation Team for NMSU CS 371.
 
+## Team
+
+- Caitlyn
+- Kleo
+- Samantha
+- [bxbritt](https://github.com/bxbritt)
+
 ## Features
 
 - Accounts with sign up, log in and a forgot-password flow (passwords are stored as SHA-256 hashes)
